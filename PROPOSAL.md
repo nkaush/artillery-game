@@ -1,7 +1,7 @@
 # Idea: Artillery Game
 
 ## Introduction
-___
+
 In this game, 2 or more players take turns attempting to hit the other player(s) with a tank shell. The objective of
 the game is to be the last tank standing. Players must perfect their aim since tank shells are heavy and are heavily
 influenced by gravity. Players must also account for the hilly terrain and may need to clear portions of terrain away
@@ -12,13 +12,13 @@ also be moved when a tank shell from an enemy clears terrain below them. Another
 not only take hit points away from players, but also destroy pieces of terrain in the vicinity of the blast impact.
 
 ## Background
-___
+
 My experience with this game is limited to some number of hours playing it in arcades when I was younger. I want to do
 this project because I think being able to successfully model the physics of the game will be a great challenge. After
 the Ideal Gas project, I knew I wanted to create some kind of physics engine, and this project matches fits that.
 
 ## Features
-___
+
 This section is meant to explain features of the game, so I don't clog up the actual timeline with descriptions. 
 
 I want to create a tank avatar that players can actually drive around. I also want to make the tank such that the gun 
@@ -34,7 +34,7 @@ of the players, and set any other necessary game rules. As an extension, I also 
 able to load it again another time.
 
 ## Timeline
-___
+
 ### Week 1:
 In week 1, I want to have created the tank model and implemented functions to move it, aim, and shoot. I also want to 
 have implemented the gravity physics for a tank shell. I also want to start designing a JSON schema to load in a game.
@@ -59,6 +59,6 @@ land when fired. A final stretch goal is to have the terrain particles level out
 laws of physics).
 
 ## Libraries
-___
+
 I plan on using the the nlohmann::json library for JSON parsing. I also want to use the gflags library for command line 
 argument processing to boot up the game, but this may be a stretch considering Cinder has it's own main method. 
