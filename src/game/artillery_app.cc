@@ -16,18 +16,18 @@ const ci::Color8u ArtilleryApp::kBackgroundColor = ci::Color8u(98, 187, 193);
 
 ArtilleryApp::ArtilleryApp()
     : tank_(vec2(50, 400), Tank::kDefaultTurretOffset, 40, 15, 10, 30, 3, 106, 113, 82),
-      bullet_(vec2(-10, -10), vec2(0, 0), 0, 0, 0, 1) { }
+      bullet_(vec2(-10, -10), vec2(0, 0), 1) {
+}
 
 void ArtilleryApp::draw() {
   ci::gl::clear(kBackgroundColor);
 
-
-
-  bullet_.Draw();
-  tank_.Draw();
   ci::gl::color(ci::Color("red"));
   ci::gl::drawLine(tank_.GetBarrelPivotPosition(), mouse_location_);
 
+  terrain_.Draw();
+  bullet_.Draw();
+  tank_.Draw();
 }
 
 void ArtilleryApp::update() {

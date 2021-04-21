@@ -15,12 +15,15 @@ class Bullet {
     Bullet() = default;
 
     Bullet(const glm::vec2& initial_position, const glm::vec2& initial_velocity,
-           uint8_t red_intensity, uint8_t green_intensity,
-           uint8_t blue_intensity, float radius);
+           float radius);
 
     void UpdatePosition();
 
     void Draw() const;
+
+    const glm::vec2& GetPosition() const;
+
+    const glm::vec2& GetVelocity() const;
 
   private:
     glm::vec2 position_;
@@ -31,6 +34,8 @@ class Bullet {
     ci::Color8u color_;
 
     static const glm::vec2 kGravityAcceleration;
+
+    static const ci::Color8u kDefaultColor;
 };
 
 } // namespace artillery

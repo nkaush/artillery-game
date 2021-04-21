@@ -11,6 +11,7 @@ using glm::vec2;
 
 const vec2 Tank::kDefaultTurretOffset = vec2(22, 0);
 const vec2 Tank::kBulletVelocityDamping = vec2(0.05, 0.05);
+
 const ci::Color8u Tank::kDefaultTreadColor = ci::Color8u(0, 0, 0);
 
 Tank::Tank(const vec2& chassis_position, const vec2& turret_offset,
@@ -20,7 +21,7 @@ Tank::Tank(const vec2& chassis_position, const vec2& turret_offset,
     : chassis_position_(chassis_position),
       turret_offset_(turret_offset),
       chassis_offset_(vec2(-chassis_length / 2, -chassis_height / 2)),
-      barrel_pivot_position_(turret_offset + chassis_offset_),
+      barrel_pivot_position_(chassis_position_ + turret_offset + chassis_offset_),
       /*chassis_length_(chassis_length), */
       barrel_length_(barrel_length),
       barrel_radius_(barrel_radius),
@@ -43,32 +44,27 @@ Tank::Tank(const vec2& chassis_position, const vec2& turret_offset,
 
 void Tank::Draw() {
   ci::gl::color(chassis_color_);
-
-  ci::gl::pushMatrices(); ///
+  ci::gl::pushMatrices();
   // Move the origin to the pivot point at the barrel
   ci::gl::translate(chassis_position_);
-
 
   ci::gl::drawSolidRoundedRect(chassis_rect_, kChassisRounding); // chassis
 
   ci::gl::color(tread_color_);
   ci::gl::drawSolidRoundedRect(treads_rect_, kTreadWheelRadius); // treads
 
-  barrel_pivot_position_ = (turret_offset_ + chassis_offset_);
-
+  ci::gl::color(chassis_color_);
   DrawBarrel();
 
-  ci::gl::color(ci::Color("blue"));
-  ci::gl::drawSolidCircle(vec2(), 2); // turret
+  // rotate chassis here
 
-  ci::gl::popMatrices(); ///
+  ci::gl::popMatrices();
 }
 
 void Tank::DrawBarrel() const {
   // Adapted from: https://discourse.libcinder.org/t/what-is-the-best-way-to-rotate-rectangles-images/410/4
-//  ci::gl::pushMatrices();
   // Move the origin to the pivot point at the barrel
-  ci::gl::translate(barrel_pivot_position_);
+  ci::gl::translate(barrel_pivot_position_ - chassis_position_);
 
   // Pivot the reference grid
   ci::gl::rotate(barrel_rotation_);
@@ -76,7 +72,6 @@ void Tank::DrawBarrel() const {
   ci::gl::drawSolidCircle(vec2(), turret_radius_); // turret
   // Draw draw the barrel at the origin of the pivoted reference grid
   ci::gl::drawSolidRect(barrel_rect_);
-//  ci::gl::popMatrices();
 }
 
 Bullet Tank::ShootBullet() const {
@@ -84,21 +79,30 @@ Bullet Tank::ShootBullet() const {
   float barrel_span = barrel_length_ + turret_radius_ - barrel_radius_;
   vec2 barrel_extension(glm::cos(barrel_rotation_) * barrel_span,
                         glm::sin(barrel_rotation_) * barrel_span);
-  vec2 initial_position = barrel_pivot_position_ + chassis_position_ + barrel_extension;
+  vec2 initial_position = barrel_pivot_position_ + barrel_extension;
 
-  return Bullet(initial_position, loaded_bullet_velocity_, 100, 100, 100, barrel_radius_);
+  return Bullet(initial_position, loaded_bullet_velocity_, barrel_radius_);
 }
 
 void Tank::PointBarrel(const vec2& position_pointed_at) {
   loaded_bullet_velocity_ =
-      (position_pointed_at - barrel_pivot_position_ - chassis_position_) * kBulletVelocityDamping;
+      (position_pointed_at - barrel_pivot_position_) * kBulletVelocityDamping;
 
   barrel_rotation_ = glm::atan(loaded_bullet_velocity_.y,
                                loaded_bullet_velocity_.x);
 }
 
-glm::vec2 Tank::GetBarrelPivotPosition() const {
-  return barrel_pivot_position_ + chassis_position_;
+const vec2& Tank::GetBarrelPivotPosition() const {
+  return barrel_pivot_position_;
+}
+
+float Tank::GetBarrelRotation() const {
+  return barrel_rotation_;
+}
+
+void Tank::UpdatePosition(const glm::vec2& velocity) {
+  barrel_pivot_position_ += velocity;
+  chassis_position_ += velocity;
 }
 
 } // namespace artillery

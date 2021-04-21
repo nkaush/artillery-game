@@ -67,12 +67,14 @@ get_filename_component(APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/" ABSOLUTE)
 include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
 
 list(APPEND CORE_SOURCE_FILES src/core/bullet.cc
-                              src/core/tank.cc)
+                              src/core/tank.cc
+                              src/core/terrain.cc)
 
 list(APPEND SOURCE_FILES    ${CORE_SOURCE_FILES}
                             src/game/artillery_app.cc)
 
-list(APPEND TEST_FILES tests/test_bullet.cc)
+list(APPEND TEST_FILES tests/test_bullet.cc
+                       tests/test_tank.cc)
 
 ci_make_app(
         APP_NAME        artillery-main

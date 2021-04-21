@@ -27,9 +27,11 @@ class Tank {
 
   void PointBarrel(const glm::vec2& position_pointed_at);
 
-  void UpdatePosition();
+  void UpdatePosition(const glm::vec2& velocity);
 
-  glm::vec2 GetBarrelPivotPosition() const;
+  const glm::vec2& GetBarrelPivotPosition() const;
+
+  float GetBarrelRotation() const;
 
   static const glm::vec2 kDefaultTurretOffset;
 
@@ -61,7 +63,7 @@ class Tank {
 
   static const glm::vec2 kBulletVelocityDamping;
 
-  static constexpr float kTurretPadding = 0;
+  static constexpr float kTurretPadding = -2;
   static constexpr float kChassisRounding = 5;
 
   static constexpr float kTreadWheelRadius = 5;

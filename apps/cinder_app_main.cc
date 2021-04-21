@@ -8,6 +8,9 @@ using artillery::ArtilleryApp;
 
 void PrepareSettings(ArtilleryApp::Settings* settings) {
   settings->setResizable(false);
+  settings->setWindowSize(artillery::Terrain::kWindowWidth,
+                          artillery::Terrain::kWindowHeight);
+  settings->setFrameRate(15);
 }
 
 //CINDER_APP(ArtilleryApp, ci::app::RendererGl, PrepareSettings);

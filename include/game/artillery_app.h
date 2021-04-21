@@ -11,6 +11,7 @@
 
 #include <core/tank.h>
 #include <core/bullet.h>
+#include <core/terrain.h>
 
 namespace artillery {
 
@@ -26,15 +27,14 @@ class ArtilleryApp : public ci::app::App {
 
   void keyDown(ci::app::KeyEvent event) override;
 
-  static constexpr int kWindowWidth = 750;
-  static constexpr int kWindowHeight = 500;
-
   static const ci::Color8u kBackgroundColor;
 
  private:
   Tank tank_;
   Bullet bullet_;
   glm::vec2 mouse_location_;
+
+  Terrain terrain_;
 };
 
 }
