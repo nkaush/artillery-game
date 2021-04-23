@@ -21,12 +21,15 @@ enum class TerrainVisibility {
 
 class Terrain {
  public:
-  Terrain();
-
-  void Draw() const;
-
   static constexpr int kWindowWidth = 750;
   static constexpr int kWindowHeight = 500;
+
+  Terrain();
+
+  /**
+   * Draws the terrain on the window.
+   */
+  void Draw() const;
 
  private:
   static const ci::ColorA8u kVisibleTerrainColor;

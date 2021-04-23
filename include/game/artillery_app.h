@@ -9,9 +9,7 @@
 #include "Cinder/app/RendererGl.h"
 #include "Cinder/gl/gl.h"
 
-#include <core/tank.h>
-#include <core/bullet.h>
-#include <core/terrain.h>
+#include "game_engine.h"
 
 namespace artillery {
 
@@ -30,11 +28,9 @@ class ArtilleryApp : public ci::app::App {
   static const ci::Color8u kBackgroundColor;
 
  private:
-  Tank tank_;
-  Bullet bullet_;
   glm::vec2 mouse_location_;
 
-  Terrain terrain_;
+  GameEngine game_engine_;
 };
 
 }

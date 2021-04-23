@@ -26,7 +26,7 @@ TEST_CASE("Test Bullet Follows Parabolic Path") {
     };
 
     for (size_t i = 0; i < expected_positions.size(); i++) {
-      bullet.UpdatePosition();
+      bullet.AdvanceToNextFrame();
 
       REQUIRE(Approx( expected_positions.at(i).x ).epsilon(0.01)
               == bullet.GetPosition().x);
@@ -54,7 +54,7 @@ TEST_CASE("Test Bullet Follows Parabolic Path") {
     };
 
     for (size_t i = 0; i < expected_positions.size(); i++) {
-      bullet.UpdatePosition();
+      bullet.AdvanceToNextFrame();
 
       REQUIRE(Approx( expected_positions.at(i).x ).epsilon(0.01)
               == bullet.GetPosition().x);
@@ -82,7 +82,7 @@ TEST_CASE("Test Bullet Follows Parabolic Path") {
     };
 
     for (size_t i = 0; i < expected_positions.size(); i++) {
-      bullet.UpdatePosition();
+      bullet.AdvanceToNextFrame();
 
       REQUIRE(Approx( expected_positions.at(i).x ).epsilon(0.01)
               == bullet.GetPosition().x);

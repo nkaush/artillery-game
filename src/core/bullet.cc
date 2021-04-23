@@ -18,9 +18,17 @@ Bullet::Bullet(const vec2& initial_position, const vec2& initial_velocity,
     : position_(initial_position), velocity_(initial_velocity), radius_(radius),
       color_(kDefaultColor) {}
 
+void Bullet::AdvanceToNextFrame() {
+  UpdatePosition();
+  UpdateVelocity();
+}
+
+void Bullet::UpdateVelocity() {
+  velocity_ += kGravityAcceleration;
+}
+
 void Bullet::UpdatePosition() {
-    position_ += velocity_;
-    velocity_ += kGravityAcceleration;
+  position_ += velocity_;
 }
 
 void Bullet::Draw() const {
@@ -32,7 +40,7 @@ const glm::vec2& Bullet::GetVelocity() const {
   return velocity_;
 }
 
-const glm::vec2& Bullet::GetPosition() const{
+const glm::vec2& Bullet::GetPosition() const {
   return position_;
 }
 

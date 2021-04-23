@@ -12,14 +12,12 @@ using ci::ColorA8u;
 using std::array;
 using glm::vec2;
 
-const ColorA8u Terrain::kRemovedTerrainColor = ColorA8u(106, 56, 31, 1);
-const ColorA8u Terrain::kVisibleTerrainColor = ColorA8u(119, 78, 36, 1);
+const ColorA8u Terrain::kRemovedTerrainColor = ColorA8u(106, 56, 31, 255);
+const ColorA8u Terrain::kVisibleTerrainColor = ColorA8u(119, 78, 36, 255);
 const ColorA8u Terrain::kBackgroundColor = ci::ColorA8u(0, 0, 0, 0); // 98, 187, 193
 
 void Terrain::Draw() const {
-  for (size_t row = 0; row < landscape_.size(); row++) {
-    ci::gl::draw(display_);
-  }
+  ci::gl::draw(display_);
 }
 
 Terrain::Terrain() : landscape_(),

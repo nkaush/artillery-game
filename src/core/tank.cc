@@ -42,7 +42,7 @@ Tank::Tank(const vec2& chassis_position, const vec2& turret_offset,
   treads_rect_ = Rectf(upper_pt, lower_pt);
 }
 
-void Tank::Draw() {
+void Tank::Draw() const {
   ci::gl::color(chassis_color_);
   ci::gl::pushMatrices();
   // Move the origin to the pivot point at the barrel

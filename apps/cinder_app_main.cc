@@ -10,7 +10,7 @@ void PrepareSettings(ArtilleryApp::Settings* settings) {
   settings->setResizable(false);
   settings->setWindowSize(artillery::Terrain::kWindowWidth,
                           artillery::Terrain::kWindowHeight);
-  settings->setFrameRate(15);
+  settings->setFrameRate(30);
 }
 
 //CINDER_APP(ArtilleryApp, ci::app::RendererGl, PrepareSettings);

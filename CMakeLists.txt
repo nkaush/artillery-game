@@ -71,7 +71,8 @@ list(APPEND CORE_SOURCE_FILES src/core/bullet.cc
                               src/core/terrain.cc)
 
 list(APPEND SOURCE_FILES    ${CORE_SOURCE_FILES}
-                            src/game/artillery_app.cc)
+                            src/game/artillery_app.cc
+                            src/game/game_engine.cc)
 
 list(APPEND TEST_FILES tests/test_bullet.cc
                        tests/test_tank.cc)
