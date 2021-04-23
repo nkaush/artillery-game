@@ -15,12 +15,17 @@ const ci::Color8u Bullet::kDefaultColor = ci::Color8u(100, 100, 100);
 
 Bullet::Bullet(const vec2& initial_position, const vec2& initial_velocity,
                float radius)
-    : position_(initial_position), velocity_(initial_velocity), radius_(radius),
+    : position_(initial_position),
+      velocity_(initial_velocity),
+      radius_(radius),
+      is_active_(true),
       color_(kDefaultColor) {}
 
 void Bullet::AdvanceToNextFrame() {
-  UpdatePosition();
-  UpdateVelocity();
+  if (is_active_) {
+    UpdatePosition();
+    UpdateVelocity();
+  }
 }
 
 void Bullet::UpdateVelocity() {
@@ -31,9 +36,15 @@ void Bullet::UpdatePosition() {
   position_ += velocity_;
 }
 
+void Bullet::Stop() {
+  is_active_ = false;
+}
+
 void Bullet::Draw() const {
-  ci::gl::color(color_);
-  ci::gl::drawSolidCircle(position_, radius_);
+  if (is_active_) {
+    ci::gl::color(color_);
+    ci::gl::drawSolidCircle(position_, radius_);
+  }
 }
 
 const glm::vec2& Bullet::GetVelocity() const {
@@ -42,6 +53,10 @@ const glm::vec2& Bullet::GetVelocity() const {
 
 const glm::vec2& Bullet::GetPosition() const {
   return position_;
+}
+
+float Bullet::GetRadius() const {
+  return radius_;
 }
 
 } // namespace artillery

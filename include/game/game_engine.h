@@ -25,6 +25,8 @@ class GameEngine {
 
   void ShootBulletFromActiveTank();
 
+  bool IsBulletCollidingWithTerrain() const;
+
  private:
   Tank tank_;
   Bullet bullet_;

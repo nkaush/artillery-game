@@ -26,6 +26,14 @@ class Terrain {
 
   Terrain();
 
+  size_t GetMaxHeight() const;
+
+  size_t GetMaxWidth() const;
+
+  TerrainVisibility GetTerrainVisibility(size_t x_coord, size_t y_coord) const;
+
+  void DestroyTerrainInRadius(const glm::vec2& center_point, size_t radius);
+
   /**
    * Draws the terrain on the window.
    */

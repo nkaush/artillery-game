@@ -12,6 +12,8 @@ namespace artillery {
 
 class Bullet {
   public:
+    static constexpr size_t kBlastRadius = 30;
+
     Bullet() = default;
 
     /**
@@ -33,6 +35,8 @@ class Bullet {
 
     void UpdateVelocity();
 
+    void Stop();
+
     /**
      * Draws this bullet in the window.
      */
@@ -41,6 +45,8 @@ class Bullet {
     const glm::vec2& GetPosition() const;
 
     const glm::vec2& GetVelocity() const;
+
+    float GetRadius() const;
 
   private:
     static const glm::vec2 kGravityAcceleration;
@@ -51,6 +57,8 @@ class Bullet {
     glm::vec2 velocity_;
 
     float radius_;
+
+    bool is_active_;
 
     ci::Color8u color_;
 };
