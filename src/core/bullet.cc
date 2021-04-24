@@ -9,12 +9,12 @@ namespace artillery {
 
 using glm::vec2;
 
+constexpr size_t Bullet::kMaxBlastRadius; // need this else get linker error
 const vec2 Bullet::kGravityAcceleration = vec2(0, 0.2);
-
 const ci::Color8u Bullet::kDefaultColor = ci::Color8u(100, 100, 100);
 
-Bullet::Bullet(const vec2& initial_position, const vec2& initial_velocity,
-               float radius)
+Bullet::Bullet(
+    const vec2& initial_position, const vec2& initial_velocity, float radius)
     : position_(initial_position),
       velocity_(initial_velocity),
       radius_(radius),
@@ -57,6 +57,11 @@ const glm::vec2& Bullet::GetPosition() const {
 
 float Bullet::GetRadius() const {
   return radius_;
+}
+
+size_t Bullet::CalculateBlastRadius() const {
+  float scaled_radius = glm::length(velocity_) * kBlastRadiusScalar;
+  return std::min(static_cast<size_t>(scaled_radius), kMaxBlastRadius);
 }
 
 } // namespace artillery

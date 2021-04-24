@@ -9,6 +9,7 @@
 namespace artillery {
 
 using ci::ColorA8u;
+using std::vector;
 using std::array;
 using glm::vec2;
 
@@ -16,16 +17,18 @@ const ColorA8u Terrain::kRemovedTerrainColor = ColorA8u(119, 78, 36, 255); // 10
 const ColorA8u Terrain::kVisibleTerrainColor = ColorA8u(228, 187, 151, 255);
 const ColorA8u Terrain::kBackgroundColor = ci::ColorA8u(0, 0, 0, 0); // 98, 187, 193
 
+constexpr TerrainVisibility Terrain::kDefaultVisibility;
+
 void Terrain::Draw() const {
   ci::gl::draw(display_);
 }
 
-TerrainVisibility Terrain::GetTerrainVisibility(
+const TerrainVisibility& Terrain::GetTerrainVisibility(
     size_t x_coord, size_t y_coord) const {
   try {
     return landscape_.at(y_coord).at(x_coord);
   } catch (std::out_of_range& exception) {
-    return TerrainVisibility::kNone;
+    return kDefaultVisibility;
   }
 }
 
@@ -47,13 +50,17 @@ void Terrain::DestroyTerrainInRadius(
   size_t right_bound = center_x + radius;
   size_t lower_bound = center_y + radius;
 
-  // TODO handle out of map bounds case - for range (!) and for point center (?)
-
   // Go through all points in the square formed by the radius of impact
   for (size_t x_coord = center_x - radius; x_coord < right_bound; x_coord++) {
     for (size_t y_coord = center_y - radius; y_coord < lower_bound; y_coord++) {
       // We only need to change the shade of a point if it is visible
-      if (GetTerrainVisibility(x_coord, y_coord) != TerrainVisibility::kVisible) {
+      bool is_terrain_in_background =
+          GetTerrainVisibility(x_coord, y_coord) != TerrainVisibility::kVisible;
+
+      bool is_point_out_of_bounds = x_coord < 0 || x_coord >= GetMaxWidth();
+      is_point_out_of_bounds |= y_coord < 0 || y_coord >= GetMaxHeight();
+
+      if (is_terrain_in_background || is_point_out_of_bounds) {
         continue;
       }
 
@@ -81,25 +88,27 @@ Terrain::Terrain() : landscape_(),
 
   pixels_.setPremultiplied(false);
 
+  LoadSurfaceFromHeights(terr);
+  display_ = ci::gl::Texture::create(pixels_);
+}
+
+void Terrain::LoadSurfaceFromHeights(const vector<size_t>& column_heights) {
   for (size_t col = 0; col < kWindowWidth; col++) {
-    size_t limit = kWindowHeight - terr.at(col);
+    size_t limit = kWindowHeight - column_heights.at(col);
 
     for (size_t row = landscape_.size(); row > 0; row--) {
       try {
         if (row - 1 >= limit) {
           landscape_.at(row - 1).at(col) = TerrainVisibility::kVisible;
           pixels_.setPixel(vec2(col, row - 1), kVisibleTerrainColor);
-        }
-        else {
+        } else {
           landscape_.at(row - 1).at(col) = TerrainVisibility::kNone;
-          pixels_.setPixel(vec2(col, row - 1), kBackgroundColor);
+//          pixels_.setPixel(vec2(col, row - 1), kBackgroundColor);
         }
       } catch (std::out_of_range& e) {
         std::cout << row << " " << col << std::endl;
       }
     }
-
-    display_ = ci::gl::Texture::create(pixels_);
   }
 }
 

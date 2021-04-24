@@ -12,10 +12,6 @@ namespace artillery {
 
 class Bullet {
   public:
-    static constexpr size_t kBlastRadius = 30;
-
-    Bullet() = default;
-
     /**
      * Creates a new Bullet with specified initial position and velocity.
      * @param initial_position - a vec2 indicating the initial position
@@ -25,16 +21,24 @@ class Bullet {
     Bullet(const glm::vec2& initial_position, const glm::vec2& initial_velocity,
            float radius);
 
+    /**
+     * Updates the bullet's position and velocity.
+     */
     void AdvanceToNextFrame();
 
     /**
-     * Updates the bullet's position with its velocity and updates the bullet's
-     * velocity with the constant acceleration of gravity.
+     * Updates the bullet's position with its velocity.
      */
     void UpdatePosition();
 
+    /**
+     * Updates the bullet's velocity with the constant acceleration of gravity.
+     */
     void UpdateVelocity();
 
+    /**
+     * Stops the bullet's motion and stops the bullet from being drawn.
+     */
     void Stop();
 
     /**
@@ -48,10 +52,16 @@ class Bullet {
 
     float GetRadius() const;
 
+    size_t CalculateBlastRadius() const;
+
   private:
     static const glm::vec2 kGravityAcceleration;
 
     static const ci::Color8u kDefaultColor;
+
+    static constexpr size_t kMaxBlastRadius = 50;
+
+    static constexpr float kBlastRadiusScalar = 2.5;
 
     glm::vec2 position_;
     glm::vec2 velocity_;

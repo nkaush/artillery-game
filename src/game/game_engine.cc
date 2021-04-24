@@ -30,7 +30,8 @@ void GameEngine::AdvanceToNextFrame() {
 
   if (IsBulletCollidingWithTerrain()) {
     bullet_.Stop();
-    terrain_.DestroyTerrainInRadius(bullet_.GetPosition(), Bullet::kBlastRadius);
+    terrain_.DestroyTerrainInRadius(bullet_.GetPosition(),
+                                    bullet_.CalculateBlastRadius());
   }
 
   float bullet_x_coord = bullet_.GetPosition().x;

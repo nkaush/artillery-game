@@ -5,7 +5,7 @@
 #ifndef ARTILLERY_TERRAIN_H
 #define ARTILLERY_TERRAIN_H
 
-#include <cstdlib>
+#include <vector>
 #include <array>
 
 #include "cinder/gl/gl.h"
@@ -14,9 +14,9 @@
 namespace artillery {
 
 enum class TerrainVisibility {
-  kVisible = 0,
-  kRemoved = 1,
-  kNone = 2
+  kNone = 0,
+  kVisible = 1,
+  kRemoved = 2,
 };
 
 class Terrain {
@@ -30,8 +30,15 @@ class Terrain {
 
   size_t GetMaxWidth() const;
 
-  TerrainVisibility GetTerrainVisibility(size_t x_coord, size_t y_coord) const;
+  const TerrainVisibility& GetTerrainVisibility(
+      size_t x_coord, size_t y_coord) const;
 
+  /**
+   * Re-shades all the 'kVisible' terrain blocks in the radius with a darker
+   * color to indicate removal and changes status of those blocks to 'kRemoved'.
+   * @param center_point - a vec2 indicating the center of the blast
+   * @param radius - a size_t indicating the radius of the blast
+   */
   void DestroyTerrainInRadius(const glm::vec2& center_point, size_t radius);
 
   /**
@@ -44,6 +51,9 @@ class Terrain {
   static const ci::ColorA8u kRemovedTerrainColor;
   static const ci::ColorA8u kBackgroundColor;
 
+  static constexpr TerrainVisibility kDefaultVisibility =
+      TerrainVisibility::kNone;
+
   std::array<std::array<TerrainVisibility, kWindowWidth>, kWindowHeight>
       landscape_;
 
@@ -51,6 +61,7 @@ class Terrain {
 
   ci::gl::Texture2dRef display_;
 
+  void LoadSurfaceFromHeights(const std::vector<size_t>& heights);
 };
 } // namespace artillery
 
