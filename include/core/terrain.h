@@ -8,8 +8,9 @@
 #include <vector>
 #include <array>
 
-#include "cinder/gl/gl.h"
+#include "nlohmann/json.hpp"
 #include "cinder/Surface.h"
+#include "cinder/gl/gl.h"
 
 namespace artillery {
 
@@ -24,6 +25,16 @@ class Terrain {
   static constexpr int kWindowWidth = 750;
   static constexpr int kWindowHeight = 500;
 
+  static const std::string kJsonRedColorKey;
+  static const std::string kJsonGreenColorKey;
+  static const std::string kJsonBlueColorKey;
+  static const std::string kJsonAlphaChannelKey;
+
+  static const std::string kJsonStartingHeightsKey;
+  static const std::string kJsonBackgroundColorKey;
+  static const std::string kJsonVisibleTerrainColorKey;
+  static const std::string kJsonRemovedTerrainColorKey;
+
   Terrain();
 
   size_t GetMaxHeight() const;
@@ -32,6 +43,8 @@ class Terrain {
 
   const TerrainVisibility& GetTerrainVisibility(
       size_t x_coord, size_t y_coord) const;
+
+  const ci::ColorA8u& GetBackgroundColor() const;
 
   /**
    * Re-shades all the 'kVisible' terrain blocks in the radius with a darker
@@ -46,11 +59,37 @@ class Terrain {
    */
   void Draw() const;
 
- private:
-  static const ci::ColorA8u kVisibleTerrainColor;
-  static const ci::ColorA8u kRemovedTerrainColor;
-  static const ci::ColorA8u kBackgroundColor;
+  /**
+   * Used by the nlohmann::json library to serialize Terrain objects.
+   * @param json_object - the json object to serialize into
+   * @param terrain - the Terrain object to serialize
+   */
+  friend void to_json(nlohmann::json& json_object, const Terrain& terrain);
 
+  /**
+   * Used by the nlohmann::json library to deserialize Terrain objects.
+   * @param json_object - the json object to serialize from
+   * @param terrain - the Terrain object to deserialize into
+   */
+  friend void from_json(const nlohmann::json& json_object, Terrain& terrain);
+
+  /**
+   * Used by the nlohmann::json library to serialize ColorA8u objects.
+   * @param json_object - the json object to serialize into
+   * @param color - the Terrain object to serialize
+   */
+  static void SerializeColorA8u(nlohmann::json& json_object,
+                                const ci::ColorA8u& color);
+
+  /**
+   * Used by the nlohmann::json library to deserialize ColorA8u objects.
+   * @param json_object - the json object to serialize from
+   * @param color - the Terrain object to deserialize into
+   */
+  static void DeserializeColorA8u(const nlohmann::json& json_object,
+                                  ci::ColorA8u& color);
+
+ private:
   static constexpr TerrainVisibility kDefaultVisibility =
       TerrainVisibility::kNone;
 
@@ -60,6 +99,10 @@ class Terrain {
   ci::Surface8u pixels_;
 
   ci::gl::Texture2dRef display_;
+
+  ci::ColorA8u visible_terrain_color_;
+  ci::ColorA8u removed_terrain_color_;
+  ci::ColorA8u background_color_;
 
   void LoadSurfaceFromHeights(const std::vector<size_t>& heights);
 };

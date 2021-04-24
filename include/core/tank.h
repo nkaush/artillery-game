@@ -16,6 +16,8 @@ class Tank {
  public:
   static const glm::vec2 kDefaultTurretOffset;
 
+  Tank() = default;
+
   /**
    * Creates a Tank object.
    * @param chassis_position - a vec2 of the initial position of the tank
@@ -55,6 +57,7 @@ class Tank {
    * being pointed at.
    */
   void PointBarrel(const glm::vec2& position_pointed_at);
+
   void UpdatePosition(const glm::vec2& velocity);
 
   const glm::vec2& GetBarrelPivotPosition() const;

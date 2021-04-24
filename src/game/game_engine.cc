@@ -6,13 +6,27 @@
 
 namespace artillery {
 
+using nlohmann::json;
+using std::string;
 using glm::vec2;
+
+const string GameEngine::kJsonTerrainKey = "terrain";
 
 GameEngine::GameEngine()
     : tank_(vec2(50, 400), Tank::kDefaultTurretOffset,
             40, 15, 10, 30, 3, 106, 113, 82),
       bullet_(tank_.ShootBullet()) {
   bullet_.Stop();
+}
+
+void to_json(json& json_object, const GameEngine& game_engine) {}
+
+void from_json(const json& json_object, GameEngine& game_engine) {
+  json_object.at(GameEngine::kJsonTerrainKey).get_to(game_engine.terrain_);
+}
+
+const ci::ColorA8u& GameEngine::GetBackgroundColor() const {
+  return terrain_.GetBackgroundColor();
 }
 
 void GameEngine::Draw(const glm::vec2& mouse_location) const {

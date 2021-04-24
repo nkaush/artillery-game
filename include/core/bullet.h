@@ -12,6 +12,8 @@ namespace artillery {
 
 class Bullet {
   public:
+    Bullet() = default;
+
     /**
      * Creates a new Bullet with specified initial position and velocity.
      * @param initial_position - a vec2 indicating the initial position

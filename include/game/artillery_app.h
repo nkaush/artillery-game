@@ -11,6 +11,8 @@
 
 #include "game_engine.h"
 
+#include <string>
+
 namespace artillery {
 
 class ArtilleryApp : public ci::app::App {
@@ -25,9 +27,9 @@ class ArtilleryApp : public ci::app::App {
 
   void keyDown(ci::app::KeyEvent event) override;
 
-  static const ci::Color8u kBackgroundColor;
-
  private:
+  static const std::string kGameSettingsFilePath;
+
   glm::vec2 mouse_location_;
 
   GameEngine game_engine_;
