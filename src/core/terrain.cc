@@ -3,6 +3,7 @@
 //
 
 #include "core/terrain.h"
+#include "core/json_helper.h"
 
 #include "glm/vec2.hpp"
 
@@ -14,11 +15,6 @@ using std::vector;
 using std::string;
 using std::array;
 using glm::vec2;
-
-const string Terrain::kJsonRedColorKey = "red";
-const string Terrain::kJsonGreenColorKey = "green";
-const string Terrain::kJsonBlueColorKey = "blue";
-const string Terrain::kJsonAlphaChannelKey = "alpha";
 
 const string Terrain::kJsonStartingHeightsKey = "starting_pixel_heights";
 const string Terrain::kJsonBackgroundColorKey = "background_color";
@@ -34,21 +30,16 @@ Terrain::Terrain() : landscape_(),
 void to_json(nlohmann::json& json_object, const Terrain& terrain) {}
 
 void from_json(const nlohmann::json& json_object, Terrain& terrain) {
-  if (!json_object.at(Terrain::kJsonStartingHeightsKey).is_array()) {
-    throw std::invalid_argument("Must construct a Terrain object with an array");
-  }
-
   terrain.pixels_.setPremultiplied(false);
 
-  Terrain::DeserializeColorA8u(
-      json_object.at(Terrain::kJsonBackgroundColorKey),
-      terrain.background_color_);
-  Terrain::DeserializeColorA8u(
-      json_object.at(Terrain::kJsonVisibleTerrainColorKey),
-      terrain.visible_terrain_color_);
-  Terrain::DeserializeColorA8u(
-      json_object.at(Terrain::kJsonRemovedTerrainColorKey),
-      terrain.removed_terrain_color_);
+  json_object.at(Terrain::kJsonBackgroundColorKey)
+      .get_to(terrain.background_color_);
+
+  json_object.at(Terrain::kJsonVisibleTerrainColorKey)
+      .get_to(terrain.visible_terrain_color_);
+
+  json_object.at(Terrain::kJsonRemovedTerrainColorKey)
+      .get_to(terrain.removed_terrain_color_);
 
   json heights_array = json_object.at(Terrain::kJsonStartingHeightsKey);
   terrain.LoadSurfaceFromHeights(heights_array.get<vector<size_t>>());
@@ -67,29 +58,12 @@ void Terrain::LoadSurfaceFromHeights(const vector<size_t>& column_heights) {
           pixels_.setPixel(vec2(col, row - 1), visible_terrain_color_);
         } else {
           landscape_.at(row - 1).at(col) = TerrainVisibility::kNone;
-//          pixels_.setPixel(vec2(col, row - 1), kBackgroundColor);
         }
       } catch (std::out_of_range& e) {
         std::cout << row << " " << col << std::endl;
       }
     }
   }
-}
-
-void Terrain::DeserializeColorA8u(const json& json_object, ColorA8u& color) {
-  json_object.at(Terrain::kJsonRedColorKey).get_to(color.r);
-  json_object.at(Terrain::kJsonGreenColorKey).get_to(color.g);
-  json_object.at(Terrain::kJsonBlueColorKey).get_to(color.b);
-  json_object.at(Terrain::kJsonAlphaChannelKey).get_to(color.a);
-}
-
-void Terrain::SerializeColorA8u(json& json_object, const ColorA8u& color) {
-  json_object = json {
-      {Terrain::kJsonRedColorKey, color.r},
-      {Terrain::kJsonGreenColorKey, color.g},
-      {Terrain::kJsonBlueColorKey, color.b},
-      {Terrain::kJsonAlphaChannelKey, color.a}
-  };
 }
 
 void Terrain::Draw() const {

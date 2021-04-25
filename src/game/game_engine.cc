@@ -8,12 +8,16 @@ namespace artillery {
 
 using nlohmann::json;
 using std::string;
+using glm::length;
 using glm::vec2;
 
 const string GameEngine::kJsonTerrainKey = "terrain";
+const string GameEngine::kJsonMaxBlastRadiusKey = "blast_radius_max";
+const string GameEngine::kJsonMinBlastRadiusKey = "blast_radius_min";
+const string GameEngine::kJsonBlastRadiusScalar = "blast_radius_scalar";
 
 GameEngine::GameEngine()
-    : tank_(vec2(50, 400), Tank::kDefaultTurretOffset,
+    : tank_(vec2(50, 200), Tank::kDefaultTurretOffset,
             40, 15, 10, 30, 3, 106, 113, 82),
       bullet_(tank_.ShootBullet()) {
   bullet_.Stop();
@@ -23,6 +27,15 @@ void to_json(json& json_object, const GameEngine& game_engine) {}
 
 void from_json(const json& json_object, GameEngine& game_engine) {
   json_object.at(GameEngine::kJsonTerrainKey).get_to(game_engine.terrain_);
+
+  json radius_scalar = json_object.at(GameEngine::kJsonBlastRadiusScalar);
+  radius_scalar.get_to(game_engine.blast_radius_scalar_);
+
+  json min_radius = json_object.at(GameEngine::kJsonMinBlastRadiusKey);
+  min_radius.get_to(game_engine.min_blast_radius_);
+
+  json max_radius = json_object.at(GameEngine::kJsonMaxBlastRadiusKey);
+  max_radius.get_to(game_engine.max_blast_radius_);
 }
 
 const ci::ColorA8u& GameEngine::GetBackgroundColor() const {
@@ -45,7 +58,7 @@ void GameEngine::AdvanceToNextFrame() {
   if (IsBulletCollidingWithTerrain()) {
     bullet_.Stop();
     terrain_.DestroyTerrainInRadius(bullet_.GetPosition(),
-                                    bullet_.CalculateBlastRadius());
+                                    CalculateBulletImpactRadius());
   }
 
   float bullet_x_coord = bullet_.GetPosition().x;
@@ -75,6 +88,12 @@ bool GameEngine::IsBulletCollidingWithTerrain() const {
 
   return terrain_.GetTerrainVisibility(x_coord, y_coord)
          == TerrainVisibility::kVisible;
+}
+
+size_t GameEngine::CalculateBulletImpactRadius() const {
+  float scaled_radius = length(bullet_.GetVelocity()) * blast_radius_scalar_;
+  auto rounded = std::max(static_cast<size_t>(scaled_radius), min_blast_radius_);
+  return std::min(rounded, max_blast_radius_);
 }
 
 } // namespace artillery

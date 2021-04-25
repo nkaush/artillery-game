@@ -54,16 +54,10 @@ class Bullet {
 
     float GetRadius() const;
 
-    size_t CalculateBlastRadius() const;
-
   private:
     static const glm::vec2 kGravityAcceleration;
 
     static const ci::Color8u kDefaultColor;
-
-    static constexpr size_t kMaxBlastRadius = 50;
-
-    static constexpr float kBlastRadiusScalar = 2.5;
 
     glm::vec2 position_;
     glm::vec2 velocity_;

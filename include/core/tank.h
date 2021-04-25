@@ -5,10 +5,11 @@
 #ifndef ARTILLERY_TANK_H
 #define ARTILLERY_TANK_H
 
+#include "core/tank_dimensions.h"
 #include "bullet.h"
 
+#include <nlohmann/json.hpp>
 #include "cinder/gl/gl.h"
-#include "glm/vec2.hpp"
 
 namespace artillery {
 
@@ -16,6 +17,9 @@ class Tank {
  public:
   static const glm::vec2 kDefaultTurretOffset;
 
+  /**
+   * Default constructor. Used when creating tanks from json.
+   */
   Tank() = default;
 
   /**
@@ -29,13 +33,15 @@ class Tank {
    * @param barrel_length - a float indicating the length of the tank barrel
    * @param barrel_radius - a float indicating the radius of the tank barrel
    * @param red_intensity - a float indicating the intensity of red to color
-   * @param green_intensity -  a float indicating the intensity of green to color
+   * @param green_intensity - a float indicating the intensity of green to color
    * @param blue_intensity - a float indicating the intensity of blue to color
    */
   Tank(const glm::vec2& chassis_position, const glm::vec2& turret_offset,
        float chassis_length, float chassis_height, float turret_radius,
        float barrel_length, float barrel_radius, uint8_t red_intensity,
        uint8_t green_intensity, uint8_t blue_intensity);
+
+  void ConfigureTankDimensions(const TankDimensions& dimensions);
 
   /**
    * Draws this tank object in the window.

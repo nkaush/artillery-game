@@ -25,11 +25,6 @@ class Terrain {
   static constexpr int kWindowWidth = 750;
   static constexpr int kWindowHeight = 500;
 
-  static const std::string kJsonRedColorKey;
-  static const std::string kJsonGreenColorKey;
-  static const std::string kJsonBlueColorKey;
-  static const std::string kJsonAlphaChannelKey;
-
   static const std::string kJsonStartingHeightsKey;
   static const std::string kJsonBackgroundColorKey;
   static const std::string kJsonVisibleTerrainColorKey;
@@ -72,22 +67,6 @@ class Terrain {
    * @param terrain - the Terrain object to deserialize into
    */
   friend void from_json(const nlohmann::json& json_object, Terrain& terrain);
-
-  /**
-   * Used by the nlohmann::json library to serialize ColorA8u objects.
-   * @param json_object - the json object to serialize into
-   * @param color - the Terrain object to serialize
-   */
-  static void SerializeColorA8u(nlohmann::json& json_object,
-                                const ci::ColorA8u& color);
-
-  /**
-   * Used by the nlohmann::json library to deserialize ColorA8u objects.
-   * @param json_object - the json object to serialize from
-   * @param color - the Terrain object to deserialize into
-   */
-  static void DeserializeColorA8u(const nlohmann::json& json_object,
-                                  ci::ColorA8u& color);
 
  private:
   static constexpr TerrainVisibility kDefaultVisibility =

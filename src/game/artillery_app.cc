@@ -15,7 +15,7 @@ using nlohmann::json;
 using std::string;
 using glm::vec2;
 
-const string ArtilleryApp::kGameSettingsFilePath = "/Users/neilkaushikkar/Cinder/my-projects/final-project-nkaush/data/game_settings.json";
+const string ArtilleryApp::kGameSettingsFilePath = "/Users/neilkaushikkar/Cinder/my-projects/final-project-nkaush/src/data/game_settings.json";
 
 ArtilleryApp::ArtilleryApp() {
   std::ifstream game_settings(kGameSettingsFilePath);

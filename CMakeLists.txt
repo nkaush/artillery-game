@@ -64,17 +64,25 @@ endif()
 get_filename_component(CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE)
 get_filename_component(APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/" ABSOLUTE)
 
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/data/)
+#
+#add_definitions("-DPATH_TO_JSON=\"${CMAKE_SOURCE_DIR}/data/game_settings.json")
+
+configure_file(src/data/game_settings.json
+        ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+
 include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
 
-list(APPEND CORE_SOURCE_FILES src/core/bullet.cc
-                              src/core/tank.cc
-                              src/core/terrain.cc)
-
+list(APPEND CORE_SOURCE_FILES src/core/tank.cc
+                              src/core/bullet.cc
+                              src/core/terrain.cc
+                              src/core/json_helper.cc
+                              src/core/tank_dimensions.cc)
 list(APPEND SOURCE_FILES    ${CORE_SOURCE_FILES}
                             src/game/artillery_app.cc
                             src/game/game_engine.cc
                             src/game/player.cc
-                            data/game_settings.json)
+                            src/data/game_settings.json)
 
 list(APPEND TEST_FILES tests/test_bullet.cc
                        tests/test_tank.cc)

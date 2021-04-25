@@ -6,6 +6,8 @@
 
 namespace artillery {
 
+using nlohmann::json;
+using ci::ColorA8u;
 using ci::Rectf;
 using glm::vec2;
 
@@ -41,6 +43,8 @@ Tank::Tank(const vec2& chassis_position, const vec2& turret_offset,
 
   treads_rect_ = Rectf(upper_pt, lower_pt);
 }
+
+void Tank::ConfigureTankDimensions(const TankDimensions& dimensions) {}
 
 void Tank::Draw() const {
   ci::gl::color(chassis_color_);
