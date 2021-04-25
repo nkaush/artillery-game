@@ -16,7 +16,7 @@
       "blue": 0
     }
   },
-  "bullet_velocity_damping": [0.05, 0.05],
+  "bullet_velocity_damping": [0.05, 0.05], ///
   "blast_radius_max": 30,
   "blast_radius_min": 10,
   "blast_radius_scalar": 2.5,

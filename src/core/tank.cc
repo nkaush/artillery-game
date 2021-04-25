@@ -16,6 +16,12 @@ const vec2 Tank::kBulletVelocityDamping = vec2(0.05, 0.05);
 
 const ci::Color8u Tank::kDefaultTreadColor = ci::Color8u(0, 0, 0);
 
+Tank::Tank(const vec2& chassis_position, const ColorA8u& chassis_color,
+           const ci::ColorA8u& bullet_color)
+    : chassis_position_(chassis_position),
+      chassis_color_(chassis_color),
+      bullet_color_(bullet_color) {}
+
 Tank::Tank(const vec2& chassis_position, const vec2& turret_offset,
            float chassis_length, float chassis_height, float turret_radius,
            float barrel_length, float barrel_radius, uint8_t red_intensity,

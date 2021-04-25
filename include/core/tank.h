@@ -22,6 +22,9 @@ class Tank {
    */
   Tank() = default;
 
+  Tank(const glm::vec2& chassis_position, const ci::ColorA8u& chassis_color,
+       const ci::ColorA8u& bullet_color);
+
   /**
    * Creates a Tank object.
    * @param chassis_position - a vec2 of the initial position of the tank
@@ -102,6 +105,7 @@ class Tank {
   ci::Rectf treads_rect_;
 
   ci::Color8u chassis_color_;
+  ci::ColorA8u bullet_color_;
   ci::Color8u tread_color_;
 
   void DrawBarrel() const;
