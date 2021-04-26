@@ -3,7 +3,6 @@
 //
 
 #include "core/tank_dimensions.h"
-
 #include "core/json_manager.h"
 
 namespace artillery {

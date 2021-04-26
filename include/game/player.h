@@ -8,9 +8,8 @@
 #include "core/bullet.h"
 #include "core/tank.h"
 
-#include "nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 #include "cinder/gl/gl.h"
-#include <string>
 
 namespace artillery {
 

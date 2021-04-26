@@ -31,7 +31,10 @@ const string JsonManager::kJsonStartingXKey = "starting_x";
 const string JsonManager::kJsonTerrainKey = "terrain";
 const string JsonManager::kJsonMaxBlastRadiusKey = "blast_radius_max";
 const string JsonManager::kJsonMinBlastRadiusKey = "blast_radius_min";
-const string JsonManager::kJsonBlastRadiusScalar = "blast_radius_scalar";
+const string JsonManager::kJsonBlastRadiusScalarKey = "blast_radius_scalar";
+const string JsonManager::kJsonTankConfigurationKey = "tank_configuration";
+const string JsonManager::kJsonBulletVelocityDampingKey =
+    "bullet_velocity_damping";
 
 } // namespace artillery
 

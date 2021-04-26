@@ -9,10 +9,7 @@
 namespace artillery {
 
 using ci::ColorA8u;
-using std::string;
 using glm::vec2;
-
-
 
 void to_json(nlohmann::json& json_object, const Player& player) {}
 

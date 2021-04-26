@@ -13,7 +13,7 @@ using glm::length;
 using glm::vec2;
 
 GameEngine::GameEngine()
-    : tank_(vec2(50, 200), Tank::kDefaultTurretOffset,
+    : tank_(vec2(100, 360), Tank::kDefaultTurretOffset,
             40, 15, 10, 30, 3, 106, 113, 82),
       bullet_(tank_.ShootBullet()) {
   bullet_.Stop();
@@ -24,7 +24,7 @@ void to_json(json& json_object, const GameEngine& game_engine) {}
 void from_json(const json& json_object, GameEngine& game_engine) {
   json_object.at(JsonManager::kJsonTerrainKey).get_to(game_engine.terrain_);
 
-  json radius_scalar = json_object.at(JsonManager::kJsonBlastRadiusScalar);
+  json radius_scalar = json_object.at(JsonManager::kJsonBlastRadiusScalarKey);
   radius_scalar.get_to(game_engine.blast_radius_scalar_);
 
   json min_radius = json_object.at(JsonManager::kJsonMinBlastRadiusKey);
@@ -32,6 +32,9 @@ void from_json(const json& json_object, GameEngine& game_engine) {
 
   json max_radius = json_object.at(JsonManager::kJsonMaxBlastRadiusKey);
   max_radius.get_to(game_engine.max_blast_radius_);
+
+  json configuration = json_object.at(JsonManager::kJsonTankConfigurationKey);
+  auto dimensions = configuration.get<TankDimensions>();
 }
 
 const ci::ColorA8u& GameEngine::GetBackgroundColor() const {
@@ -51,30 +54,22 @@ void GameEngine::Draw(const glm::vec2& mouse_location) const {
 void GameEngine::AdvanceToNextFrame() {
   bullet_.AdvanceToNextFrame();
 
-  if (IsBulletCollidingWithTerrain()) {
+  if (IsBulletCollidingWithTerrain() && bullet_.IsActive()) {
     bullet_.Stop();
     terrain_.DestroyTerrainInRadius(bullet_.GetPosition(),
                                     CalculateBulletImpactRadius());
   }
 
-  float bullet_x_coord = bullet_.GetPosition().x;
-  float bullet_radius = bullet_.GetRadius();
+  float x_coord = bullet_.GetPosition().x;
+  float radius = bullet_.GetRadius();
 
   bool is_bullet_past_map_bound =
-      bullet_x_coord - bullet_radius > terrain_.GetMaxWidth();
-  is_bullet_past_map_bound |= bullet_x_coord + bullet_radius < 0;
+      x_coord - radius > static_cast<float>(terrain_.GetMaxWidth());
+  is_bullet_past_map_bound |= x_coord + radius < 0;
 
   if (is_bullet_past_map_bound) {
     bullet_.Stop();
   }
-}
-
-void GameEngine::PointActiveTankBarrel(const vec2& mouse_location) {
-  tank_.PointBarrel(mouse_location);
-}
-
-void GameEngine::ShootBulletFromActiveTank() {
-  bullet_ = tank_.ShootBullet();
 }
 
 bool GameEngine::IsBulletCollidingWithTerrain() const {
@@ -90,6 +85,14 @@ size_t GameEngine::CalculateBulletImpactRadius() const {
   float scaled_radius = length(bullet_.GetVelocity()) * blast_radius_scalar_;
   return glm::clamp(static_cast<size_t>(scaled_radius),
                     min_blast_radius_, max_blast_radius_);
+}
+
+void GameEngine::PointActiveTankBarrel(const vec2& mouse_location) {
+  tank_.PointBarrel(mouse_location);
+}
+
+void GameEngine::ShootBulletFromActiveTank() {
+  bullet_ = tank_.ShootBullet();
 }
 
 } // namespace artillery

@@ -3,8 +3,8 @@
 //
 
 #include "game/artillery_app.h"
-#include "nlohmann/json.hpp"
 
+#include <nlohmann/json.hpp>
 #include <fstream>
 
 namespace artillery {

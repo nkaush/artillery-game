@@ -24,17 +24,12 @@ class QuadraticSolver {
   static std::vector<float> CreateRange(float start, float end);
 
  private:
-  static constexpr float kSquarePower = 2.f;
-
   glm::vec3 quadratic_constants_;
 
-  glm::mat3 design_matrix_;
-  glm::vec3 observation_vector_;
-
-  glm::vec3 Solve() const;
+  glm::vec3 Solve(
+      const glm::mat3& design_matrix, const glm::vec3& observation_vector) const;
 };
 
 }
-
 
 #endif  // ARTILLERY_QUADRATIC_SOLVER_H

@@ -6,7 +6,6 @@
 #define ARTILLERY_BULLET_H
 
 #include "cinder/gl/gl.h"
-#include "glm/vec2.hpp"
 
 namespace artillery {
 
@@ -53,6 +52,8 @@ class Bullet {
     const glm::vec2& GetVelocity() const;
 
     float GetRadius() const;
+
+    bool IsActive() const;
 
   private:
     static const glm::vec2 kGravityAcceleration;

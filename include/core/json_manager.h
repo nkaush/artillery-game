@@ -38,7 +38,9 @@ class JsonManager {
   static const std::string kJsonTerrainKey;
   static const std::string kJsonMaxBlastRadiusKey;
   static const std::string kJsonMinBlastRadiusKey;
-  static const std::string kJsonBlastRadiusScalar;
+  static const std::string kJsonBlastRadiusScalarKey;
+  static const std::string kJsonTankConfigurationKey;
+  static const std::string kJsonBulletVelocityDampingKey;
 };
 
 } // namespace artillery

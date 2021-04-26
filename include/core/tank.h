@@ -6,7 +6,7 @@
 #define ARTILLERY_TANK_H
 
 #include "core/tank_dimensions.h"
-#include "bullet.h"
+#include "core/bullet.h"
 
 #include <nlohmann/json.hpp>
 #include "cinder/gl/gl.h"
@@ -78,6 +78,7 @@ class Tank {
 
   static const glm::vec2 kBulletVelocityDamping;
 
+  // TODO replace
   static constexpr float kTurretPadding = -2;
   static constexpr float kChassisRounding = 5;
 

@@ -13,7 +13,6 @@ namespace artillery {
 using nlohmann::json;
 using ci::ColorA8u;
 using std::vector;
-using std::array;
 using glm::vec2;
 
 constexpr TerrainVisibility Terrain::kDefaultVisibility;
@@ -24,8 +23,8 @@ Terrain::Terrain() : landscape_(),
 
 void to_json(json& json_object, const Terrain& terrain) {}
 
-void from_json(const json& json_object, Terrain& terrain) {
-  terrain.pixels_.setPremultiplied(false);
+void from_json(const json& json_object, Terrain& terrain) { // TODO documentation
+  terrain.pixels_.setPremultiplied(true);
 
   json_object.at(JsonManager::kJsonBackgroundColorKey)
       .get_to(terrain.background_color_);

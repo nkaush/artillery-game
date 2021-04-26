@@ -5,11 +5,11 @@
 #ifndef ARTILLERY_ARTILLERY_APP_H
 #define ARTILLERY_ARTILLERY_APP_H
 
+#include "game_engine.h"
+
 #include "Cinder/app/App.h"
 #include "Cinder/app/RendererGl.h"
 #include "Cinder/gl/gl.h"
-
-#include "game_engine.h"
 
 #include <string>
 

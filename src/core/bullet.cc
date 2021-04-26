@@ -3,7 +3,6 @@
 //
 
 #include "core/bullet.h"
-#include "cinder/gl/gl.h"
 
 namespace artillery {
 
@@ -56,6 +55,10 @@ const glm::vec2& Bullet::GetPosition() const {
 
 float Bullet::GetRadius() const {
   return radius_;
+}
+
+bool Bullet::IsActive() const {
+  return is_active_;
 }
 
 } // namespace artillery

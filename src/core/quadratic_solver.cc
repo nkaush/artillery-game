@@ -16,22 +16,20 @@ using glm::vec2;
 QuadraticSolver::QuadraticSolver(
     const vec2& point_a, const vec2& point_b, const vec2& point_c) {
   vec3 second_column = vec3(point_a.x, point_b.x, point_c.x);
+  vec3 third_column = second_column * second_column;
 
-  vec3 third_column = vec3(glm::pow(point_a.x, kSquarePower),
-                           glm::pow(point_b.x, kSquarePower),
-                           glm::pow(point_c.x, kSquarePower));
+  mat3 design_matrix = mat3(vec3(1), second_column, third_column);
+  vec3 observation_vector = vec3(point_a.y, point_b.y, point_c.y);
 
-  design_matrix_ = mat3(vec3(1), second_column, third_column);
-  observation_vector_ = vec3(point_a.y, point_b.y, point_c.y);
-
-  quadratic_constants_ = Solve();
+  quadratic_constants_ = Solve(design_matrix, observation_vector);
 }
 
-vec3 QuadraticSolver::Solve() const {
-  mat3 design_matrix_transpose = glm::transpose(design_matrix_);
+vec3 QuadraticSolver::Solve(
+    const mat3& design_matrix, const vec3& observation_vector) const {
+  mat3 design_matrix_transpose = glm::transpose(design_matrix);
 
-  mat3 equation_system = design_matrix_transpose * design_matrix_;
-  vec3 equation_targets = design_matrix_transpose * observation_vector_;
+  mat3 equation_system = design_matrix_transpose * design_matrix;
+  vec3 equation_targets = design_matrix_transpose * observation_vector;
 
   return glm::inverse(equation_system) * equation_targets;
 }
@@ -44,8 +42,6 @@ std::vector<float> QuadraticSolver::ComputePointsInRange(
     float start_x, float end_x) const {
   vector<float> x_values = CreateRange(start_x, end_x);
   std::vector<float> y_values = vector<float>(x_values.size());
-
-  std::iota(x_values.begin(), x_values.end(), start_x);
 
   for (size_t idx = 0; idx < x_values.size(); idx++) {
     y_values.at(idx) = ComputePoint(x_values.at(idx));
