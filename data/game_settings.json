@@ -20,8 +20,8 @@
   "blast_radius_max": 30,
   "blast_radius_min": 10,
   "blast_radius_scalar": 2,
-  "players": {
-    "player_one": {
+  "players": [
+    {
       "tank_color": {
         "red": 106,
         "green": 113,
@@ -37,9 +37,9 @@
         "green": 0,
         "blue": 0
       },
-      "starting_x": 60
+      "starting_x": 100
     },
-    "player_two": {
+    {
       "tank_color": {
         "red": 106,
         "green": 113,
@@ -57,7 +57,7 @@
       },
       "starting_x": 700
     }
-  },
+  ],
   "terrain": {
     "background_color": {
       "red": 173,

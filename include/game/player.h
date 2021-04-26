@@ -31,11 +31,16 @@ class Player {
    */
   friend void from_json(const nlohmann::json& json_object, Player& player);
 
-  void ConfigureTank(const TankDimensions& dimensions, float initial_y);
+  void ConfigureTank(const TankConfiguration& dimensions, float initial_y);
+
+  void Draw(const glm::vec2& mouse_location, bool is_current_player) const;
+
+  void PointTankBarrel(const glm::vec2& mouse_location);
+
+  Bullet ShootBullet() const;
 
  private:
   Tank tank_;
-  Bullet active_bullet_;
 
   ci::ColorA8u laser_color_;
 };

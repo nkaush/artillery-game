@@ -7,10 +7,12 @@
 
 #include "core/terrain.h"
 #include "core/bullet.h"
-#include "core/tank.h"
+
+#include "game/player.h"
 
 #include <nlohmann/json.hpp>
 #include "Cinder/gl/gl.h"
+#include <vector>
 
 namespace artillery {
 
@@ -70,7 +72,6 @@ class GameEngine {
   const ci::ColorA8u& GetBackgroundColor() const;
 
  private:
-  Tank tank_;
   Bullet bullet_;
 
   Terrain terrain_;
@@ -78,6 +79,11 @@ class GameEngine {
   float blast_radius_scalar_;
   size_t min_blast_radius_;
   size_t max_blast_radius_;
+
+  std::vector<Player> players_;
+  size_t current_player_idx_;
+
+  void AdvanceToNextPlayerTurn();
 
   /**
    * Checks whether the active bullet is colliding with the terrain.

@@ -36,6 +36,7 @@ class JsonManager {
 
   // These constants are used in deserializing the game settings json
   static const std::string kJsonTerrainKey;
+  static const std::string kJsonPlayersKey;
   static const std::string kJsonMaxBlastRadiusKey;
   static const std::string kJsonMinBlastRadiusKey;
   static const std::string kJsonBlastRadiusScalarKey;

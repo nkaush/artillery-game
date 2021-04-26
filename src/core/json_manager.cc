@@ -24,11 +24,12 @@ const string JsonManager::kJsonRemovedTerrainColorKey = "removed_terrain_color";
 // These constants are used in deserializing player json objects
 const string JsonManager::kJsonBulletColorKey = "bullet_color";
 const string JsonManager::kJsonLaserColorKey = "laser_color";
-const string JsonManager::kJsonTankColorKey = "chassis_color";
+const string JsonManager::kJsonTankColorKey = "tank_color";
 const string JsonManager::kJsonStartingXKey = "starting_x";
 
 // These constants are used in deserializing the game settings json
 const string JsonManager::kJsonTerrainKey = "terrain";
+const string JsonManager::kJsonPlayersKey = "players";
 const string JsonManager::kJsonMaxBlastRadiusKey = "blast_radius_max";
 const string JsonManager::kJsonMinBlastRadiusKey = "blast_radius_min";
 const string JsonManager::kJsonBlastRadiusScalarKey = "blast_radius_scalar";

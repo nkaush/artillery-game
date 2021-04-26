@@ -17,10 +17,11 @@ class Bullet {
      * Creates a new Bullet with specified initial position and velocity.
      * @param initial_position - a vec2 indicating the initial position
      * @param initial_velocity - a vec2 indicating the initial velocity
+     * @param color - a ColorA8u object indicating the color of the bullet
      * @param radius - a float indicating the radius of the bullet
      */
     Bullet(const glm::vec2& initial_position, const glm::vec2& initial_velocity,
-           float radius);
+           const ci::ColorA8u& color, float radius);
 
     /**
      * Updates the bullet's position and velocity.
@@ -57,8 +58,6 @@ class Bullet {
 
   private:
     static const glm::vec2 kGravityAcceleration;
-
-    static const ci::Color8u kDefaultColor;
 
     glm::vec2 position_;
     glm::vec2 velocity_;

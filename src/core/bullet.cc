@@ -9,15 +9,15 @@ namespace artillery {
 using glm::vec2;
 
 const vec2 Bullet::kGravityAcceleration = vec2(0, 0.2);
-const ci::Color8u Bullet::kDefaultColor = ci::Color8u(100, 100, 100);
 
 Bullet::Bullet(
-    const vec2& initial_position, const vec2& initial_velocity, float radius)
+    const vec2& initial_position, const vec2& initial_velocity,
+    const ci::ColorA8u& color, float radius)
     : position_(initial_position),
       velocity_(initial_velocity),
       radius_(radius),
       is_active_(true),
-      color_(kDefaultColor) {}
+      color_(color) {}
 
 void Bullet::AdvanceToNextFrame() {
   if (is_active_) {

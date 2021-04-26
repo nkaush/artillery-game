@@ -5,11 +5,11 @@
 #ifndef ARTILLERY_TANK_H
 #define ARTILLERY_TANK_H
 
-#include "core/tank_dimensions.h"
-#include "core/bullet.h"
-
 #include <nlohmann/json.hpp>
+
 #include "cinder/gl/gl.h"
+#include "core/bullet.h"
+#include "core/tank_configuration.h"
 
 namespace artillery {
 
@@ -17,34 +17,12 @@ class Tank {
  public:
   static const glm::vec2 kDefaultTurretOffset;
 
-  /**
-   * Default constructor. Used when creating tanks from json.
-   */
   Tank() = default;
 
   Tank(const glm::vec2& chassis_position, const ci::ColorA8u& chassis_color,
        const ci::ColorA8u& bullet_color);
 
-  /**
-   * Creates a Tank object.
-   * @param chassis_position - a vec2 of the initial position of the tank
-   * @param turret_offset - a vec2 of the location of the turret in
-   *                        relation to the tank body
-   * @param chassis_length - a float indicating the length of the tank
-   * @param chassis_height - a float indicating the height of the tank
-   * @param turret_radius - a float indicating the radius of the tank turret
-   * @param barrel_length - a float indicating the length of the tank barrel
-   * @param barrel_radius - a float indicating the radius of the tank barrel
-   * @param red_intensity - a float indicating the intensity of red to color
-   * @param green_intensity - a float indicating the intensity of green to color
-   * @param blue_intensity - a float indicating the intensity of blue to color
-   */
-  Tank(const glm::vec2& chassis_position, const glm::vec2& turret_offset,
-       float chassis_length, float chassis_height, float turret_radius,
-       float barrel_length, float barrel_radius, uint8_t red_intensity,
-       uint8_t green_intensity, uint8_t blue_intensity);
-
-  void ConfigureTankDimensions(const TankDimensions& dimensions);
+  void ConfigureTank(const TankConfiguration& dimensions, float y_coordinate);
 
   /**
    * Draws this tank object in the window.
@@ -74,31 +52,27 @@ class Tank {
   float GetBarrelRotation() const;
 
  private:
-  static const ci::Color8u kDefaultTreadColor;
-
   static const glm::vec2 kBulletVelocityDamping;
 
   // TODO replace
-  static constexpr float kTurretPadding = -2;
   static constexpr float kChassisRounding = 5;
 
   static constexpr float kTreadWheelRadius = 5;
-  static constexpr float kTreadWheelPadding = 2;
 
   glm::vec2 chassis_position_;
+  glm::vec2 chassis_offset_;
 
   glm::vec2 turret_offset_;
-  glm::vec2 chassis_offset_;
 
   glm::vec2 barrel_pivot_position_;
   glm::vec2 loaded_bullet_velocity_;
 
-//  float chassis_length_;
+  float chassis_rounding_;
+  float tread_wheel_radius_;
 
   float barrel_length_;
   float barrel_radius_;
   float barrel_rotation_;
-
   float turret_radius_;
 
   ci::Rectf chassis_rect_;
@@ -110,6 +84,14 @@ class Tank {
   ci::Color8u tread_color_;
 
   void DrawBarrel() const;
+
+  void SetYCoordinate(float y_coordinate);
+
+  void ConfigureChassis(const TankConfiguration& config);
+
+  void ConfigureTurretAndBarrel(const TankConfiguration& config);
+
+  void ConfigureTreads(const TankConfiguration& config);
 };
 
 } // namespace artillery

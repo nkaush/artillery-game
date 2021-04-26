@@ -68,7 +68,7 @@ get_filename_component(APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/" ABSOLUTE)
 #
 #add_definitions("-DPATH_TO_JSON=\"${CMAKE_SOURCE_DIR}/data/game_settings.json")
 
-configure_file(src/data/game_settings.json
+configure_file(data/game_settings.json
         ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
@@ -77,17 +77,18 @@ list(APPEND CORE_SOURCE_FILES src/core/tank.cc
                               src/core/bullet.cc
                               src/core/terrain.cc
         src/core/json_manager.cc
-                              src/core/tank_dimensions.cc
+        src/core/tank_configuration.cc
                               src/core/quadratic_solver.cc)
 list(APPEND SOURCE_FILES    ${CORE_SOURCE_FILES}
                             src/game/artillery_app.cc
                             src/game/game_engine.cc
-                            src/game/player.cc
-                            src/data/game_settings.json)
+                            src/game/player.cc)
 
 list(APPEND TEST_FILES tests/test_quadratic_solver.cc
                        tests/test_bullet.cc
                        tests/test_tank.cc)
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/game_settings.json DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/data/)
 
 ci_make_app(
         APP_NAME        artillery-main

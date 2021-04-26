@@ -10,19 +10,19 @@ namespace artillery {
 
 using nlohmann::json;
 using glm::length;
+using std::vector;
 using glm::vec2;
 
 GameEngine::GameEngine()
-    : tank_(vec2(100, 360), Tank::kDefaultTurretOffset,
-            40, 15, 10, 30, 3, 106, 113, 82),
-      bullet_(tank_.ShootBullet()) {
+    : bullet_(),
+      current_player_idx_(0) {
   bullet_.Stop();
 }
 
 void to_json(json& json_object, const GameEngine& game_engine) {}
 
 void from_json(const json& json_object, GameEngine& game_engine) {
-  json_object.at(JsonManager::kJsonTerrainKey).get_to(game_engine.terrain_);
+  json_object.at(JsonManager::kJsonTerrainKey).get_to(game_engine.terrain_); // TODO Get height at index
 
   json radius_scalar = json_object.at(JsonManager::kJsonBlastRadiusScalarKey);
   radius_scalar.get_to(game_engine.blast_radius_scalar_);
@@ -34,7 +34,17 @@ void from_json(const json& json_object, GameEngine& game_engine) {
   max_radius.get_to(game_engine.max_blast_radius_);
 
   json configuration = json_object.at(JsonManager::kJsonTankConfigurationKey);
-  auto dimensions = configuration.get<TankDimensions>();
+  auto dimensions = configuration.get<TankConfiguration>();
+
+  json_object.at(JsonManager::kJsonPlayersKey).get_to(game_engine.players_);
+
+  for (Player& player : game_engine.players_) {
+    player.ConfigureTank(dimensions, 360); // TODO set this
+  }
+
+  Player first_player = game_engine.players_.at(game_engine.current_player_idx_);
+  game_engine.bullet_ = first_player.ShootBullet();
+  game_engine.bullet_.Stop();
 }
 
 const ci::ColorA8u& GameEngine::GetBackgroundColor() const {
@@ -43,12 +53,11 @@ const ci::ColorA8u& GameEngine::GetBackgroundColor() const {
 
 void GameEngine::Draw(const glm::vec2& mouse_location) const {
   terrain_.Draw();
-
-  ci::gl::color(ci::Color("red"));
-  ci::gl::drawLine(tank_.GetBarrelPivotPosition(), mouse_location);
-
   bullet_.Draw();
-  tank_.Draw();
+
+  for (size_t idx = 0; idx < players_.size(); idx++) {
+    players_.at(idx).Draw(mouse_location, idx == current_player_idx_);
+  }
 }
 
 void GameEngine::AdvanceToNextFrame() {
@@ -88,11 +97,21 @@ size_t GameEngine::CalculateBulletImpactRadius() const {
 }
 
 void GameEngine::PointActiveTankBarrel(const vec2& mouse_location) {
-  tank_.PointBarrel(mouse_location);
+  players_.at(current_player_idx_).PointTankBarrel(mouse_location);
 }
 
 void GameEngine::ShootBulletFromActiveTank() {
-  bullet_ = tank_.ShootBullet();
+  if (!bullet_.IsActive()) { // prevent player from removing bullet if in action
+    bullet_ = players_.at(current_player_idx_).ShootBullet();
+  }
+}
+
+void GameEngine::AdvanceToNextPlayerTurn() {
+  current_player_idx_++;
+
+  if (current_player_idx_ == players_.size()) {
+    current_player_idx_ = 0;
+  }
 }
 
 } // namespace artillery

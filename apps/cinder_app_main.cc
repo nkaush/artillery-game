@@ -11,6 +11,7 @@ void PrepareSettings(ArtilleryApp::Settings* settings) {
   settings->setWindowSize(artillery::Terrain::kWindowWidth,
                           artillery::Terrain::kWindowHeight);
   settings->setFrameRate(60);
+  settings->setTitle("Artillery");
 }
 
 CINDER_APP(ArtilleryApp, ci::app::RendererGl, PrepareSettings);

@@ -14,43 +14,69 @@ using glm::vec2;
 const vec2 Tank::kDefaultTurretOffset = vec2(22, 0);
 const vec2 Tank::kBulletVelocityDamping = vec2(0.05, 0.05);
 
-const ci::Color8u Tank::kDefaultTreadColor = ci::Color8u(0, 0, 0);
-
 Tank::Tank(const vec2& chassis_position, const ColorA8u& chassis_color,
            const ci::ColorA8u& bullet_color)
     : chassis_position_(chassis_position),
       chassis_color_(chassis_color),
       bullet_color_(bullet_color) {}
 
-Tank::Tank(const vec2& chassis_position, const vec2& turret_offset,
-           float chassis_length, float chassis_height, float turret_radius,
-           float barrel_length, float barrel_radius, uint8_t red_intensity,
-           uint8_t green_intensity, uint8_t blue_intensity)
-    : chassis_position_(chassis_position),
-      turret_offset_(turret_offset),
-      chassis_offset_(vec2(-chassis_length / 2, -chassis_height / 2)),
-      barrel_pivot_position_(chassis_position_ + turret_offset + chassis_offset_),
-      /*chassis_length_(chassis_length), */
-      barrel_length_(barrel_length),
-      barrel_radius_(barrel_radius),
-      turret_radius_(turret_radius),
-//      chassis_rect_(chassis_position,
-//                    chassis_position + vec2(chassis_length, chassis_height)),
-      chassis_rect_(vec2(-chassis_length / 2, -chassis_height / 2),
-                    vec2(chassis_length / 2, chassis_height / 2)),
-      barrel_rect_(vec2(turret_radius + kTurretPadding, -barrel_radius),
-                   vec2(turret_radius + barrel_length, barrel_radius)),
-      chassis_color_(red_intensity, green_intensity, blue_intensity),
-      tread_color_(kDefaultTreadColor) {
-  vec2 upper_pt = vec2((-chassis_length / 2) + kTreadWheelPadding,
-                       (chassis_height / 2) - kTreadWheelRadius);
-  vec2 lower_pt = vec2((chassis_length / 2) - kTreadWheelPadding,
-                       (chassis_height / 2) + kTreadWheelRadius);
+void Tank::ConfigureTank(const TankConfiguration& config, float y_coordinate) {
+  ConfigureChassis(config);
+  ConfigureTreads(config);
+  ConfigureTurretAndBarrel(config);
 
-  treads_rect_ = Rectf(upper_pt, lower_pt);
+  // Set the initial y-coordinate as defined by the height of the terrain
+  SetYCoordinate(y_coordinate);
 }
 
-void Tank::ConfigureTankDimensions(const TankDimensions& dimensions) {}
+void Tank::ConfigureChassis(const TankConfiguration& config) {
+  float half_chassis_length = config.chassis_length_ / 2;
+  float half_chassis_height = config.chassis_height_ / 2;
+
+  // Set up the fields defining the chassis appearance
+  chassis_offset_ = vec2(-1 * half_chassis_length, -1 * half_chassis_height);
+
+  chassis_rect_ = Rectf(vec2(-1 * half_chassis_length, -1 * half_chassis_height),
+                        vec2(half_chassis_length, half_chassis_height));
+  chassis_rounding_ = config.chassis_rounding_;
+}
+
+void Tank::ConfigureTreads(const TankConfiguration& config) {
+  float half_chassis_length = config.chassis_length_ / 2;
+  float half_chassis_height = config.chassis_height_ / 2;
+
+  // Set up the fields defining the tank treads appearance
+  tread_color_ = config.GetTreadColor();
+  tread_wheel_radius_ = config.tread_wheel_radius_;
+
+  vec2 tread_upper_pt(-1 * half_chassis_length + config.tread_wheel_padding_,
+                      half_chassis_height - config.tread_wheel_radius_);
+  vec2 tread_lower_pt(half_chassis_length - config.tread_wheel_padding_,
+                      half_chassis_height + config.tread_wheel_radius_);
+  treads_rect_ = Rectf(tread_upper_pt, tread_lower_pt);
+}
+
+void Tank::ConfigureTurretAndBarrel(const TankConfiguration& config) {
+  // Set up the fields defining the turret appearance
+  turret_offset_ = config.GetTurretOffset();
+  turret_radius_ = config.turret_radius_;
+
+  // Set up the fields defining the barrel appearance
+  barrel_pivot_position_ = chassis_position_ + config.GetTurretOffset()
+                           + chassis_offset_;
+  barrel_length_ = config.barrel_length_;
+  barrel_radius_ = config.barrel_radius_;
+
+  vec2 barrel_upper_pt(turret_radius_ + config.turret_padding_,
+                       -1 * barrel_radius_);
+  vec2 barrel_lower_pt(turret_radius_ + barrel_length_, barrel_radius_);
+  barrel_rect_ = Rectf(barrel_upper_pt, barrel_lower_pt);
+}
+
+void Tank::SetYCoordinate(float y_coordinate) {
+  chassis_position_.y += y_coordinate;
+  barrel_pivot_position_.y += y_coordinate;
+}
 
 void Tank::Draw() const {
   ci::gl::color(chassis_color_);
@@ -91,7 +117,8 @@ Bullet Tank::ShootBullet() const {
                         glm::sin(barrel_rotation_) * barrel_span);
   vec2 initial_position = barrel_pivot_position_ + barrel_extension;
 
-  return Bullet(initial_position, loaded_bullet_velocity_, barrel_radius_);
+  return Bullet(initial_position, loaded_bullet_velocity_,
+                bullet_color_, barrel_radius_);
 }
 
 void Tank::PointBarrel(const vec2& position_pointed_at) {
