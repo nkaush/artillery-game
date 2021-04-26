@@ -2,9 +2,10 @@
 // Created by Neil Kaushikkar on 4/20/21.
 //
 
-#include "core/json_helper.h"
 #include "core/terrain.h"
 
+#include "core/quadratic_solver.h"
+#include "core/json_manager.h"
 #include "glm/vec2.hpp"
 
 namespace artillery {
@@ -12,14 +13,8 @@ namespace artillery {
 using nlohmann::json;
 using ci::ColorA8u;
 using std::vector;
-using std::string;
 using std::array;
 using glm::vec2;
-
-const string Terrain::kJsonStartingHeightsKey = "starting_pixel_heights";
-const string Terrain::kJsonBackgroundColorKey = "background_color";
-const string Terrain::kJsonVisibleTerrainColorKey = "visible_terrain_color";
-const string Terrain::kJsonRemovedTerrainColorKey = "removed_terrain_color";
 
 constexpr TerrainVisibility Terrain::kDefaultVisibility;
 
@@ -27,24 +22,52 @@ Terrain::Terrain() : landscape_(),
                      pixels_(kWindowWidth, kWindowHeight, true),
                      display_() {}
 
-void to_json(nlohmann::json& json_object, const Terrain& terrain) {}
+void to_json(json& json_object, const Terrain& terrain) {}
 
-void from_json(const nlohmann::json& json_object, Terrain& terrain) {
+void from_json(const json& json_object, Terrain& terrain) {
   terrain.pixels_.setPremultiplied(false);
 
-  json_object.at(Terrain::kJsonBackgroundColorKey)
+  json_object.at(JsonManager::kJsonBackgroundColorKey)
       .get_to(terrain.background_color_);
 
-  json_object.at(Terrain::kJsonVisibleTerrainColorKey)
+  json_object.at(JsonManager::kJsonVisibleTerrainColorKey)
       .get_to(terrain.visible_terrain_color_);
 
-  json_object.at(Terrain::kJsonRemovedTerrainColorKey)
+  json_object.at(JsonManager::kJsonRemovedTerrainColorKey)
       .get_to(terrain.removed_terrain_color_);
 
-  json heights_array = json_object.at(Terrain::kJsonStartingHeightsKey);
-  terrain.LoadSurfaceFromHeights(heights_array.get<vector<size_t>>());
+  json ridge_extrema = json_object.at(JsonManager::kJsonRidgeExtremaKey);
+  auto points_matrix = ridge_extrema.get<vector<vector<vec2>>>();
+  vector<size_t> heights = terrain.ComputerSurfaceHeights(points_matrix);
+  terrain.LoadSurfaceFromHeights(heights);
 
   terrain.display_ = ci::gl::Texture::create(terrain.pixels_);
+}
+
+vector<size_t> Terrain::ComputerSurfaceHeights(
+    const vector<vector<vec2>>& points_matrix) const {
+  // TODO check if window size == last point x value
+  vector<float> curve_fits = vector<float>();
+  curve_fits.reserve(sizeof(float) * kWindowWidth);
+
+  for (const vector<vec2>& points : points_matrix) {
+    vec2 start = points.at(0);
+    vec2 end = points.at(2);
+
+    QuadraticSolver quad_solver(start, points.at(1), end);
+    std::vector<float> y_values =
+        quad_solver.ComputePointsInRange(start.x, end.x);
+
+    curve_fits.insert(curve_fits.end(), y_values.begin(), y_values.end());
+  }
+
+  vector<size_t> heights = vector<size_t>(curve_fits.size());
+
+  for (size_t idx = 0; idx < curve_fits.size(); idx++) {
+    heights.at(idx) = static_cast<size_t>(glm::max(0.f, curve_fits.at(idx)));
+  }
+
+  return heights;
 }
 
 void Terrain::LoadSurfaceFromHeights(const vector<size_t>& column_heights) {

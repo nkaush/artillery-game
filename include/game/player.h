@@ -16,11 +16,6 @@ namespace artillery {
 
 class Player {
  public:
-  static const std::string kJsonBulletColorKey;
-  static const std::string kJsonLaserColorKey;
-  static const std::string kJsonTankColorKey;
-  static const std::string kJsonStartingXKey;
-
   Player() = default;
 
   /**

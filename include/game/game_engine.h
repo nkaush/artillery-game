@@ -12,8 +12,6 @@
 #include "nlohmann/json.hpp"
 #include "Cinder/gl/gl.h"
 
-#include <string>
-
 namespace artillery {
 
 class GameEngine {
@@ -21,12 +19,6 @@ class GameEngine {
   // TODO finish serialization
   // TODO default constructor
  public:
-  // These constants are used in deserializing the game settings json
-  static const std::string kJsonTerrainKey;
-  static const std::string kJsonMaxBlastRadiusKey;
-  static const std::string kJsonMinBlastRadiusKey;
-  static const std::string kJsonBlastRadiusScalar;
-
   GameEngine();
 
   /**

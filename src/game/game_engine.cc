@@ -4,17 +4,13 @@
 
 #include "game/game_engine.h"
 
+#include "core/json_manager.h"
+
 namespace artillery {
 
 using nlohmann::json;
-using std::string;
 using glm::length;
 using glm::vec2;
-
-const string GameEngine::kJsonTerrainKey = "terrain";
-const string GameEngine::kJsonMaxBlastRadiusKey = "blast_radius_max";
-const string GameEngine::kJsonMinBlastRadiusKey = "blast_radius_min";
-const string GameEngine::kJsonBlastRadiusScalar = "blast_radius_scalar";
 
 GameEngine::GameEngine()
     : tank_(vec2(50, 200), Tank::kDefaultTurretOffset,
@@ -26,15 +22,15 @@ GameEngine::GameEngine()
 void to_json(json& json_object, const GameEngine& game_engine) {}
 
 void from_json(const json& json_object, GameEngine& game_engine) {
-  json_object.at(GameEngine::kJsonTerrainKey).get_to(game_engine.terrain_);
+  json_object.at(JsonManager::kJsonTerrainKey).get_to(game_engine.terrain_);
 
-  json radius_scalar = json_object.at(GameEngine::kJsonBlastRadiusScalar);
+  json radius_scalar = json_object.at(JsonManager::kJsonBlastRadiusScalar);
   radius_scalar.get_to(game_engine.blast_radius_scalar_);
 
-  json min_radius = json_object.at(GameEngine::kJsonMinBlastRadiusKey);
+  json min_radius = json_object.at(JsonManager::kJsonMinBlastRadiusKey);
   min_radius.get_to(game_engine.min_blast_radius_);
 
-  json max_radius = json_object.at(GameEngine::kJsonMaxBlastRadiusKey);
+  json max_radius = json_object.at(JsonManager::kJsonMaxBlastRadiusKey);
   max_radius.get_to(game_engine.max_blast_radius_);
 }
 
@@ -92,8 +88,8 @@ bool GameEngine::IsBulletCollidingWithTerrain() const {
 
 size_t GameEngine::CalculateBulletImpactRadius() const {
   float scaled_radius = length(bullet_.GetVelocity()) * blast_radius_scalar_;
-  auto rounded = std::max(static_cast<size_t>(scaled_radius), min_blast_radius_);
-  return std::min(rounded, max_blast_radius_);
+  return glm::clamp(static_cast<size_t>(scaled_radius),
+                    min_blast_radius_, max_blast_radius_);
 }
 
 } // namespace artillery

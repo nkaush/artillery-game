@@ -5,12 +5,11 @@
 #ifndef ARTILLERY_TERRAIN_H
 #define ARTILLERY_TERRAIN_H
 
-#include <vector>
-#include <array>
-
-#include "nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 #include "cinder/Surface.h"
 #include "cinder/gl/gl.h"
+#include <vector>
+#include <array>
 
 namespace artillery {
 
@@ -24,11 +23,6 @@ class Terrain {
  public:
   static constexpr int kWindowWidth = 750;
   static constexpr int kWindowHeight = 500;
-
-  static const std::string kJsonStartingHeightsKey;
-  static const std::string kJsonBackgroundColorKey;
-  static const std::string kJsonVisibleTerrainColorKey;
-  static const std::string kJsonRemovedTerrainColorKey;
 
   Terrain();
 
@@ -84,6 +78,9 @@ class Terrain {
   ci::ColorA8u background_color_;
 
   void LoadSurfaceFromHeights(const std::vector<size_t>& heights);
+
+  std::vector<size_t> ComputerSurfaceHeights(
+      const std::vector<std::vector<glm::vec2>>& points) const;
 };
 } // namespace artillery
 
