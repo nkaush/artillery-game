@@ -34,8 +34,6 @@ const string JsonManager::kJsonMaxBlastRadiusKey = "blast_radius_max";
 const string JsonManager::kJsonMinBlastRadiusKey = "blast_radius_min";
 const string JsonManager::kJsonBlastRadiusScalarKey = "blast_radius_scalar";
 const string JsonManager::kJsonTankConfigurationKey = "tank_configuration";
-const string JsonManager::kJsonBulletVelocityDampingKey =
-    "bullet_velocity_damping";
 
 } // namespace artillery
 
@@ -51,8 +49,20 @@ void adl_serializer<vec2>::to_json(json& json_array, const vec2& vec) {
 
 void adl_serializer<vec2>::from_json(const json& json_array, vec2& vec) {
   auto values = json_array.get<std::vector<float>>();
-  vec.x = values.at(0);
-  vec.y = values.at(1);
+
+  // If the 1st value is missing, set it to 0, otherwise, fill with 1st value
+  if (values.empty()) {
+    vec.x = 0;
+  } else {
+    vec.x = values.at(0);
+  }
+
+  // If the 2nd value is missing, set it to 0, otherwise, fill with 2nd value
+  if (values.size() < JsonManager::kVec2Length) {
+    vec.y = 0;
+  } else {
+    vec.y = values.at(1);
+  }
 }
 
 void adl_serializer<ColorA8u>::to_json(json& json_object,

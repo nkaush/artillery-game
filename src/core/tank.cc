@@ -11,12 +11,14 @@ using ci::ColorA8u;
 using ci::Rectf;
 using glm::vec2;
 
-const vec2 Tank::kDefaultTurretOffset = vec2(22, 0);
-const vec2 Tank::kBulletVelocityDamping = vec2(0.05, 0.05);
+Tank::Tank() : chassis_rounding_(0), tread_wheel_radius_(0), barrel_length_(0),
+               barrel_radius_(0), barrel_rotation_(0), turret_radius_(0) {}
 
 Tank::Tank(const vec2& chassis_position, const ColorA8u& chassis_color,
            const ci::ColorA8u& bullet_color)
     : chassis_position_(chassis_position),
+      chassis_rounding_(0), tread_wheel_radius_(0), barrel_length_(0),
+      barrel_radius_(0), barrel_rotation_(0), turret_radius_(0),
       chassis_color_(chassis_color),
       bullet_color_(bullet_color) {}
 
@@ -46,7 +48,7 @@ void Tank::ConfigureTreads(const TankConfiguration& config) {
   float half_chassis_height = config.chassis_height_ / 2;
 
   // Set up the fields defining the tank treads appearance
-  tread_color_ = config.GetTreadColor();
+  tread_color_ = config.tread_color_;
   tread_wheel_radius_ = config.tread_wheel_radius_;
 
   vec2 tread_upper_pt(-1 * half_chassis_length + config.tread_wheel_padding_,
@@ -58,19 +60,22 @@ void Tank::ConfigureTreads(const TankConfiguration& config) {
 
 void Tank::ConfigureTurretAndBarrel(const TankConfiguration& config) {
   // Set up the fields defining the turret appearance
-  turret_offset_ = config.GetTurretOffset();
   turret_radius_ = config.turret_radius_;
 
   // Set up the fields defining the barrel appearance
-  barrel_pivot_position_ = chassis_position_ + config.GetTurretOffset()
-                           + chassis_offset_;
+  barrel_pivot_position_ =
+      chassis_position_ + config.turret_offset_ + chassis_offset_;
   barrel_length_ = config.barrel_length_;
   barrel_radius_ = config.barrel_radius_;
 
+  // Set the bounding dimensions of the barrel
   vec2 barrel_upper_pt(turret_radius_ + config.turret_padding_,
                        -1 * barrel_radius_);
   vec2 barrel_lower_pt(turret_radius_ + barrel_length_, barrel_radius_);
   barrel_rect_ = Rectf(barrel_upper_pt, barrel_lower_pt);
+
+  // Set the damping multiplier of bullet velocity
+  bullet_velocity_damping_ = config.bullet_velocity_damping_;
 }
 
 void Tank::SetYCoordinate(float y_coordinate) {
@@ -84,10 +89,10 @@ void Tank::Draw() const {
   // Move the origin to the pivot point at the barrel
   ci::gl::translate(chassis_position_);
 
-  ci::gl::drawSolidRoundedRect(chassis_rect_, kChassisRounding); // chassis
+  ci::gl::drawSolidRoundedRect(chassis_rect_, chassis_rounding_); // chassis
 
   ci::gl::color(tread_color_);
-  ci::gl::drawSolidRoundedRect(treads_rect_, kTreadWheelRadius); // treads
+  ci::gl::drawSolidRoundedRect(treads_rect_, tread_wheel_radius_); // treads
 
   ci::gl::color(chassis_color_);
   DrawBarrel();
@@ -113,6 +118,8 @@ void Tank::DrawBarrel() const {
 Bullet Tank::ShootBullet() const {
   // subtract the barrel radius so the bullet starts completely inside barrel
   float barrel_span = barrel_length_ + turret_radius_ - barrel_radius_;
+
+  // Find the change in coords after the barrel rotation
   vec2 barrel_extension(glm::cos(barrel_rotation_) * barrel_span,
                         glm::sin(barrel_rotation_) * barrel_span);
   vec2 initial_position = barrel_pivot_position_ + barrel_extension;
@@ -122,8 +129,9 @@ Bullet Tank::ShootBullet() const {
 }
 
 void Tank::PointBarrel(const vec2& position_pointed_at) {
+  // The velocity is the dampened magnitude of the vector to the mouse location
   loaded_bullet_velocity_ =
-      (position_pointed_at - barrel_pivot_position_) * kBulletVelocityDamping;
+      (position_pointed_at - barrel_pivot_position_) * bullet_velocity_damping_;
 
   barrel_rotation_ = glm::atan(loaded_bullet_velocity_.y,
                                loaded_bullet_velocity_.x);

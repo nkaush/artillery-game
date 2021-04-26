@@ -77,14 +77,13 @@ list(APPEND CORE_SOURCE_FILES src/core/tank.cc
                               src/core/bullet.cc
                               src/core/terrain.cc
         src/core/json_manager.cc
-        src/core/tank_configuration.cc
-                              src/core/quadratic_solver.cc)
+        src/core/quadratic_model.cc)
 list(APPEND SOURCE_FILES    ${CORE_SOURCE_FILES}
                             src/game/artillery_app.cc
                             src/game/game_engine.cc
                             src/game/player.cc)
 
-list(APPEND TEST_FILES tests/test_quadratic_solver.cc
+list(APPEND TEST_FILES tests/test_quadratic_model.cc
                        tests/test_bullet.cc
                        tests/test_tank.cc)
 

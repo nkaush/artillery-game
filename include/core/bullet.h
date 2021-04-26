@@ -9,9 +9,15 @@
 
 namespace artillery {
 
+/**
+ * This class is used to represent bullets shot from Tanks.
+ */
 class Bullet {
   public:
-    Bullet() = default;
+    /**
+     * Default constructor used when creating temporary bullets at game start.
+     */
+    Bullet();
 
     /**
      * Creates a new Bullet with specified initial position and velocity.
@@ -44,28 +50,48 @@ class Bullet {
     void Stop();
 
     /**
-     * Draws this bullet in the window.
+     * Draws this bullet in the window if the bullet is active.
      */
     void Draw() const;
 
+    /**
+     * Gets the position of the bullet.
+     * @return a vec2 indicating the position of the bullet
+     */
     const glm::vec2& GetPosition() const;
 
+    /**
+     * Gets the velocity of the bullet.
+     * @return a vec2 indicating the velocity of the bullet
+     */
     const glm::vec2& GetVelocity() const;
 
+    /**
+     * Gets the radius of the bullet.
+     * @return a float indicating the radius of the bullet
+     */
     float GetRadius() const;
 
+    /**
+     * Gets status of the bullet.
+     * @return a bool indicating if the bullet is active (true) or not (false)
+     */
     bool IsActive() const;
 
   private:
+    // The constant acceleration of gravity as a vector with x-component = 0
     static const glm::vec2 kGravityAcceleration;
 
+    // Vectors representing the 2D position and velocity of the bullet
     glm::vec2 position_;
     glm::vec2 velocity_;
 
     float radius_;
 
+    // Indicates whether the bullet is mid-flight
     bool is_active_;
 
+    // The color to draw the bullet with
     ci::Color8u color_;
 };
 

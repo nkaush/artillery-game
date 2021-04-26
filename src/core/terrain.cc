@@ -4,8 +4,8 @@
 
 #include "core/terrain.h"
 
-#include "core/quadratic_solver.h"
 #include "core/json_manager.h"
+#include "core/quadratic_model.h"
 #include "glm/vec2.hpp"
 
 namespace artillery {
@@ -23,9 +23,10 @@ Terrain::Terrain() : landscape_(),
 
 void to_json(json& json_object, const Terrain& terrain) {}
 
-void from_json(const json& json_object, Terrain& terrain) { // TODO documentation
+void from_json(const json& json_object, Terrain& terrain) {
   terrain.pixels_.setPremultiplied(true);
 
+  // Deserialize the colors of each type of particle
   json_object.at(JsonManager::kJsonBackgroundColorKey)
       .get_to(terrain.background_color_);
 
@@ -35,6 +36,7 @@ void from_json(const json& json_object, Terrain& terrain) { // TODO documentatio
   json_object.at(JsonManager::kJsonRemovedTerrainColorKey)
       .get_to(terrain.removed_terrain_color_);
 
+  // Deserialize the groups of 3 points in the json object passed
   json ridge_extrema = json_object.at(JsonManager::kJsonRidgeExtremaKey);
   auto points_matrix = ridge_extrema.get<vector<vector<vec2>>>();
   vector<size_t> heights = terrain.ComputerSurfaceHeights(points_matrix);
@@ -49,11 +51,13 @@ vector<size_t> Terrain::ComputerSurfaceHeights(
   vector<float> curve_fits = vector<float>();
   curve_fits.reserve(sizeof(float) * kWindowWidth);
 
+  // Go through each group of 3 points in the passed vector
   for (const vector<vec2>& points : points_matrix) {
     vec2 start = points.at(0);
     vec2 end = points.at(2);
 
-    QuadraticSolver quad_solver(start, points.at(1), end);
+    // Fit a quadratic curve to the 3 points
+    QuadraticModel quad_solver(start, points.at(1), end);
     std::vector<float> y_values =
         quad_solver.ComputePointsInRange(start.x, end.x);
 
@@ -62,6 +66,7 @@ vector<size_t> Terrain::ComputerSurfaceHeights(
 
   vector<size_t> heights = vector<size_t>(curve_fits.size());
 
+  // Convert each float on the curve to a size_t so we can use them as indices
   for (size_t idx = 0; idx < curve_fits.size(); idx++) {
     heights.at(idx) = static_cast<size_t>(glm::max(0.f, curve_fits.at(idx)));
   }
@@ -70,9 +75,11 @@ vector<size_t> Terrain::ComputerSurfaceHeights(
 }
 
 void Terrain::LoadSurfaceFromHeights(const vector<size_t>& column_heights) {
+  // go through each column of pixels...
   for (size_t col = 0; col < kWindowWidth; col++) {
     size_t limit = kWindowHeight - column_heights.at(col);
 
+    // and shade the pixel if it is under the height at that column
     for (size_t row = landscape_.size(); row > 0; row--) {
       try {
         if (row - 1 >= limit) {
@@ -133,6 +140,7 @@ void Terrain::DestroyTerrainInRadius(
       bool is_point_out_of_bounds = x_coord < 0 || x_coord >= GetMaxWidth();
       is_point_out_of_bounds |= y_coord < 0 || y_coord >= GetMaxHeight();
 
+      // We do not need to change the state if the state will remain the same
       if (is_terrain_in_background || is_point_out_of_bounds) {
         continue;
       }
@@ -147,7 +155,7 @@ void Terrain::DestroyTerrainInRadius(
     }
   }
 
-  display_->update(pixels_);
+  display_->update(pixels_); // update the texture with the new pixel colors
 }
 
 }
