@@ -22,7 +22,14 @@ void Player::SetTankYCoordinate(float treads_y1, float treads_y2) {
 void Player::Draw(const vec2& mouse_location, bool is_current_player) const {
   if (is_current_player) {
     ci::gl::color(laser_color_);
-    ci::gl::drawLine(tank_.GetBarrelPivotPosition(), mouse_location);
+
+    if (aim_assistance_ > 0) {
+      for (const vec2& point : tank_.PredictBulletPath(aim_assistance_)) {
+        ci::gl::drawSolidCircle(point, 2);
+      }
+    } else {
+      ci::gl::drawLine(tank_.GetBarrelPivotPosition(), mouse_location);
+    }
   }
 
   tank_.Draw();

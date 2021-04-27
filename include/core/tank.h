@@ -98,6 +98,8 @@ class Tank {
 
   std::pair<float, float> GetTreadsXCoordinates() const;
 
+  std::vector<glm::vec2> PredictBulletPath(size_t aim_assistance) const;
+
  private:
   // Tracks the position of the tank's chassis
   glm::vec2 chassis_position_;
@@ -112,12 +114,14 @@ class Tank {
   float chassis_rounding_;
   float chassis_rotation_;
   float tread_wheel_radius_;
+  float tread_wheel_padding_;
 
   // Used when drawing the tank turret
   float barrel_length_;
   float barrel_radius_;
   float barrel_rotation_;
   float turret_radius_;
+  float barrel_span_;
 
   // Used when drawing the tank's components
   ci::Rectf chassis_rect_;

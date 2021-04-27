@@ -37,6 +37,7 @@ void ArtilleryApp::draw() {
 
 void ArtilleryApp::update() {
   game_engine_.AdvanceToNextFrame();
+  game_engine_.PointActiveTankBarrel(mouse_location_);
 }
 
 void ArtilleryApp::mouseMove(MouseEvent event) {

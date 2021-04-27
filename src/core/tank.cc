@@ -4,6 +4,8 @@
 
 #include "core/tank.h"
 
+#include "core/terrain.h"
+
 namespace artillery {
 
 using nlohmann::json;
@@ -49,6 +51,7 @@ void Tank::ConfigureTreads(const TankConfiguration& config) {
   // Set up the fields defining the tank treads appearance
   tread_color_ = config.tread_color_;
   tread_wheel_radius_ = config.tread_wheel_radius_;
+  tread_wheel_padding_ = config.tread_wheel_padding_;
 
   vec2 tread_upper_pt(-1 * half_chassis_length + config.tread_wheel_padding_,
                       half_chassis_height - config.tread_wheel_radius_);
@@ -67,6 +70,9 @@ void Tank::ConfigureTurretAndBarrel(const TankConfiguration& config) {
   barrel_length_ = config.barrel_length_;
   barrel_radius_ = config.barrel_radius_;
 
+  // subtract the barrel radius so the bullet starts completely inside barrel
+  barrel_span_ = barrel_length_ + turret_radius_ - barrel_radius_;
+
   // Set the bounding dimensions of the barrel
   vec2 barrel_upper_pt(turret_radius_ + config.turret_padding_,
                        -1 * barrel_radius_);
@@ -82,10 +88,11 @@ void Tank::SetYCoordinate(float treads_y1, float treads_y2) {
   chassis_rotation_ =
       glm::atan(treads_y2 - treads_y1, x_coords.second - x_coords.first);
 
-  float y_coordinate = (treads_y1 + treads_y2) / 2;
+  float y_coordinate =
+      (treads_y1 + treads_y2) / 2 - treads_rect_.y2 + tread_wheel_padding_;
 
-  chassis_position_.y += y_coordinate - treads_rect_.y2 + 3; // TODO remove magic numbers
-  barrel_pivot_position_.y += y_coordinate - treads_rect_.y2 + 3;
+  chassis_position_.y += y_coordinate;
+  barrel_pivot_position_.y += y_coordinate;
 }
 
 void Tank::Draw() const {
@@ -99,40 +106,42 @@ void Tank::Draw() const {
 
   ci::gl::color(tread_color_);
   ci::gl::drawSolidRoundedRect(treads_rect_, tread_wheel_radius_); // treads
+  ci::gl::drawStrokedRoundedRect(chassis_rect_, chassis_rounding_); // chassis
 
   DrawBarrel();
   // rotate chassis here
 
   ci::gl::popMatrices();
+
+  ci::gl::color(ci::Color(1, 1, 1));
 }
 
 void Tank::DrawBarrel() const {
   // Adapted from: https://discourse.libcinder.org/t/what-is-the-best-way-to-rotate-rectangles-images/410/4
   // Move the origin to the pivot point at the barrel
-  ci::gl::pushMatrices();
-  ci::gl::color(chassis_color_);
   ci::gl::translate(barrel_pivot_position_ - chassis_position_);
 
   // Pivot the reference grid
   ci::gl::rotate(barrel_rotation_ - chassis_rotation_);
 
-  ci::gl::drawSolidCircle(vec2(), turret_radius_); // turret
   // Draw draw the barrel at the origin of the pivoted reference grid
+  ci::gl::color(chassis_color_);
   ci::gl::drawSolidRect(barrel_rect_);
 
-//  ci::gl::color(ci::Color("red"));
-//  ci::gl::drawSolidCircle(vec2(), 2); // turret
+  ci::gl::color(tread_color_);
+  ci::gl::drawStrokedRect(barrel_rect_); // turret
 
-  ci::gl::popMatrices();
+  ci::gl::color(chassis_color_);
+  ci::gl::drawSolidCircle(vec2(), turret_radius_); // turret
+
+  ci::gl::color(tread_color_);
+  ci::gl::drawStrokedCircle(vec2(), turret_radius_); // turret
 }
 
 Bullet Tank::ShootBullet() const {
-  // subtract the barrel radius so the bullet starts completely inside barrel
-  float barrel_span = barrel_length_ + turret_radius_ - barrel_radius_;
-
   // Find the change in coords after the barrel rotation
-  vec2 barrel_extension(glm::cos(barrel_rotation_) * barrel_span,
-                        glm::sin(barrel_rotation_) * barrel_span);
+  vec2 barrel_extension(glm::cos(barrel_rotation_) * barrel_span_,
+                        glm::sin(barrel_rotation_) * barrel_span_);
   vec2 initial_position = barrel_pivot_position_ + barrel_extension;
 
   return Bullet(initial_position, loaded_bullet_velocity_,
@@ -165,6 +174,30 @@ std::pair<float, float> Tank::GetTreadsXCoordinates() const {
 void Tank::UpdatePosition(const glm::vec2& velocity) {
   barrel_pivot_position_ += velocity;
   chassis_position_ += velocity;
+}
+
+std::vector<vec2> Tank::PredictBulletPath(size_t aim_assistance) const {
+  std::vector<vec2> points;
+
+  vec2 working_velocity(loaded_bullet_velocity_);
+  vec2 barrel_extension(glm::cos(barrel_rotation_) * barrel_span_,
+                        glm::sin(barrel_rotation_) * barrel_span_);
+  vec2 working_position = barrel_pivot_position_ + barrel_extension;
+
+  for (size_t i = 0; i < aim_assistance; i++) {
+    working_position += working_velocity;
+    working_velocity += Bullet::kGravityAcceleration;
+
+    if (i % 5 == 0) {
+      points.push_back(working_position);
+    }
+
+    if (working_position.y > Terrain::kWindowHeight) {
+      break;
+    }
+  }
+
+  return points;
 }
 
 } // namespace artillery

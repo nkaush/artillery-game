@@ -14,6 +14,9 @@ namespace artillery {
  */
 class Bullet {
   public:
+    // The constant acceleration of gravity as a vector with x-component = 0
+    static const glm::vec2 kGravityAcceleration;
+
     /**
      * Default constructor used when creating temporary bullets at game start.
      */
@@ -79,9 +82,6 @@ class Bullet {
     bool IsActive() const;
 
   private:
-    // The constant acceleration of gravity as a vector with x-component = 0
-    static const glm::vec2 kGravityAcceleration;
-
     // Vectors representing the 2D position and velocity of the bullet
     glm::vec2 position_;
     glm::vec2 velocity_;

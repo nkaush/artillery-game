@@ -23,7 +23,7 @@ class Player {
    * constructor and populate it with fields from the json. The macro also
    * generates boilerplate code to serialize this object.
    */
-  NLOHMANN_DEFINE_TYPE_INTRUSIVE(Player, tank_, laser_color_)
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE(Player, tank_, laser_color_, aim_assistance_)
 
   /**
    * Default constructor.
@@ -70,6 +70,8 @@ class Player {
  private:
   Tank tank_;
   ci::ColorA8u laser_color_;
+
+  size_t aim_assistance_;
 };
 
 } // namespace artillery
