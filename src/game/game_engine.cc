@@ -11,6 +11,7 @@ namespace artillery {
 using nlohmann::json;
 using glm::length;
 using std::vector;
+using ci::Rectf;
 using glm::vec2;
 
 GameEngine::GameEngine()
@@ -19,7 +20,16 @@ GameEngine::GameEngine()
 
 void GameEngine::ConfigurePlayerTanks() {
   for (Player& player : players_) {
-    player.ConfigureTank(tank_config_, 360); // TODO fix this + Get height at index
+    player.ConfigureTank(tank_config_);
+
+    std::pair<float, float> treads = player.GetTankTreadsXCoordinates();
+    size_t y1 = terrain_.GetStartingHeight(static_cast<size_t>(treads.first));
+    size_t y2 = terrain_.GetStartingHeight(static_cast<size_t>(treads.second));
+
+    auto y1_coord = static_cast<float>(y1);
+    auto y2_coord = static_cast<float>(y2);
+
+    player.SetTankYCoordinate(y1_coord, y2_coord);
   }
 }
 
@@ -37,23 +47,28 @@ void GameEngine::Draw(const glm::vec2& mouse_location) const {
 }
 
 void GameEngine::AdvanceToNextFrame() {
-  float x_coord = bullet_.GetPosition().x;
+  bullet_.AdvanceToNextFrame();
+
+  vec2 bullet_position = bullet_.GetPosition();
   float radius = bullet_.GetRadius();
 
   bool is_bullet_past_map_bound =
-      x_coord - radius > static_cast<float>(terrain_.GetMaxWidth());
-  is_bullet_past_map_bound |= x_coord + radius < 0;
+      bullet_position.x - radius > static_cast<float>(terrain_.GetMaxWidth());
+  is_bullet_past_map_bound |= bullet_position.x + radius < 0;
+  is_bullet_past_map_bound |=
+      bullet_position.y - radius > static_cast<float>(terrain_.GetMaxHeight());
+
+  bool did_bullet_hit_terrain = IsBulletCollidingWithTerrain();
+  bool should_bullet_stop = is_bullet_past_map_bound || did_bullet_hit_terrain;
 
   // If the bullet leaves the map bounds, make it inactive
-  if (is_bullet_past_map_bound) {
+  if (bullet_.IsActive() && should_bullet_stop) {
     bullet_.Stop();
+    AdvanceToNextPlayerTurn();
   }
 
-  bullet_.AdvanceToNextFrame();
-
   // If the bullet is active and collides with some terrain, destroy the terrain
-  if (IsBulletCollidingWithTerrain() && bullet_.IsActive()) {
-    bullet_.Stop();
+  if (did_bullet_hit_terrain) {
     terrain_.DestroyTerrainInRadius(bullet_.GetPosition(),
                                     CalculateBulletImpactRadius());
   }

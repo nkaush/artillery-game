@@ -35,9 +35,15 @@ class Player {
    * the tank's dimensions. Also, set the tank's y-coordinate.
    * @param config - a TankConfiguration struct with information on the
    *                 dimensions of all of the tank's components
-   * @param initial_y - a float indicating the new y-coordinate
    */
-  void ConfigureTank(const TankConfiguration& config, float initial_y);
+  void ConfigureTank(const TankConfiguration& config);
+
+  /**
+   * Position the tank on the map so it is just above the terrain
+   * @param treads_y1 - a float indicating the 1st y-coordinate of the treads
+   * @param treads_y2 - a float indicating the 2nd y-coordinate of the treads
+   */
+  void SetTankYCoordinate(float treads_y1, float treads_y2);
 
   /**
    * Draws this player's tank in the window. Also draws the laser aim if this
@@ -58,6 +64,8 @@ class Player {
    * @return the Bullet object created when the player's tank shot a bullet
    */
   Bullet ShootBullet() const;
+
+  std::pair<float, float> GetTankTreadsXCoordinates() const;
 
  private:
   Tank tank_;

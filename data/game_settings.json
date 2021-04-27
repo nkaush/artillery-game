@@ -33,11 +33,11 @@
           "green": 100,
           "blue": 100
         },
-        "chassis_position_": 100
+        "chassis_position_": 700
       },
       "laser_color_": {
-        "red": 255,
-        "green": 0,
+        "red": 0,
+        "green": 255,
         "blue": 0
       }
     },
@@ -53,31 +53,31 @@
           "green": 100,
           "blue": 100
         },
-        "chassis_position_": 700
+        "chassis_position_": 100
       },
       "laser_color_": {
-        "red": 0,
-        "green": 255,
+        "red": 255,
+        "green": 0,
         "blue": 0
       }
     }
   ],
   "terrain_": {
     "background_color": {
-      "red": 173,
-      "green": 231,
-      "blue": 255
+      "red": 63,
+      "green": 136,
+      "blue": 197
     },
     "visible_terrain_color": {
-      "red": 184,
-      "green": 100,
-      "blue": 100,
-      "alpha": 184
+      "red": 200,
+      "green": 150,
+      "blue": 0,
+      "alpha": 255
     },
     "removed_terrain_color": {
       "red": 150,
-      "green": 150,
-      "blue": 150,
+      "green": 100,
+      "blue": 0,
       "alpha": 255
     },
     "ridge_extrema": [

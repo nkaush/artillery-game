@@ -11,8 +11,12 @@ namespace artillery {
 using ci::ColorA8u;
 using glm::vec2;
 
-void Player::ConfigureTank(const TankConfiguration& config, float initial_y) {
-  tank_.ConfigureTank(config, initial_y);
+void Player::ConfigureTank(const TankConfiguration& config) {
+  tank_.ConfigureTank(config);
+}
+
+void Player::SetTankYCoordinate(float treads_y1, float treads_y2) {
+  tank_.SetYCoordinate(treads_y1, treads_y2);
 }
 
 void Player::Draw(const vec2& mouse_location, bool is_current_player) const {
@@ -30,6 +34,10 @@ Bullet Player::ShootBullet() const {
 
 void Player::PointTankBarrel(const vec2& mouse_location) {
   tank_.PointBarrel(mouse_location);
+}
+
+std::pair<float, float> Player::GetTankTreadsXCoordinates() const {
+  return tank_.GetTreadsXCoordinates();
 }
 
 } // namespace artillery

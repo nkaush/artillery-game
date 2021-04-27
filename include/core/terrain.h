@@ -79,6 +79,8 @@ class Terrain {
    */
   void Draw() const;
 
+  size_t GetStartingHeight(size_t x_coordinate) const;
+
   /**
    * Used by the nlohmann::json library to serialize Terrain objects.
    * @param json_object - the json object to populate
@@ -100,6 +102,8 @@ class Terrain {
   // The pixel grid that contains the state of each pixel in the window
   std::array<std::array<TerrainVisibility, kWindowWidth>, kWindowHeight>
       landscape_;
+
+  std::vector<size_t> starting_heights_;
 
   // The pixel grid containing the color information of each pixel
   ci::Surface8u pixels_;

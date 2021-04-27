@@ -10,7 +10,7 @@ void PrepareSettings(ArtilleryApp::Settings* settings) {
   settings->setResizable(false);
   settings->setWindowSize(artillery::Terrain::kWindowWidth,
                           artillery::Terrain::kWindowHeight);
-  settings->setFrameRate(60);
+  settings->setFrameRate(100);
   settings->setTitle("Artillery");
 }
 

@@ -40,8 +40,8 @@ void from_json(const json& json_object, Terrain& terrain) {
   // Deserialize the groups of 3 points in the json object passed
   json ridge_extrema = json_object.at(JsonManager::kJsonRidgeExtremaKey);
   auto points_matrix = ridge_extrema.get<vector<vector<vec2>>>();
-  vector<size_t> heights = terrain.ComputerSurfaceHeights(points_matrix);
-  terrain.LoadSurfaceFromHeights(heights);
+  terrain.starting_heights_ = terrain.ComputerSurfaceHeights(points_matrix);
+  terrain.LoadSurfaceFromHeights(terrain.starting_heights_);
 
   terrain.display_ = ci::gl::Texture::create(terrain.pixels_);
 }
@@ -119,6 +119,10 @@ size_t Terrain::GetMaxWidth() const {
 
 const ci::ColorA8u& Terrain::GetBackgroundColor() const {
   return background_color_;
+}
+
+size_t Terrain::GetStartingHeight(size_t x_coordinate) const {
+  return GetMaxHeight() - starting_heights_.at(x_coordinate);
 }
 
 void Terrain::DestroyTerrainInRadius(

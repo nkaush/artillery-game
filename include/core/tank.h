@@ -50,9 +50,16 @@ class Tank {
    * json, this method was created to initialize all tanks with 1 struct.
    * @param config - a TankConfiguration struct with information on the
    *                 dimensions of all of the tank's components listed above
-   * @param y_coordinate - a float indicating the y-coordinate of the tank
    */
-  void ConfigureTank(const TankConfiguration& config, float y_coordinate);
+  void ConfigureTank(const TankConfiguration& config);
+
+  /**
+   * Sets the height of the tank in the frame. Used when configuring the tank
+   * after creating it with deserialized json.
+   * @param treads_y1 - a float indicating the 1st y-coordinate of the treads
+   * @param treads_y2 - a float indicating the 2nd y-coordinate of the treads
+   */
+  void SetYCoordinate(float treads_y1, float treads_y2);
 
   /**
    * Draws this tank object in the window.
@@ -89,6 +96,8 @@ class Tank {
    */
   float GetBarrelRotation() const;
 
+  std::pair<float, float> GetTreadsXCoordinates() const;
+
  private:
   // Tracks the position of the tank's chassis
   glm::vec2 chassis_position_;
@@ -101,6 +110,7 @@ class Tank {
 
   // Used in drawing the tank chassis
   float chassis_rounding_;
+  float chassis_rotation_;
   float tread_wheel_radius_;
 
   // Used when drawing the tank turret
@@ -123,13 +133,6 @@ class Tank {
    * Draws the tank's barrel; transforms a reference frame to pivot position.
    */
   void DrawBarrel() const;
-
-  /**
-   * Sets the height of the tank in the frame. Used when configuring the tank
-   * after creating it with deserialized json.
-   * @param y_coordinate - a float indicating the new y-coordinate
-   */
-  void SetYCoordinate(float y_coordinate);
 
   /**
    * Sets the tank's chassis dimensions. Used when configuring the tank

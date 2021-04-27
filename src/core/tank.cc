@@ -11,24 +11,23 @@ using ci::ColorA8u;
 using ci::Rectf;
 using glm::vec2;
 
-Tank::Tank() : chassis_rounding_(0), tread_wheel_radius_(0), barrel_length_(0),
-               barrel_radius_(0), barrel_rotation_(0), turret_radius_(0) {}
+Tank::Tank()
+    : chassis_rounding_(0), chassis_rotation_(0), tread_wheel_radius_(0),
+      barrel_length_(0), barrel_radius_(0), barrel_rotation_(0),
+      turret_radius_(0) {}
 
 Tank::Tank(const vec2& chassis_position, const ColorA8u& chassis_color,
            const ci::ColorA8u& bullet_color)
-    : chassis_position_(chassis_position),
-      chassis_rounding_(0), tread_wheel_radius_(0), barrel_length_(0),
+    : chassis_position_(chassis_position), chassis_rounding_(0),
+      chassis_rotation_(0), tread_wheel_radius_(0), barrel_length_(0),
       barrel_radius_(0), barrel_rotation_(0), turret_radius_(0),
       chassis_color_(chassis_color),
       bullet_color_(bullet_color) {}
 
-void Tank::ConfigureTank(const TankConfiguration& config, float y_coordinate) {
+void Tank::ConfigureTank(const TankConfiguration& config) {
   ConfigureChassis(config);
   ConfigureTreads(config);
   ConfigureTurretAndBarrel(config);
-
-  // Set the initial y-coordinate as defined by the height of the terrain
-  SetYCoordinate(y_coordinate);
 }
 
 void Tank::ConfigureChassis(const TankConfiguration& config) {
@@ -78,25 +77,30 @@ void Tank::ConfigureTurretAndBarrel(const TankConfiguration& config) {
   bullet_velocity_damping_ = config.bullet_velocity_damping_;
 }
 
-void Tank::SetYCoordinate(float y_coordinate) {
-  chassis_position_.y += y_coordinate;
-  barrel_pivot_position_.y += y_coordinate;
+void Tank::SetYCoordinate(float treads_y1, float treads_y2) {
+  std::pair<float, float> x_coords = GetTreadsXCoordinates();
+  chassis_rotation_ =
+      glm::atan(treads_y2 - treads_y1, x_coords.second - x_coords.first);
+
+  float y_coordinate = (treads_y1 + treads_y2) / 2;
+
+  chassis_position_.y += y_coordinate - treads_rect_.y2 + 3; // TODO remove magic numbers
+  barrel_pivot_position_.y += y_coordinate - treads_rect_.y2 + 3;
 }
 
 void Tank::Draw() const {
-  ci::gl::color(chassis_color_);
   ci::gl::pushMatrices();
   // Move the origin to the pivot point at the barrel
   ci::gl::translate(chassis_position_);
+  ci::gl::rotate(chassis_rotation_);
 
+  ci::gl::color(chassis_color_);
   ci::gl::drawSolidRoundedRect(chassis_rect_, chassis_rounding_); // chassis
 
   ci::gl::color(tread_color_);
   ci::gl::drawSolidRoundedRect(treads_rect_, tread_wheel_radius_); // treads
 
-  ci::gl::color(chassis_color_);
   DrawBarrel();
-
   // rotate chassis here
 
   ci::gl::popMatrices();
@@ -105,14 +109,21 @@ void Tank::Draw() const {
 void Tank::DrawBarrel() const {
   // Adapted from: https://discourse.libcinder.org/t/what-is-the-best-way-to-rotate-rectangles-images/410/4
   // Move the origin to the pivot point at the barrel
+  ci::gl::pushMatrices();
+  ci::gl::color(chassis_color_);
   ci::gl::translate(barrel_pivot_position_ - chassis_position_);
 
   // Pivot the reference grid
-  ci::gl::rotate(barrel_rotation_);
+  ci::gl::rotate(barrel_rotation_ - chassis_rotation_);
 
   ci::gl::drawSolidCircle(vec2(), turret_radius_); // turret
   // Draw draw the barrel at the origin of the pivoted reference grid
   ci::gl::drawSolidRect(barrel_rect_);
+
+//  ci::gl::color(ci::Color("red"));
+//  ci::gl::drawSolidCircle(vec2(), 2); // turret
+
+  ci::gl::popMatrices();
 }
 
 Bullet Tank::ShootBullet() const {
@@ -143,6 +154,12 @@ const vec2& Tank::GetBarrelPivotPosition() const {
 
 float Tank::GetBarrelRotation() const {
   return barrel_rotation_;
+}
+
+std::pair<float, float> Tank::GetTreadsXCoordinates() const {
+  float x1 = treads_rect_.x1 + chassis_position_.x;
+  float x2 = treads_rect_.x2 + chassis_position_.x;
+  return {x1, x2};
 }
 
 void Tank::UpdatePosition(const glm::vec2& velocity) {
