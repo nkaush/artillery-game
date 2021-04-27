@@ -5,7 +5,7 @@
 #ifndef ARTILLERY_TANK_CONFIGURATION_H
 #define ARTILLERY_TANK_CONFIGURATION_H
 
-#include "core/json_manager.h"
+#include "utilities/json_manager.h"
 
 #include <nlohmann/json.hpp>
 #include "cinder/gl/gl.h"

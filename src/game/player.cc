@@ -4,7 +4,7 @@
 
 #include "game/player.h"
 
-#include "core/json_manager.h"
+#include "utilities/json_manager.h"
 
 namespace artillery {
 

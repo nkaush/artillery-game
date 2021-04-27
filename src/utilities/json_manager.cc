@@ -2,7 +2,8 @@
 // Created by Neil Kaushikkar on 4/24/21.
 //
 
-#include "core/json_manager.h"
+#include "utilities/json_manager.h"
+
 #include <vector>
 
 namespace artillery {
@@ -17,7 +18,6 @@ const string JsonManager::kJsonAlphaChannelKey = "alpha";
 
 // These constants are used in deserializing json objects describing terrain
 const string JsonManager::kJsonRidgeExtremaKey = "ridge_extrema";
-const string JsonManager::kJsonStartingHeightsKey = "starting_pixel_heights";
 const string JsonManager::kJsonBackgroundColorKey = "background_color";
 const string JsonManager::kJsonVisibleTerrainColorKey = "visible_terrain_color";
 const string JsonManager::kJsonRemovedTerrainColorKey = "removed_terrain_color";

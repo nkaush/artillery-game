@@ -2,7 +2,7 @@
 // Created by Neil Kaushikkar on 4/25/21.
 //
 
-#include <core/quadratic_model.h>
+#include <utilities/quadratic_model.h>
 
 #include <catch2/catch.hpp>
 

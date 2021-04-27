@@ -6,8 +6,9 @@
 #define ARTILLERY_TANK_H
 
 #include "core/tank_configuration.h"
-#include "core/json_manager.h"
 #include "core/bullet.h"
+
+#include "utilities/json_manager.h"
 
 #include <nlohmann/json.hpp>
 #include "cinder/gl/gl.h"

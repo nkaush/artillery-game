@@ -4,8 +4,9 @@
 
 #include "core/terrain.h"
 
-#include "core/json_manager.h"
-#include "core/quadratic_model.h"
+#include "utilities/quadratic_model.h"
+#include "utilities/json_manager.h"
+
 #include "glm/vec2.hpp"
 
 namespace artillery {

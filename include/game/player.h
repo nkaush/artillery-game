@@ -5,7 +5,8 @@
 #ifndef ARTILLERY_PLAYER_H
 #define ARTILLERY_PLAYER_H
 
-#include "core/json_manager.h"
+#include "utilities/json_manager.h"
+
 #include "core/bullet.h"
 #include "core/tank.h"
 

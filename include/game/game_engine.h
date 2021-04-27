@@ -5,14 +5,15 @@
 #ifndef ARTILLERY_GAME_ENGINE_H
 #define ARTILLERY_GAME_ENGINE_H
 
-#include "core/json_manager.h"
+#include "utilities/json_manager.h"
+
 #include "core/terrain.h"
 #include "core/bullet.h"
 
 #include "game/player.h"
 
 #include <nlohmann/json.hpp>
-#include "Cinder/gl/gl.h"
+#include "cinder/gl/gl.h"
 #include <vector>
 
 namespace artillery {

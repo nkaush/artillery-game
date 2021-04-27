@@ -29,7 +29,6 @@ class JsonManager {
 
   // These constants are used in deserializing json objects describing terrain
   static const std::string kJsonRidgeExtremaKey;
-  static const std::string kJsonStartingHeightsKey;
   static const std::string kJsonBackgroundColorKey;
   static const std::string kJsonVisibleTerrainColorKey;
   static const std::string kJsonRemovedTerrainColorKey;
