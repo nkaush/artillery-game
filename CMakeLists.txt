@@ -29,7 +29,7 @@ include(FetchContent)
 FetchContent_Declare(
         json
         GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
-        GIT_TAG v3.9.1
+        GIT_TAG        v3.9.1
 )
 
 # Adds json parsing library
@@ -64,29 +64,23 @@ endif()
 get_filename_component(CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE)
 get_filename_component(APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/" ABSOLUTE)
 
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/data/)
-#
-#add_definitions("-DPATH_TO_JSON=\"${CMAKE_SOURCE_DIR}/data/game_settings.json")
-
-configure_file(data/game_settings.json
-        ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
-
 include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
 
 list(APPEND CORE_SOURCE_FILES src/core/tank.cc
                               src/core/bullet.cc
                               src/core/terrain.cc
-        src/core/json_manager.cc
-        src/core/quadratic_model.cc)
+                              src/core/json_manager.cc
+                              src/core/quadratic_model.cc)
 list(APPEND SOURCE_FILES    ${CORE_SOURCE_FILES}
-                            src/game/artillery_app.cc
+                            src/game/player.cc
                             src/game/game_engine.cc
-                            src/game/player.cc)
+                            src/game/artillery_app.cc)
 
-list(APPEND TEST_FILES tests/test_quadratic_model.cc
+list(APPEND TEST_FILES tests/test_tank.cc
                        tests/test_bullet.cc
-                       tests/test_tank.cc)
+                       tests/test_quadratic_model.cc)
 
+configure_file(data/game_settings.json ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/game_settings.json DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/data/)
 
 ci_make_app(

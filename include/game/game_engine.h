@@ -5,6 +5,7 @@
 #ifndef ARTILLERY_GAME_ENGINE_H
 #define ARTILLERY_GAME_ENGINE_H
 
+#include "core/json_manager.h"
 #include "core/terrain.h"
 #include "core/bullet.h"
 
@@ -16,28 +17,30 @@
 
 namespace artillery {
 
+/**
+ * This class contains and executes all the logic involved in this game.
+ */
 class GameEngine {
-  // TODO convert fields to players
-  // TODO finish serialization
-  // TODO default constructor
  public:
+  /**
+   * This macro from from the nlohmann::json parsing library will generate the
+   * boilerplate code required to construct a GameEngine object with the
+   * default constructor and populate it with fields from the json. The macro
+   * also generates boilerplate code to serialize this object.
+   */
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE(GameEngine, players_, tank_config_, terrain_,
+                                 blast_radius_scalar_, min_blast_radius_,
+                                 max_blast_radius_)
+
+  /**
+   * Default constructor that initializes a default bullet.
+   */
   GameEngine();
 
   /**
-   * Used by the nlohmann::json library to serialize GameEngine objects.
-   * @param json_object - the json object to serialize into
-   * @param game_engine - the GameEngine object to serialize
+   * Pass the deserialized TankConfiguration object to each player's tank.
    */
-  friend void to_json(nlohmann::json& json_object,
-                      const GameEngine& game_engine);
-
-  /**
-   * Used by the nlohmann::json library to deserialize GameEngine objects.
-   * @param json_object - the json object to serialize from
-   * @param game_engine - the GameEngine object to deserialize into
-   */
-  friend void from_json(const nlohmann::json& json_object,
-                        GameEngine& game_engine);
+  void ConfigurePlayerTanks();
 
   /**
    * Draws all the components of the game: tanks, bullets, terrain, lasers.
@@ -83,6 +86,11 @@ class GameEngine {
   std::vector<Player> players_;
   size_t current_player_idx_;
 
+  TankConfiguration tank_config_;
+
+  /**
+   * Moves to the next player's turn.
+   */
   void AdvanceToNextPlayerTurn();
 
   /**

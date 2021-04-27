@@ -1,5 +1,5 @@
 {
-  "tank_configuration": {
+  "tank_config_": {
     "chassis_length_": 40,
     "chassis_height_": 15,
     "chassis_rounding_": 5,
@@ -17,48 +17,52 @@
       "blue": 0
     }
   },
-  "blast_radius_max": 30,
-  "blast_radius_min": 10,
-  "blast_radius_scalar": 2,
-  "players": [
+  "max_blast_radius_": 30,
+  "min_blast_radius_": 10,
+  "blast_radius_scalar_": 2,
+  "players_": [
     {
-      "tank_color": {
-        "red": 106,
-        "green": 113,
-        "blue": 82
+      "tank_": {
+        "chassis_color_": {
+          "red": 106,
+          "green": 113,
+          "blue": 82
+        },
+        "bullet_color_": {
+          "red": 100,
+          "green": 100,
+          "blue": 100
+        },
+        "chassis_position_": 100
       },
-      "bullet_color": {
-        "red": 100,
-        "green": 100,
-        "blue": 100
-      },
-      "laser_color": {
+      "laser_color_": {
         "red": 255,
         "green": 0,
         "blue": 0
-      },
-      "starting_x": 100
+      }
     },
     {
-      "tank_color": {
-        "red": 106,
-        "green": 113,
-        "blue": 82
+      "tank_": {
+        "chassis_color_": {
+          "red": 106,
+          "green": 113,
+          "blue": 82
+        },
+        "bullet_color_": {
+          "red": 100,
+          "green": 100,
+          "blue": 100
+        },
+        "chassis_position_": 700
       },
-      "bullet_color": {
-        "red": 100,
-        "green": 100,
-        "blue": 100
-      },
-      "laser_color": {
+      "laser_color_": {
         "red": 0,
         "green": 255,
         "blue": 0
-      },
-      "starting_x": 700
+      }
     }
   ],
-  "terrain": {
+  "terrain_": {
     "background_color": {
       "red": 173,
       "green": 231,

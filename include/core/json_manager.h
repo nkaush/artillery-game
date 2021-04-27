@@ -33,20 +33,6 @@ class JsonManager {
   static const std::string kJsonBackgroundColorKey;
   static const std::string kJsonVisibleTerrainColorKey;
   static const std::string kJsonRemovedTerrainColorKey;
-
-  // These constants are used in deserializing player json objects
-  static const std::string kJsonBulletColorKey;
-  static const std::string kJsonLaserColorKey;
-  static const std::string kJsonTankColorKey;
-  static const std::string kJsonStartingXKey;
-
-  // These constants are used in deserializing the game settings json
-  static const std::string kJsonTerrainKey;
-  static const std::string kJsonPlayersKey;
-  static const std::string kJsonMaxBlastRadiusKey;
-  static const std::string kJsonMinBlastRadiusKey;
-  static const std::string kJsonBlastRadiusScalarKey;
-  static const std::string kJsonTankConfigurationKey;
 };
 
 } // namespace artillery

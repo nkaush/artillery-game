@@ -26,6 +26,7 @@ ArtilleryApp::ArtilleryApp() {
     game_settings >> json_object;
 
     game_engine_ = json_object.get<GameEngine>();
+    game_engine_.ConfigurePlayerTanks();
   }
 }
 

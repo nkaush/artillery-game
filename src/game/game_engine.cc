@@ -15,36 +15,12 @@ using glm::vec2;
 
 GameEngine::GameEngine()
     : bullet_(),
-      current_player_idx_(0) {
-  bullet_.Stop();
-}
+      current_player_idx_(0) {}
 
-void to_json(json& json_object, const GameEngine& game_engine) {}
-
-void from_json(const json& json_object, GameEngine& game_engine) {
-  json_object.at(JsonManager::kJsonTerrainKey).get_to(game_engine.terrain_); // TODO Get height at index
-
-  json radius_scalar = json_object.at(JsonManager::kJsonBlastRadiusScalarKey);
-  radius_scalar.get_to(game_engine.blast_radius_scalar_);
-
-  json min_radius = json_object.at(JsonManager::kJsonMinBlastRadiusKey);
-  min_radius.get_to(game_engine.min_blast_radius_);
-
-  json max_radius = json_object.at(JsonManager::kJsonMaxBlastRadiusKey);
-  max_radius.get_to(game_engine.max_blast_radius_);
-
-  json configuration = json_object.at(JsonManager::kJsonTankConfigurationKey);
-  auto dimensions = configuration.get<TankConfiguration>();
-
-  json_object.at(JsonManager::kJsonPlayersKey).get_to(game_engine.players_);
-
-  for (Player& player : game_engine.players_) {
-    player.ConfigureTank(dimensions, 360); // TODO set this
+void GameEngine::ConfigurePlayerTanks() {
+  for (Player& player : players_) {
+    player.ConfigureTank(tank_config_, 360); // TODO fix this + Get height at index
   }
-
-  Player first_player = game_engine.players_.at(game_engine.current_player_idx_);
-  game_engine.bullet_ = first_player.ShootBullet();
-  game_engine.bullet_.Stop();
 }
 
 const ci::ColorA8u& GameEngine::GetBackgroundColor() const {
@@ -61,14 +37,6 @@ void GameEngine::Draw(const glm::vec2& mouse_location) const {
 }
 
 void GameEngine::AdvanceToNextFrame() {
-  bullet_.AdvanceToNextFrame();
-
-  if (IsBulletCollidingWithTerrain() && bullet_.IsActive()) {
-    bullet_.Stop();
-    terrain_.DestroyTerrainInRadius(bullet_.GetPosition(),
-                                    CalculateBulletImpactRadius());
-  }
-
   float x_coord = bullet_.GetPosition().x;
   float radius = bullet_.GetRadius();
 
@@ -76,8 +44,18 @@ void GameEngine::AdvanceToNextFrame() {
       x_coord - radius > static_cast<float>(terrain_.GetMaxWidth());
   is_bullet_past_map_bound |= x_coord + radius < 0;
 
+  // If the bullet leaves the map bounds, make it inactive
   if (is_bullet_past_map_bound) {
     bullet_.Stop();
+  }
+
+  bullet_.AdvanceToNextFrame();
+
+  // If the bullet is active and collides with some terrain, destroy the terrain
+  if (IsBulletCollidingWithTerrain() && bullet_.IsActive()) {
+    bullet_.Stop();
+    terrain_.DestroyTerrainInRadius(bullet_.GetPosition(),
+                                    CalculateBulletImpactRadius());
   }
 }
 

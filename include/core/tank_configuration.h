@@ -36,7 +36,12 @@ struct TankConfiguration {
   glm::vec2 bullet_velocity_damping_;
 };
 
-// macro from JSON parsing library that automatically (de)serializes this struct
+/**
+ * This macro from from the nlohmann::json parsing library will generate the
+ * boilerplate code required to create a TankConfiguration struct and populate
+ * it with fields from the json. The macro also generates boilerplate code
+ * to serialize TankConfiguration structs.
+ */
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
     TankConfiguration, chassis_rounding_, chassis_length_, chassis_height_,
     turret_offset_, turret_padding_, turret_radius_, barrel_length_,

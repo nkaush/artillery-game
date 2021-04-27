@@ -42,4 +42,8 @@ TEST_CASE("Test Quadratic Solver") {
     REQUIRE(Approx(expected.y).epsilon(0.1) == constants.y);
     REQUIRE(Approx(expected.z).epsilon(0.1) == constants.z);
   }
+
+  SECTION("EXPERIMENT") {
+    ci::Rectf test(vec2(0, 0), vec2(10, 20));
+  }
 }

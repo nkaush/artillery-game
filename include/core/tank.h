@@ -6,6 +6,7 @@
 #define ARTILLERY_TANK_H
 
 #include "core/tank_configuration.h"
+#include "core/json_manager.h"
 #include "core/bullet.h"
 
 #include <nlohmann/json.hpp>
@@ -18,6 +19,15 @@ namespace artillery {
  */
 class Tank {
  public:
+  /**
+   * This macro from from the nlohmann::json parsing library will generate the
+   * boilerplate code required to construct a Tank object with the default
+   * constructor and populate it with fields from the json. The macro also
+   * generates boilerplate code to serialize this object.
+   */
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE(
+      Tank, chassis_position_, chassis_color_, bullet_color_)
+
   /**
    * Default constructor used by nlohmann::json to deserialize Player objects.
    */
@@ -104,9 +114,9 @@ class Tank {
   ci::Rectf treads_rect_;
 
   // Used when drawing the tank's components
-  ci::Color8u chassis_color_;
+  ci::ColorA8u chassis_color_;
   ci::ColorA8u bullet_color_;
-  ci::Color8u tread_color_;
+  ci::ColorA8u tread_color_;
 
   /**
    * Draws the tank's barrel; transforms a reference frame to pivot position.

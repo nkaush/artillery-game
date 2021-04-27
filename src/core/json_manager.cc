@@ -3,6 +3,7 @@
 //
 
 #include "core/json_manager.h"
+#include <vector>
 
 namespace artillery {
 
@@ -21,26 +22,13 @@ const string JsonManager::kJsonBackgroundColorKey = "background_color";
 const string JsonManager::kJsonVisibleTerrainColorKey = "visible_terrain_color";
 const string JsonManager::kJsonRemovedTerrainColorKey = "removed_terrain_color";
 
-// These constants are used in deserializing player json objects
-const string JsonManager::kJsonBulletColorKey = "bullet_color";
-const string JsonManager::kJsonLaserColorKey = "laser_color";
-const string JsonManager::kJsonTankColorKey = "tank_color";
-const string JsonManager::kJsonStartingXKey = "starting_x";
-
-// These constants are used in deserializing the game settings json
-const string JsonManager::kJsonTerrainKey = "terrain";
-const string JsonManager::kJsonPlayersKey = "players";
-const string JsonManager::kJsonMaxBlastRadiusKey = "blast_radius_max";
-const string JsonManager::kJsonMinBlastRadiusKey = "blast_radius_min";
-const string JsonManager::kJsonBlastRadiusScalarKey = "blast_radius_scalar";
-const string JsonManager::kJsonTankConfigurationKey = "tank_configuration";
-
 } // namespace artillery
 
 namespace nlohmann {
 
 using artillery::JsonManager;
 using ci::ColorA8u;
+using std::vector;
 using glm::vec2;
 
 void adl_serializer<vec2>::to_json(json& json_array, const vec2& vec) {
@@ -48,7 +36,14 @@ void adl_serializer<vec2>::to_json(json& json_array, const vec2& vec) {
 }
 
 void adl_serializer<vec2>::from_json(const json& json_array, vec2& vec) {
-  auto values = json_array.get<std::vector<float>>();
+  vector<float> values;
+  if (json_array.is_array()) {
+    values = json_array.get<vector<float>>();
+  } else if (json_array.is_number()) {
+    values.push_back(json_array.get<float>());
+  } else {
+    return;
+  }
 
   // If the 1st value is missing, set it to 0, otherwise, fill with 1st value
   if (values.empty()) {
