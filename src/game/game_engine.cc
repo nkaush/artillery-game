@@ -16,20 +16,20 @@ using glm::vec2;
 
 GameEngine::GameEngine()
     : bullet_(),
-      current_player_idx_(0) {}
+      current_tank_idx_(0) {}
 
 void GameEngine::ConfigurePlayerTanks() {
-  for (Player& player : players_) {
-    player.ConfigureTank(tank_config_);
+  for (Tank& tank : tanks_) {
+    tank.ConfigureTank(tank_config_);
 
-    std::pair<float, float> treads = player.GetTankTreadsXCoordinates();
+    std::pair<float, float> treads = tank.GetTreadsXCoordinates();
     size_t y1 = terrain_.GetStartingHeight(static_cast<size_t>(treads.first));
     size_t y2 = terrain_.GetStartingHeight(static_cast<size_t>(treads.second));
 
     auto y1_coord = static_cast<float>(y1);
     auto y2_coord = static_cast<float>(y2);
 
-    player.SetTankYCoordinate(y1_coord, y2_coord);
+    tank.SetYCoordinate(y1_coord, y2_coord);
   }
 }
 
@@ -41,8 +41,8 @@ void GameEngine::Draw(const glm::vec2& mouse_location) const {
   terrain_.Draw();
   bullet_.Draw();
 
-  for (size_t idx = 0; idx < players_.size(); idx++) {
-    players_.at(idx).Draw(mouse_location, idx == current_player_idx_);
+  for (size_t idx = 0; idx < tanks_.size(); idx++) {
+    tanks_.at(idx).Draw(mouse_location, idx == current_tank_idx_);
   }
 }
 
@@ -72,6 +72,12 @@ void GameEngine::AdvanceToNextFrame() {
     terrain_.DestroyTerrainInRadius(bullet_.GetPosition(),
                                     CalculateBulletImpactRadius());
   }
+
+  for (const Tank& tank : tanks_) {
+    if (bullet_.IsActive() && tank.WasTankHit(bullet_position, radius)) {
+      std::cout << "hit" << std::endl;
+    }
+  }
 }
 
 bool GameEngine::IsBulletCollidingWithTerrain() const {
@@ -90,20 +96,20 @@ size_t GameEngine::CalculateBulletImpactRadius() const {
 }
 
 void GameEngine::PointActiveTankBarrel(const vec2& mouse_location) {
-  players_.at(current_player_idx_).PointTankBarrel(mouse_location);
+  tanks_.at(current_tank_idx_).PointBarrel(mouse_location);
 }
 
 void GameEngine::ShootBulletFromActiveTank() {
-  if (!bullet_.IsActive()) { // prevent player from removing bullet if in action
-    bullet_ = players_.at(current_player_idx_).ShootBullet();
+  if (!bullet_.IsActive()) { // prevent tank from removing bullet if in action
+    bullet_ = tanks_.at(current_tank_idx_).ShootBullet();
   }
 }
 
 void GameEngine::AdvanceToNextPlayerTurn() {
-  current_player_idx_++;
+  current_tank_idx_++;
 
-  if (current_player_idx_ == players_.size()) {
-    current_player_idx_ = 0;
+  if (current_tank_idx_ == tanks_.size()) {
+    current_tank_idx_ = 0;
   }
 }
 

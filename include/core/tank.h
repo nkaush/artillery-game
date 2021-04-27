@@ -26,8 +26,8 @@ class Tank {
    * constructor and populate it with fields from the json. The macro also
    * generates boilerplate code to serialize this object.
    */
-  NLOHMANN_DEFINE_TYPE_INTRUSIVE(
-      Tank, chassis_position_, chassis_color_, bullet_color_)
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE(Tank, chassis_position_, chassis_color_,
+                                 bullet_color_, laser_color_, aim_assistance_)
 
   /**
    * Default constructor used by nlohmann::json to deserialize Player objects.
@@ -63,8 +63,11 @@ class Tank {
 
   /**
    * Draws this tank object in the window.
+   * @param mouse_location - a vec2 indicating coordinates of the user's mouse
+   * @param is_current_player - a bool indicating whether the current turn
+   *                            belongs to the player represented by this tank
    */
-  void Draw() const;
+  void Draw(const glm::vec2& mouse_location, bool is_current_player) const;
 
   /**
    * Creates a Bullet object with initial position and velocity dependent
@@ -100,6 +103,8 @@ class Tank {
 
   std::vector<glm::vec2> PredictBulletPath(size_t aim_assistance) const;
 
+  bool WasTankHit(const glm::vec2& point, float radius) const;
+
  private:
   // Tracks the position of the tank's chassis
   glm::vec2 chassis_position_;
@@ -123,6 +128,8 @@ class Tank {
   float turret_radius_;
   float barrel_span_;
 
+  size_t aim_assistance_;
+
   // Used when drawing the tank's components
   ci::Rectf chassis_rect_;
   ci::Rectf barrel_rect_;
@@ -132,11 +139,26 @@ class Tank {
   ci::ColorA8u chassis_color_;
   ci::ColorA8u bullet_color_;
   ci::ColorA8u tread_color_;
+  ci::ColorA8u laser_color_;
 
   /**
    * Draws the tank's barrel; transforms a reference frame to pivot position.
    */
   void DrawBarrel() const;
+
+  /**
+   * Draws the tank's chassis; transforms a reference frame to pivot position.
+   */
+  void DrawChassis() const;
+
+  /**
+   * Draws the laser aim assist. Draws a line if aim_assistance_ is 0. Otherwise,
+   * draws a parabola with the range specified by the aim_assistance_ value.
+   * @param mouse_location - a vec2 indicating coordinates of the user's mouse
+   * @param is_current_player - a bool indicating whether the current turn
+   *                            belongs to the player represented by this tank
+   */
+  void DrawLaser(const glm::vec2& mouse_location, bool is_current_player) const;
 
   /**
    * Sets the tank's chassis dimensions. Used when configuring the tank

@@ -9,8 +9,7 @@
 
 #include "core/terrain.h"
 #include "core/bullet.h"
-
-#include "game/player.h"
+#include "core/tank.h"
 
 #include <nlohmann/json.hpp>
 #include "cinder/gl/gl.h"
@@ -29,7 +28,7 @@ class GameEngine {
    * default constructor and populate it with fields from the json. The macro
    * also generates boilerplate code to serialize this object.
    */
-  NLOHMANN_DEFINE_TYPE_INTRUSIVE(GameEngine, players_, tank_config_, terrain_,
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE(GameEngine, tanks_, tank_config_, terrain_,
                                  blast_radius_scalar_, min_blast_radius_,
                                  max_blast_radius_)
 
@@ -84,8 +83,8 @@ class GameEngine {
   size_t min_blast_radius_;
   size_t max_blast_radius_;
 
-  std::vector<Player> players_;
-  size_t current_player_idx_;
+  std::vector<Tank> tanks_;
+  size_t current_tank_idx_;
 
   TankConfiguration tank_config_;
 

@@ -69,10 +69,9 @@ include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
 list(APPEND CORE_SOURCE_FILES src/core/tank.cc
                               src/core/bullet.cc
                               src/core/terrain.cc
-        src/utilities/json_manager.cc
-        src/utilities/quadratic_model.cc)
+                              src/utilities/json_manager.cc
+                              src/utilities/quadratic_model.cc)
 list(APPEND SOURCE_FILES    ${CORE_SOURCE_FILES}
-                            src/game/player.cc
                             src/game/game_engine.cc
                             src/game/artillery_app.cc)
 

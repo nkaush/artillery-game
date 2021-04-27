@@ -20,48 +20,44 @@
   "max_blast_radius_": 30,
   "min_blast_radius_": 10,
   "blast_radius_scalar_": 2,
-  "players_": [
+  "tanks_": [
     {
-      "tank_": {
-        "chassis_color_": {
-          "red": 106,
-          "green": 113,
-          "blue": 82
-        },
-        "bullet_color_": {
-          "red": 0,
-          "green": 0,
-          "blue": 0
-        },
-        "chassis_position_": 700
+      "chassis_color_": {
+        "red": 106,
+        "green": 113,
+        "blue": 82
+      },
+      "bullet_color_": {
+        "red": 0,
+        "green": 0,
+        "blue": 0
       },
       "laser_color_": {
         "red": 0,
         "green": 255,
         "blue": 0
       },
+      "chassis_position_": 700,
       "aim_assistance_": 150
     },
     {
-      "tank_": {
-        "chassis_color_": {
-          "red": 106,
-          "green": 113,
-          "blue": 82
-        },
-        "bullet_color_": {
-          "red": 0,
-          "green": 0,
-          "blue": 0
-        },
-        "chassis_position_": 100
+      "chassis_color_": {
+        "red": 106,
+        "green": 113,
+        "blue": 82
+      },
+      "bullet_color_": {
+        "red": 0,
+        "green": 0,
+        "blue": 0
       },
       "laser_color_": {
         "red": 255,
         "green": 0,
         "blue": 0
       },
-      "aim_assistance_": 0
+      "chassis_position_": 100,
+      "aim_assistance_": 150
     }
   ],
   "terrain_": {
@@ -73,14 +69,12 @@
     "visible_terrain_color": {
       "red": 150,
       "green": 150,
-      "blue": 150,
-      "alpha": 255
+      "blue": 150
     },
     "removed_terrain_color": {
       "red": 100,
       "green": 100,
-      "blue": 100,
-      "alpha": 255
+      "blue": 100
     },
     "ridge_extrema": [
       [[0, 300], [100, 125], [200, 300]],

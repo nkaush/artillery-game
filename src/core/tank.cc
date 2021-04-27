@@ -6,6 +6,8 @@
 
 #include "core/terrain.h"
 
+#include "cinder/GeomIo.h"
+
 namespace artillery {
 
 using nlohmann::json;
@@ -95,8 +97,33 @@ void Tank::SetYCoordinate(float treads_y1, float treads_y2) {
   barrel_pivot_position_.y += y_coordinate;
 }
 
-void Tank::Draw() const {
+void Tank::Draw(const vec2& mouse_location, bool is_current_player) const {
+  DrawLaser(mouse_location, is_current_player);
+
   ci::gl::pushMatrices();
+  DrawChassis();
+  DrawBarrel();
+
+  ci::gl::popMatrices();
+
+  ci::gl::color(ci::Color(1, 1, 1));
+}
+
+void Tank::DrawLaser(const vec2& mouse_location, bool is_current_player) const {
+  if (is_current_player) {
+    ci::gl::color(laser_color_);
+
+    if (aim_assistance_ > 0) {
+      for (const vec2& point : PredictBulletPath(aim_assistance_)) {
+        ci::gl::drawSolidCircle(point, 2);
+      }
+    } else {
+      ci::gl::drawLine(barrel_pivot_position_, mouse_location);
+    }
+  }
+}
+
+void Tank::DrawChassis() const {
   // Move the origin to the pivot point at the barrel
   ci::gl::translate(chassis_position_);
   ci::gl::rotate(chassis_rotation_);
@@ -107,13 +134,6 @@ void Tank::Draw() const {
   ci::gl::color(tread_color_);
   ci::gl::drawSolidRoundedRect(treads_rect_, tread_wheel_radius_); // treads
   ci::gl::drawStrokedRoundedRect(chassis_rect_, chassis_rounding_); // chassis
-
-  DrawBarrel();
-  // rotate chassis here
-
-  ci::gl::popMatrices();
-
-  ci::gl::color(ci::Color(1, 1, 1));
 }
 
 void Tank::DrawBarrel() const {
@@ -198,6 +218,15 @@ std::vector<vec2> Tank::PredictBulletPath(size_t aim_assistance) const {
   }
 
   return points;
+}
+
+bool Tank::WasTankHit(const vec2& point, float radius) const {
+  bool was_chassis_hit = chassis_rect_.getOffset(chassis_position_).contains(point);
+  bool were_treads_hit = treads_rect_.getOffset(chassis_position_).contains(point);
+  bool was_turret_hit =
+      glm::distance(point, barrel_pivot_position_) < radius + turret_radius_;
+
+  return was_chassis_hit || were_treads_hit || was_turret_hit;
 }
 
 } // namespace artillery
