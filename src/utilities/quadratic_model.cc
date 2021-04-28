@@ -26,7 +26,7 @@ QuadraticModel::QuadraticModel(
 }
 
 vec3 QuadraticModel::Solve(
-    const mat3& design_matrix, const vec3& observation_vector) const {
+    const mat3& design_matrix, const vec3& observation_vector) {
   // Solve the linear system A.T * A * x = A.T * b
   mat3 design_matrix_transpose = glm::transpose(design_matrix);
 

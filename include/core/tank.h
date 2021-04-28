@@ -26,8 +26,9 @@ class Tank {
    * constructor and populate it with fields from the json. The macro also
    * generates boilerplate code to serialize this object.
    */
-  NLOHMANN_DEFINE_TYPE_INTRUSIVE(Tank, chassis_position_, chassis_color_,
-                                 bullet_color_, laser_color_, aim_assistance_)
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE(
+      Tank, chassis_position_, chassis_color_, bullet_color_, laser_color_,
+      aim_assistance_, hitpoints_)
 
   /**
    * Default constructor used by nlohmann::json to deserialize Player objects.
@@ -85,6 +86,10 @@ class Tank {
    */
   void PointBarrel(const glm::vec2& position_pointed_at);
 
+  /**
+   * Update the position of the tank by incrementing by the given velocity.
+   * @param velocity - a glm::vec2 indicating the speed on each axis
+   */
   void UpdatePosition(const glm::vec2& velocity);
 
   /**
@@ -93,9 +98,33 @@ class Tank {
    */
   float GetBarrelRotation() const;
 
+  /**
+   * Get the x-coordinates of the front and back of the tank treads.
+   * @return an std::pair with the 2 x-coordinates of the tread front and back
+   */
   std::pair<float, float> GetTreadsXCoordinates() const;
 
+  /**
+   * Determines whether the tank was hit at the given point with a given radius.
+   * @param point - a vec2 indicating the location to check
+   * @param radius - a float indicating the margin to check around
+   * @return a bool indicating whether the tank was hit (true) or not (false)
+   */
   bool WasTankHit(const glm::vec2& point, float radius) const;
+
+  /**
+   * Get the remaining number of hitpoints this tank has.
+   * @return a size_t indicating the number of hitpoints this tank has
+   */
+  size_t GetHitpoints() const;
+
+  /**
+   * Subtract the given hitpoints from the tank's remaining hitpoints. If the
+   * the tank has 0 hitpoints or if the number to subtract is larger than the
+   * tank's remaining hitpoints, set the number of hitpoints to 0.
+   * @param lost_hitpoints - a size_t indicating the number of hitpoints lost
+   */
+  void SubtractHitpoints(size_t lost_hitpoints);
 
  private:
   // Tracks the position of the tank's chassis
@@ -122,6 +151,10 @@ class Tank {
   float turret_radius_;
 
   size_t aim_assistance_;
+  size_t aim_assist_frequency_;
+  float aim_assist_render_size_;
+
+  size_t hitpoints_;
 
   // Used when drawing the tank's components
   ci::Rectf chassis_rect_;
@@ -134,7 +167,7 @@ class Tank {
   ci::ColorA8u tread_color_;
   ci::ColorA8u laser_color_;
 
-  std::vector<glm::vec2> PredictBulletPath(size_t aim_assistance) const;
+  std::vector<glm::vec2> PredictBulletPath() const;
 
   /**
    * Sets the tank's chassis dimensions. Used when configuring the tank

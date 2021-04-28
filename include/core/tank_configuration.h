@@ -33,6 +33,9 @@ struct TankConfiguration {
   float tread_wheel_padding_;
   float tread_wheel_radius_;
 
+  size_t aim_assist_frequency_;
+  float aim_assist_render_size_;
+
   glm::vec2 bullet_velocity_damping_;
 };
 
@@ -46,7 +49,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
     TankConfiguration, chassis_rounding_, chassis_length_, chassis_height_,
     turret_offset_, turret_padding_, turret_radius_, barrel_length_,
     barrel_radius_, tread_wheel_padding_, tread_wheel_radius_, tread_color_,
-    bullet_velocity_damping_)
+    bullet_velocity_damping_, aim_assist_frequency_, aim_assist_render_size_)
 
 } // namespace artillery
 

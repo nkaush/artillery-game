@@ -15,13 +15,12 @@ using ci::Rectf;
 using glm::vec2;
 
 GameEngine::GameEngine()
-    : bullet_(), blast_radius_scalar_(0), min_blast_radius_(0),
-      max_blast_radius_(0), current_tank_idx_(0) {}
+    : bullet_(), blast_size_scalar_(0), min_blast_size_(0),
+      max_blast_size_(0), max_hitpoints_(0), current_tank_idx_(0) {}
 
 void GameEngine::ConfigureTanks() {
   for (Tank& tank : tanks_) {
     tank.Configure(tank_config_);
-
     UpdateTankYCoordinate(tank);
   }
 }
@@ -29,6 +28,7 @@ void GameEngine::ConfigureTanks() {
 void GameEngine::UpdateTankYCoordinate(Tank& tank) {
   std::pair<float, float> treads = tank.GetTreadsXCoordinates();
 
+  // get the height of the terrain at the location of the tank's treads
   size_t y1 = terrain_.GetStartingHeight(static_cast<size_t>(treads.first));
   size_t y2 = terrain_.GetStartingHeight(static_cast<size_t>(treads.second));
 
@@ -48,7 +48,37 @@ void GameEngine::Draw(const glm::vec2& mouse_location) const {
 
   for (size_t idx = 0; idx < tanks_.size(); idx++) {
     tanks_.at(idx).Draw(mouse_location, idx == current_tank_idx_);
+    DrawHitpointsBar(tanks_.at(idx), idx);
   }
+
+  ci::gl::color(ci::Color(1, 1, 1));
+}
+
+void GameEngine::DrawHitpointsBar(const Tank& tank, size_t index) const {
+  // find the top left point of the hitpoints bar
+  vec2 vertical_component =
+    hp_render_settings_.vertical_padding_ * vec2(0, index + 1);
+  vertical_component += vec2(0, hp_render_settings_.bar_height_ * index);
+  vec2 upper_pt = hp_render_settings_.horizontal_padding_ + vertical_component;
+
+  // find the lower right point of the hitpoints bar background
+  vec2 back_horizontal_change =
+      vec2(max_hitpoints_ * hp_render_settings_.bar_length_scalar_,
+           hp_render_settings_.bar_height_);
+  Rectf back = Rectf(upper_pt, upper_pt + back_horizontal_change);
+
+  ci::gl::color(hp_render_settings_.total_hitpoints_color_);
+  ci::gl::drawSolidRect(back);
+
+  // find the lower right point of the hitpoints bar front display
+  vec2 front_horizontal_change =
+      vec2(static_cast<float>(tank.GetHitpoints())
+               * hp_render_settings_.bar_length_scalar_,
+           hp_render_settings_.bar_height_);
+  Rectf front = Rectf(upper_pt, upper_pt + front_horizontal_change);
+
+  ci::gl::color(hp_render_settings_.remaining_hitpoints_color_);
+  ci::gl::drawSolidRect(front);
 }
 
 void GameEngine::AdvanceToNextFrame() {
@@ -57,6 +87,7 @@ void GameEngine::AdvanceToNextFrame() {
   vec2 bullet_position = bullet_.GetPosition();
   float radius = bullet_.GetRadius();
 
+  // Check all bounds EXCEPT the top bound since a bullet can come back down
   bool is_bullet_past_map_bound =
       bullet_position.x - radius > static_cast<float>(terrain_.GetMaxWidth());
   is_bullet_past_map_bound |= bullet_position.x + radius < 0;
@@ -74,13 +105,21 @@ void GameEngine::AdvanceToNextFrame() {
 
   // If the bullet is active and collides with some terrain, destroy the terrain
   if (did_bullet_hit_terrain) {
-    terrain_.DestroyTerrainInRadius(bullet_.GetPosition(),
-                                    CalculateBulletImpactRadius());
+    terrain_.DestroyTerrainInRadius(
+        bullet_.GetPosition(), CalculateBulletImpactSize());
   }
 
-  for (const Tank& tank : tanks_) {
+  bool were_tanks_hit = false;
+  for (Tank& tank : tanks_) {
     if (bullet_.IsActive() && tank.WasTankHit(bullet_position, radius)) {
+      were_tanks_hit = true;
+      tank.SubtractHitpoints(CalculateBulletImpactSize());
+      AdvanceToNextPlayerTurn();
     }
+  }
+
+  if (were_tanks_hit) {
+    bullet_.Stop();
   }
 }
 
@@ -93,10 +132,10 @@ bool GameEngine::IsBulletCollidingWithTerrain() const {
          == TerrainVisibility::kVisible;
 }
 
-size_t GameEngine::CalculateBulletImpactRadius() const {
-  float scaled_radius = length(bullet_.GetVelocity()) * blast_radius_scalar_;
-  return glm::clamp(static_cast<size_t>(scaled_radius),
-                    min_blast_radius_, max_blast_radius_);
+size_t GameEngine::CalculateBulletImpactSize() const {
+  float scaled_size = length(bullet_.GetVelocity()) * blast_size_scalar_;
+  return glm::clamp(static_cast<size_t>(scaled_size),
+                    min_blast_size_, max_blast_size_);
 }
 
 void GameEngine::PointActiveTankBarrel(const vec2& mouse_location) {
@@ -112,23 +151,30 @@ void GameEngine::ShootBulletFromActiveTank() {
 void GameEngine::AdvanceToNextPlayerTurn() {
   current_tank_idx_++;
 
+  // if we have gone through each player's turn, go back to the 1st player
   if (current_tank_idx_ == tanks_.size()) {
     current_tank_idx_ = 0;
   }
 }
 
-void GameEngine::MoveActiveTank(const vec2& velocity) {
+void GameEngine::MoveCurrentTank(bool should_move_left) {
+  vec2 speed = tank_speed_on_move_;
+
+  if (should_move_left) { // invert the velocity to move left
+    speed *= vec2(-1, -1);
+  }
+
   Tank& current_tank = tanks_.at(current_tank_idx_);
-  current_tank.UpdatePosition(velocity);
+  current_tank.UpdatePosition(speed);
 
   std::pair<float, float> tank_position = current_tank.GetTreadsXCoordinates();
   auto max_width = static_cast<float>(terrain_.GetMaxWidth());
 
-  // If the tank has not reached the bounds of the map, update it's y-coords
+  // If the tank has not reached the bounds of the map, update it's y-coord
   if (tank_position.first > 0 && tank_position.second < max_width) {
     UpdateTankYCoordinate(current_tank);
-  } else { // otherwise, undo advancing via velocity
-    current_tank.UpdatePosition(velocity * vec2(-1, -1));
+  } else { // otherwise, undo advancing via velocity by negating the change
+    current_tank.UpdatePosition(speed * vec2(-1, -1));
   }
 }
 

@@ -37,6 +37,8 @@ void adl_serializer<vec2>::to_json(json& json_array, const vec2& vec) {
 
 void adl_serializer<vec2>::from_json(const json& json_array, vec2& vec) {
   vector<float> values;
+
+  // Only deserialize the json if it contains an array or a numeric value
   if (json_array.is_array()) {
     values = json_array.get<vector<float>>();
   } else if (json_array.is_number()) {

@@ -17,7 +17,8 @@ Tank::Tank()
     : chassis_rounding_(0), chassis_rotation_(0), tread_wheel_radius_(0),
       tread_wheel_padding_(0), barrel_length_(0), barrel_radius_(0),
       barrel_rotation_(0), barrel_span_(0), turret_radius_(0),
-      aim_assistance_(0) {}
+      aim_assistance_(0), aim_assist_frequency_(0), aim_assist_render_size_(0),
+      hitpoints_(0) {}
 
 Tank::Tank(const vec2& chassis_position, const ColorA8u& chassis_color,
            const ci::ColorA8u& bullet_color)
@@ -25,12 +26,16 @@ Tank::Tank(const vec2& chassis_position, const ColorA8u& chassis_color,
       chassis_rotation_(0), tread_wheel_radius_(0), tread_wheel_padding_(0),
       barrel_length_(0), barrel_radius_(0), barrel_rotation_(0),
       barrel_span_(0), turret_radius_(0), aim_assistance_(0),
+      aim_assist_frequency_(0), aim_assist_render_size_(0), hitpoints_(0),
       chassis_color_(chassis_color), bullet_color_(bullet_color) {}
 
 void Tank::Configure(const TankConfiguration& config) {
   ConfigureChassis(config);
   ConfigureTreads(config);
   ConfigureTurretAndBarrel(config);
+
+  aim_assist_render_size_ = config.aim_assist_render_size_;
+  aim_assist_frequency_ = config.aim_assist_frequency_;
 }
 
 void Tank::ConfigureChassis(const TankConfiguration& config) {
@@ -90,12 +95,13 @@ void Tank::SetYCoordinate(float treads_y1, float treads_y2) {
   chassis_rotation_ =
       glm::atan(treads_y2 - treads_y1, x_coords.second - x_coords.first);
 
-  float y_coordinate =
-      (treads_y1 + treads_y2) / 2 - treads_rect_.y2 + tread_wheel_padding_;
+  // Get the average of the new y-coords to set the tank y_coord
+  float y_coordinate = (treads_y1 + treads_y2) / 2;
+  y_coordinate += tread_wheel_padding_ - treads_rect_.y2;
 
-  chassis_position_.y += (y_coordinate - chassis_position_.y);
+  // Update the tank y-coordinates and barrel pivot y-coordinates
+  chassis_position_.y = y_coordinate;
   barrel_pivot_position_ = chassis_position_ + turret_offset_ + chassis_offset_;
-
 }
 
 void Tank::Draw(const vec2& mouse_location, bool is_current_player) const {
@@ -146,35 +152,43 @@ void Tank::DrawBarrel() const {
 }
 
 void Tank::DrawLaser(const vec2& mouse_location, bool is_current_player) const {
+  // Only draw the aiming laser if it is the player's turn
   if (is_current_player) {
     ci::gl::color(laser_color_);
 
+    // If the player chose to use aim assist, draw the parabola
     if (aim_assistance_ > 0) {
-      for (const vec2& point : PredictBulletPath(aim_assistance_)) {
-        ci::gl::drawSolidCircle(point, 2);
+      for (const vec2& point : PredictBulletPath()) {
+        ci::gl::drawSolidCircle(point, aim_assist_render_size_);
       }
-    } else {
+    } else { // Otherwise, draw a line to the mouse location
       ci::gl::drawLine(barrel_pivot_position_, mouse_location);
     }
   }
 }
 
-std::vector<vec2> Tank::PredictBulletPath(size_t aim_assistance) const {
+std::vector<vec2> Tank::PredictBulletPath() const {
   std::vector<vec2> points;
 
+  // Make a copy of the bullet velocity so we can update it as we go
   vec2 working_velocity(loaded_bullet_velocity_);
+
+  // Determine the initial position of a bullet, if fired
   vec2 barrel_extension(glm::cos(barrel_rotation_) * barrel_span_,
                         glm::sin(barrel_rotation_) * barrel_span_);
   vec2 working_position = barrel_pivot_position_ + barrel_extension;
 
-  for (size_t i = 0; i < aim_assistance; i++) {
+  // Predict bullet path to the extent defined by the magnitude of assistance
+  for (size_t i = 0; i < aim_assistance_; i++) {
     working_position += working_velocity;
     working_velocity += Bullet::kGravityAcceleration;
 
-    if (i % 3 == 0) {
+    // Add the prediction based on the frequency defined in settings
+    if (i % aim_assist_frequency_ == 0) {
       points.push_back(working_position);
     }
 
+    // No need to continue predicting if the point is out of the window bounds
     if (working_position.y > Terrain::kWindowHeight) {
       break;
     }
@@ -207,9 +221,10 @@ float Tank::GetBarrelRotation() const {
 }
 
 std::pair<float, float> Tank::GetTreadsXCoordinates() const {
-  float x1 = treads_rect_.x1 + chassis_position_.x;
-  float x2 = treads_rect_.x2 + chassis_position_.x;
-  return {x1, x2};
+  // Get the coordinates in context of the actual frame,
+  // NOT the reference frame when rendering the tank
+  return {treads_rect_.x1 + chassis_position_.x,
+          treads_rect_.x2 + chassis_position_.x};
 }
 
 void Tank::UpdatePosition(const glm::vec2& velocity) {
@@ -218,6 +233,7 @@ void Tank::UpdatePosition(const glm::vec2& velocity) {
 }
 
 bool Tank::WasTankHit(const vec2& point, float radius) const {
+  // Check if each of the components of the tank were hit
   bool was_chassis_hit =
       chassis_rect_.getOffset(chassis_position_).contains(point);
   bool were_treads_hit =
@@ -226,6 +242,19 @@ bool Tank::WasTankHit(const vec2& point, float radius) const {
       glm::distance(point, barrel_pivot_position_) < radius + turret_radius_;
 
   return was_chassis_hit || were_treads_hit || was_turret_hit;
+}
+
+size_t Tank::GetHitpoints() const {
+  return hitpoints_;
+}
+
+void Tank::SubtractHitpoints(size_t lost_hitpoints) {
+  // Only subtract hitpoints such that hitpoints does not overflow to size_t max
+  if (lost_hitpoints >= hitpoints_) {
+    hitpoints_ = 0;
+  } else {
+    hitpoints_ -= lost_hitpoints;
+  }
 }
 
 } // namespace artillery

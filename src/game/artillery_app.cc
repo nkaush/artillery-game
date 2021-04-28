@@ -42,7 +42,6 @@ void ArtilleryApp::update() {
 
 void ArtilleryApp::mouseMove(MouseEvent event) {
   mouse_location_ = event.getPos();
-  game_engine_.PointActiveTankBarrel(mouse_location_);
 }
 
 void ArtilleryApp::keyDown(KeyEvent event) {
@@ -51,10 +50,10 @@ void ArtilleryApp::keyDown(KeyEvent event) {
       game_engine_.ShootBulletFromActiveTank();
       break;
     case ci::app::KeyEvent::KEY_RIGHT:
-      game_engine_.MoveActiveTank(glm::vec2(1, 0));
+      game_engine_.MoveCurrentTank(false);
       break;
     case ci::app::KeyEvent::KEY_LEFT:
-      game_engine_.MoveActiveTank(glm::vec2(-1, 0));
+      game_engine_.MoveCurrentTank(true);
       break;
   }
 }

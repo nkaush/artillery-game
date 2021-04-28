@@ -18,6 +18,24 @@
 namespace artillery {
 
 /**
+ * This struct contains information on how to render the bars that indicate
+ * the number of hitpoints each player has.
+ */
+struct HitpointsRenderingSettings {
+  glm::vec2 vertical_padding_;
+  glm::vec2 horizontal_padding_;
+  size_t bar_height_;
+  float bar_length_scalar_;
+  ci::ColorA8u remaining_hitpoints_color_;
+  ci::ColorA8u total_hitpoints_color_;
+};
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+    HitpointsRenderingSettings, vertical_padding_, horizontal_padding_,
+    bar_height_, bar_length_scalar_, remaining_hitpoints_color_,
+    total_hitpoints_color_);
+
+/**
  * This class contains and executes all the logic involved in this game.
  */
 class GameEngine {
@@ -28,9 +46,10 @@ class GameEngine {
    * default constructor and populate it with fields from the json. The macro
    * also generates boilerplate code to serialize this object.
    */
-  NLOHMANN_DEFINE_TYPE_INTRUSIVE(GameEngine, tanks_, tank_config_, terrain_,
-                                 blast_radius_scalar_, min_blast_radius_,
-                                 max_blast_radius_)
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE(
+      GameEngine, tanks_, tank_config_, terrain_, blast_size_scalar_,
+      min_blast_size_, max_blast_size_, max_hitpoints_,
+      hp_render_settings_, tank_speed_on_move_)
 
   /**
    * Default constructor that initializes a default bullet.
@@ -68,7 +87,13 @@ class GameEngine {
    */
   void ShootBulletFromActiveTank();
 
-  void MoveActiveTank(const glm::vec2& velocity);
+  /**
+   * Move the tank representing the current player to the left or right, as
+   * indicated, at the speed determined from the game settings.
+   * @param should_move_left - a bool indicating whether the tank should move
+   *                           left (true) or right (false)
+   */
+  void MoveCurrentTank(bool should_move_left);
 
   /**
    * Get the background color of the terrain.
@@ -78,17 +103,20 @@ class GameEngine {
 
  private:
   Bullet bullet_;
-
   Terrain terrain_;
 
-  float blast_radius_scalar_;
-  size_t min_blast_radius_;
-  size_t max_blast_radius_;
+  float blast_size_scalar_;
+  size_t min_blast_size_;
+  size_t max_blast_size_;
+  float max_hitpoints_;
 
   std::vector<Tank> tanks_;
   size_t current_tank_idx_;
 
+  glm::vec2 tank_speed_on_move_;
+
   TankConfiguration tank_config_;
+  HitpointsRenderingSettings hp_render_settings_;
 
   /**
    * Moves to the next player's turn.
@@ -105,9 +133,22 @@ class GameEngine {
    * Calculates the radius of the blast caused by a bullet using the bullet
    * speed, the blast radius scalar, and the max and min radius sizes.
    */
-  size_t CalculateBulletImpactRadius() const;
+  size_t CalculateBulletImpactSize() const;
 
+  /**
+   * Update the y-coordinate of the given tank using the height of the terrain
+   * at the tank's current x-coordinates. This method is required since tanks
+   * do not have access to information about the terrain.
+   * @param tank - the tank to update y-coordinates for
+   */
   void UpdateTankYCoordinate(Tank& tank);
+
+  /**
+   * Draw a bar indicating the number of hitpoints the given tank has remaining.
+   * @param tank - the tank to draw the hitpoints bar for
+   * @param index - the index of the tank in the vector 'tanks_'
+   */
+  void DrawHitpointsBar(const Tank& tank, size_t index) const;
 };
 
 } // namespace artillery

@@ -11,15 +11,35 @@
     "tread_wheel_radius_": 5,
     "tread_wheel_padding_": 2,
     "bullet_velocity_damping_": [0.05, 0.05],
+    "aim_assist_frequency_": 3,
+    "aim_assist_render_size_": 2,
     "tread_color_": {
       "red": 0,
       "green": 0,
       "blue": 0
     }
   },
-  "max_blast_radius_": 30,
-  "min_blast_radius_": 10,
-  "blast_radius_scalar_": 2,
+  "max_blast_size_": 30,
+  "min_blast_size_": 10,
+  "blast_size_scalar_": 2,
+  "max_hitpoints_": 100,
+  "tank_speed_on_move_": 2,
+  "hp_render_settings_": {
+    "vertical_padding_": [0, 10],
+    "horizontal_padding_": [10, 0],
+    "bar_height_": 15,
+    "bar_length_scalar_": 2,
+    "remaining_hitpoints_color_": {
+      "red": 0,
+      "green": 255,
+      "blue": 0
+    },
+    "total_hitpoints_color_": {
+      "red": 255,
+      "green": 0,
+      "blue": 0
+    }
+  },
   "tanks_": [
     {
       "chassis_color_": {
@@ -38,7 +58,8 @@
         "blue": 0
       },
       "chassis_position_": 700,
-      "aim_assistance_": 0
+      "aim_assistance_": 0,
+      "hitpoints_": 100
     },
     {
       "chassis_color_": {
@@ -57,7 +78,8 @@
         "blue": 0
       },
       "chassis_position_": 100,
-      "aim_assistance_": 150
+      "aim_assistance_": 150,
+      "hitpoints_": 100
     }
   ],
   "terrain_": {

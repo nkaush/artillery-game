@@ -79,6 +79,11 @@ class Terrain {
    */
   void Draw() const;
 
+  /**
+   * Get the height of the terrain as it was at the start of the game.
+   * @param x_coordinate - the x_coordinate to get the height at
+   * @return a size_t indicating the height of the terrain
+   */
   size_t GetStartingHeight(size_t x_coordinate) const;
 
   /**
