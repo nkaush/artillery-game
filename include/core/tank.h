@@ -51,7 +51,7 @@ class Tank {
    * @param config - a TankConfiguration struct with information on the
    *                 dimensions of all of the tank's components listed above
    */
-  void ConfigureTank(const TankConfiguration& config);
+  void Configure(const TankConfiguration& config);
 
   /**
    * Sets the height of the tank in the frame. Used when configuring the tank
@@ -88,12 +88,6 @@ class Tank {
   void UpdatePosition(const glm::vec2& velocity);
 
   /**
-   * Getter for the pivot position of the tank's barrel.
-   * @return a vec2 indicating where the point the barrel pivots
-   */
-  const glm::vec2& GetBarrelPivotPosition() const;
-
-  /**
    * Getter for the angle the barrel is rotated between -1 * PI and PI.
    * @return a float indicating the barrel's angle of rotation
    */
@@ -101,14 +95,13 @@ class Tank {
 
   std::pair<float, float> GetTreadsXCoordinates() const;
 
-  std::vector<glm::vec2> PredictBulletPath(size_t aim_assistance) const;
-
   bool WasTankHit(const glm::vec2& point, float radius) const;
 
  private:
   // Tracks the position of the tank's chassis
   glm::vec2 chassis_position_;
   glm::vec2 chassis_offset_;
+  glm::vec2 turret_offset_;
 
   // Used when the user requests to shoot a bullet
   glm::vec2 barrel_pivot_position_;
@@ -125,8 +118,8 @@ class Tank {
   float barrel_length_;
   float barrel_radius_;
   float barrel_rotation_;
-  float turret_radius_;
   float barrel_span_;
+  float turret_radius_;
 
   size_t aim_assistance_;
 
@@ -135,30 +128,13 @@ class Tank {
   ci::Rectf barrel_rect_;
   ci::Rectf treads_rect_;
 
-  // Used when drawing the tank's components
+  // Used when coloring the tank's components
   ci::ColorA8u chassis_color_;
   ci::ColorA8u bullet_color_;
   ci::ColorA8u tread_color_;
   ci::ColorA8u laser_color_;
 
-  /**
-   * Draws the tank's barrel; transforms a reference frame to pivot position.
-   */
-  void DrawBarrel() const;
-
-  /**
-   * Draws the tank's chassis; transforms a reference frame to pivot position.
-   */
-  void DrawChassis() const;
-
-  /**
-   * Draws the laser aim assist. Draws a line if aim_assistance_ is 0. Otherwise,
-   * draws a parabola with the range specified by the aim_assistance_ value.
-   * @param mouse_location - a vec2 indicating coordinates of the user's mouse
-   * @param is_current_player - a bool indicating whether the current turn
-   *                            belongs to the player represented by this tank
-   */
-  void DrawLaser(const glm::vec2& mouse_location, bool is_current_player) const;
+  std::vector<glm::vec2> PredictBulletPath(size_t aim_assistance) const;
 
   /**
    * Sets the tank's chassis dimensions. Used when configuring the tank
@@ -183,6 +159,25 @@ class Tank {
    *                 dimensions of all of the tank's components
    */
   void ConfigureTreads(const TankConfiguration& config);
+
+  /**
+   * Draws the tank's barrel; transforms a reference frame to pivot position.
+   */
+  void DrawBarrel() const;
+
+  /**
+   * Draws the tank's chassis; transforms a reference frame to pivot position.
+   */
+  void DrawChassis() const;
+
+  /**
+   * Draws the laser aim assist. Draws a line if aim_assistance_ is 0. Otherwise,
+   * draws a parabola with the range specified by the aim_assistance_ value.
+   * @param mouse_location - a vec2 indicating coordinates of the user's mouse
+   * @param is_current_player - a bool indicating whether the current turn
+   *                            belongs to the player represented by this tank
+   */
+  void DrawLaser(const glm::vec2& mouse_location, bool is_current_player) const;
 };
 
 } // namespace artillery

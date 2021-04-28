@@ -26,7 +26,7 @@ ArtilleryApp::ArtilleryApp() {
     game_settings >> json_object;
 
     game_engine_ = json_object.get<GameEngine>();
-    game_engine_.ConfigurePlayerTanks();
+    game_engine_.ConfigureTanks();
   }
 }
 
@@ -49,6 +49,12 @@ void ArtilleryApp::keyDown(KeyEvent event) {
   switch (event.getCode()) {
     case ci::app::KeyEvent::KEY_SPACE:
       game_engine_.ShootBulletFromActiveTank();
+      break;
+    case ci::app::KeyEvent::KEY_RIGHT:
+      game_engine_.MoveActiveTank(glm::vec2(1, 0));
+      break;
+    case ci::app::KeyEvent::KEY_LEFT:
+      game_engine_.MoveActiveTank(glm::vec2(-1, 0));
       break;
   }
 }

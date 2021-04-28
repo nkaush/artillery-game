@@ -15,22 +15,27 @@ using ci::Rectf;
 using glm::vec2;
 
 GameEngine::GameEngine()
-    : bullet_(),
-      current_tank_idx_(0) {}
+    : bullet_(), blast_radius_scalar_(0), min_blast_radius_(0),
+      max_blast_radius_(0), current_tank_idx_(0) {}
 
-void GameEngine::ConfigurePlayerTanks() {
+void GameEngine::ConfigureTanks() {
   for (Tank& tank : tanks_) {
-    tank.ConfigureTank(tank_config_);
+    tank.Configure(tank_config_);
 
-    std::pair<float, float> treads = tank.GetTreadsXCoordinates();
-    size_t y1 = terrain_.GetStartingHeight(static_cast<size_t>(treads.first));
-    size_t y2 = terrain_.GetStartingHeight(static_cast<size_t>(treads.second));
-
-    auto y1_coord = static_cast<float>(y1);
-    auto y2_coord = static_cast<float>(y2);
-
-    tank.SetYCoordinate(y1_coord, y2_coord);
+    UpdateTankYCoordinate(tank);
   }
+}
+
+void GameEngine::UpdateTankYCoordinate(Tank& tank) {
+  std::pair<float, float> treads = tank.GetTreadsXCoordinates();
+
+  size_t y1 = terrain_.GetStartingHeight(static_cast<size_t>(treads.first));
+  size_t y2 = terrain_.GetStartingHeight(static_cast<size_t>(treads.second));
+
+  auto y1_coord = static_cast<float>(y1);
+  auto y2_coord = static_cast<float>(y2);
+
+  tank.SetYCoordinate(y1_coord, y2_coord);
 }
 
 const ci::ColorA8u& GameEngine::GetBackgroundColor() const {
@@ -75,7 +80,6 @@ void GameEngine::AdvanceToNextFrame() {
 
   for (const Tank& tank : tanks_) {
     if (bullet_.IsActive() && tank.WasTankHit(bullet_position, radius)) {
-      std::cout << "hit" << std::endl;
     }
   }
 }
@@ -110,6 +114,21 @@ void GameEngine::AdvanceToNextPlayerTurn() {
 
   if (current_tank_idx_ == tanks_.size()) {
     current_tank_idx_ = 0;
+  }
+}
+
+void GameEngine::MoveActiveTank(const vec2& velocity) {
+  Tank& current_tank = tanks_.at(current_tank_idx_);
+  current_tank.UpdatePosition(velocity);
+
+  std::pair<float, float> tank_position = current_tank.GetTreadsXCoordinates();
+  auto max_width = static_cast<float>(terrain_.GetMaxWidth());
+
+  // If the tank has not reached the bounds of the map, update it's y-coords
+  if (tank_position.first > 0 && tank_position.second < max_width) {
+    UpdateTankYCoordinate(current_tank);
+  } else { // otherwise, undo advancing via velocity
+    current_tank.UpdatePosition(velocity * vec2(-1, -1));
   }
 }
 

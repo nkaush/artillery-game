@@ -6,8 +6,6 @@
 
 #include "core/terrain.h"
 
-#include "cinder/GeomIo.h"
-
 namespace artillery {
 
 using nlohmann::json;
@@ -17,18 +15,19 @@ using glm::vec2;
 
 Tank::Tank()
     : chassis_rounding_(0), chassis_rotation_(0), tread_wheel_radius_(0),
-      barrel_length_(0), barrel_radius_(0), barrel_rotation_(0),
-      turret_radius_(0) {}
+      tread_wheel_padding_(0), barrel_length_(0), barrel_radius_(0),
+      barrel_rotation_(0), barrel_span_(0), turret_radius_(0),
+      aim_assistance_(0) {}
 
 Tank::Tank(const vec2& chassis_position, const ColorA8u& chassis_color,
            const ci::ColorA8u& bullet_color)
     : chassis_position_(chassis_position), chassis_rounding_(0),
-      chassis_rotation_(0), tread_wheel_radius_(0), barrel_length_(0),
-      barrel_radius_(0), barrel_rotation_(0), turret_radius_(0),
-      chassis_color_(chassis_color),
-      bullet_color_(bullet_color) {}
+      chassis_rotation_(0), tread_wheel_radius_(0), tread_wheel_padding_(0),
+      barrel_length_(0), barrel_radius_(0), barrel_rotation_(0),
+      barrel_span_(0), turret_radius_(0), aim_assistance_(0),
+      chassis_color_(chassis_color), bullet_color_(bullet_color) {}
 
-void Tank::ConfigureTank(const TankConfiguration& config) {
+void Tank::Configure(const TankConfiguration& config) {
   ConfigureChassis(config);
   ConfigureTreads(config);
   ConfigureTurretAndBarrel(config);
@@ -65,10 +64,11 @@ void Tank::ConfigureTreads(const TankConfiguration& config) {
 void Tank::ConfigureTurretAndBarrel(const TankConfiguration& config) {
   // Set up the fields defining the turret appearance
   turret_radius_ = config.turret_radius_;
+  turret_offset_ = config.turret_offset_;
 
   // Set up the fields defining the barrel appearance
   barrel_pivot_position_ =
-      chassis_position_ + config.turret_offset_ + chassis_offset_;
+      chassis_position_ + turret_offset_ + chassis_offset_;
   barrel_length_ = config.barrel_length_;
   barrel_radius_ = config.barrel_radius_;
 
@@ -93,8 +93,9 @@ void Tank::SetYCoordinate(float treads_y1, float treads_y2) {
   float y_coordinate =
       (treads_y1 + treads_y2) / 2 - treads_rect_.y2 + tread_wheel_padding_;
 
-  chassis_position_.y += y_coordinate;
-  barrel_pivot_position_.y += y_coordinate;
+  chassis_position_.y += (y_coordinate - chassis_position_.y);
+  barrel_pivot_position_ = chassis_position_ + turret_offset_ + chassis_offset_;
+
 }
 
 void Tank::Draw(const vec2& mouse_location, bool is_current_player) const {
@@ -107,20 +108,6 @@ void Tank::Draw(const vec2& mouse_location, bool is_current_player) const {
   ci::gl::popMatrices();
 
   ci::gl::color(ci::Color(1, 1, 1));
-}
-
-void Tank::DrawLaser(const vec2& mouse_location, bool is_current_player) const {
-  if (is_current_player) {
-    ci::gl::color(laser_color_);
-
-    if (aim_assistance_ > 0) {
-      for (const vec2& point : PredictBulletPath(aim_assistance_)) {
-        ci::gl::drawSolidCircle(point, 2);
-      }
-    } else {
-      ci::gl::drawLine(barrel_pivot_position_, mouse_location);
-    }
-  }
 }
 
 void Tank::DrawChassis() const {
@@ -158,6 +145,44 @@ void Tank::DrawBarrel() const {
   ci::gl::drawStrokedCircle(vec2(), turret_radius_); // turret
 }
 
+void Tank::DrawLaser(const vec2& mouse_location, bool is_current_player) const {
+  if (is_current_player) {
+    ci::gl::color(laser_color_);
+
+    if (aim_assistance_ > 0) {
+      for (const vec2& point : PredictBulletPath(aim_assistance_)) {
+        ci::gl::drawSolidCircle(point, 2);
+      }
+    } else {
+      ci::gl::drawLine(barrel_pivot_position_, mouse_location);
+    }
+  }
+}
+
+std::vector<vec2> Tank::PredictBulletPath(size_t aim_assistance) const {
+  std::vector<vec2> points;
+
+  vec2 working_velocity(loaded_bullet_velocity_);
+  vec2 barrel_extension(glm::cos(barrel_rotation_) * barrel_span_,
+                        glm::sin(barrel_rotation_) * barrel_span_);
+  vec2 working_position = barrel_pivot_position_ + barrel_extension;
+
+  for (size_t i = 0; i < aim_assistance; i++) {
+    working_position += working_velocity;
+    working_velocity += Bullet::kGravityAcceleration;
+
+    if (i % 3 == 0) {
+      points.push_back(working_position);
+    }
+
+    if (working_position.y > Terrain::kWindowHeight) {
+      break;
+    }
+  }
+
+  return points;
+}
+
 Bullet Tank::ShootBullet() const {
   // Find the change in coords after the barrel rotation
   vec2 barrel_extension(glm::cos(barrel_rotation_) * barrel_span_,
@@ -177,10 +202,6 @@ void Tank::PointBarrel(const vec2& position_pointed_at) {
                                loaded_bullet_velocity_.x);
 }
 
-const vec2& Tank::GetBarrelPivotPosition() const {
-  return barrel_pivot_position_;
-}
-
 float Tank::GetBarrelRotation() const {
   return barrel_rotation_;
 }
@@ -196,33 +217,11 @@ void Tank::UpdatePosition(const glm::vec2& velocity) {
   chassis_position_ += velocity;
 }
 
-std::vector<vec2> Tank::PredictBulletPath(size_t aim_assistance) const {
-  std::vector<vec2> points;
-
-  vec2 working_velocity(loaded_bullet_velocity_);
-  vec2 barrel_extension(glm::cos(barrel_rotation_) * barrel_span_,
-                        glm::sin(barrel_rotation_) * barrel_span_);
-  vec2 working_position = barrel_pivot_position_ + barrel_extension;
-
-  for (size_t i = 0; i < aim_assistance; i++) {
-    working_position += working_velocity;
-    working_velocity += Bullet::kGravityAcceleration;
-
-    if (i % 5 == 0) {
-      points.push_back(working_position);
-    }
-
-    if (working_position.y > Terrain::kWindowHeight) {
-      break;
-    }
-  }
-
-  return points;
-}
-
 bool Tank::WasTankHit(const vec2& point, float radius) const {
-  bool was_chassis_hit = chassis_rect_.getOffset(chassis_position_).contains(point);
-  bool were_treads_hit = treads_rect_.getOffset(chassis_position_).contains(point);
+  bool was_chassis_hit =
+      chassis_rect_.getOffset(chassis_position_).contains(point);
+  bool were_treads_hit =
+      treads_rect_.getOffset(chassis_position_).contains(point);
   bool was_turret_hit =
       glm::distance(point, barrel_pivot_position_) < radius + turret_radius_;
 

@@ -40,7 +40,7 @@ class GameEngine {
   /**
    * Pass the deserialized TankConfiguration object to each player's tank.
    */
-  void ConfigurePlayerTanks();
+  void ConfigureTanks();
 
   /**
    * Draws all the components of the game: tanks, bullets, terrain, lasers.
@@ -67,6 +67,8 @@ class GameEngine {
    * Shoots a bullet from the tank belonging to the player with an active turn.
    */
   void ShootBulletFromActiveTank();
+
+  void MoveActiveTank(const glm::vec2& velocity);
 
   /**
    * Get the background color of the terrain.
@@ -104,6 +106,8 @@ class GameEngine {
    * speed, the blast radius scalar, and the max and min radius sizes.
    */
   size_t CalculateBulletImpactRadius() const;
+
+  void UpdateTankYCoordinate(Tank& tank);
 };
 
 } // namespace artillery
