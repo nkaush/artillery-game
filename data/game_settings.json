@@ -19,33 +19,41 @@
       "blue": 0
     }
   },
-  "max_blast_size_": 30,
-  "min_blast_size_": 10,
-  "blast_size_scalar_": 2,
-  "max_hitpoints_": 100,
-  "tank_speed_on_move_": 2,
   "hp_render_settings_": {
     "vertical_padding_": [0, 10],
     "horizontal_padding_": [10, 0],
+    "label_padding_": [5, 5],
     "bar_height_": 15,
     "bar_length_scalar_": 2,
+    "label_prefix_": "Player ",
+    "label_suffix_": " Hitpoints: ",
     "remaining_hitpoints_color_": {
       "red": 0,
       "green": 255,
       "blue": 0
     },
     "total_hitpoints_color_": {
-      "red": 255,
+      "red": 75,
+      "green": 75,
+      "blue": 75
+    },
+    "label_color_": {
+      "red": 0,
       "green": 0,
       "blue": 0
     }
   },
+  "max_blast_size_": 30,
+  "min_blast_size_": 10,
+  "blast_size_scalar_": 2,
+  "max_hitpoints_": 100,
+  "tank_speed_on_move_": 2,
   "tanks_": [
     {
       "chassis_color_": {
-        "red": 106,
-        "green": 113,
-        "blue": 82
+        "red": 222,
+        "green": 110,
+        "blue": 75
       },
       "bullet_color_": {
         "red": 0,
@@ -78,7 +86,7 @@
         "blue": 0
       },
       "chassis_position_": 100,
-      "aim_assistance_": 150,
+      "aim_assistance_": 0,
       "hitpoints_": 100
     }
   ],

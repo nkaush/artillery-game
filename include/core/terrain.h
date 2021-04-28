@@ -137,6 +137,8 @@ class Terrain {
    */
   std::vector<size_t> ComputerSurfaceHeights(
       const std::vector<std::vector<glm::vec2>>& points) const;
+
+  static ci::ColorA8u RandomizeColor(const ci::ColorA8u& original_color);
 };
 
 } // namespace artillery

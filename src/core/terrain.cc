@@ -7,6 +7,7 @@
 #include "utilities/quadratic_model.h"
 #include "utilities/json_manager.h"
 
+#include "glm/gtc/random.hpp"
 #include "glm/vec2.hpp"
 
 namespace artillery {
@@ -85,7 +86,8 @@ void Terrain::LoadSurfaceFromHeights(const vector<size_t>& column_heights) {
       try {
         if (row - 1 >= limit) {
           landscape_.at(row - 1).at(col) = TerrainVisibility::kVisible;
-          pixels_.setPixel(vec2(col, row - 1), visible_terrain_color_);
+          pixels_.setPixel(vec2(col, row - 1),
+                           RandomizeColor(visible_terrain_color_));
         } else {
           landscape_.at(row - 1).at(col) = TerrainVisibility::kNone;
         }
@@ -154,13 +156,25 @@ void Terrain::DestroyTerrainInRadius(
 
       // Check if point is inside blast radius circle
       if (glm::distance(point, center_point) <= unsigned_radius) {
-        pixels_.setPixel(point, removed_terrain_color_);
+        pixels_.setPixel(point, RandomizeColor(removed_terrain_color_));
         landscape_.at(y_coord).at(x_coord) = TerrainVisibility::kRemoved;
       }
     }
   }
 
   display_->update(pixels_); // update the texture with the new pixel colors
+}
+
+ci::ColorA8u Terrain::RandomizeColor(const ColorA8u& original_color) {
+  ci::ColorA8u new_color(original_color);
+
+  int modification = glm::linearRand(-10, 10);
+
+  new_color.r += modification;
+  new_color.g += modification;
+  new_color.b += modification;
+
+  return new_color;
 }
 
 }

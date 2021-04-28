@@ -216,22 +216,6 @@ void Tank::PointBarrel(const vec2& position_pointed_at) {
                                loaded_bullet_velocity_.x);
 }
 
-float Tank::GetBarrelRotation() const {
-  return barrel_rotation_;
-}
-
-std::pair<float, float> Tank::GetTreadsXCoordinates() const {
-  // Get the coordinates in context of the actual frame,
-  // NOT the reference frame when rendering the tank
-  return {treads_rect_.x1 + chassis_position_.x,
-          treads_rect_.x2 + chassis_position_.x};
-}
-
-void Tank::UpdatePosition(const glm::vec2& velocity) {
-  barrel_pivot_position_ += velocity;
-  chassis_position_ += velocity;
-}
-
 bool Tank::WasTankHit(const vec2& point, float radius) const {
   // Check if each of the components of the tank were hit
   bool was_chassis_hit =
@@ -244,8 +228,9 @@ bool Tank::WasTankHit(const vec2& point, float radius) const {
   return was_chassis_hit || were_treads_hit || was_turret_hit;
 }
 
-size_t Tank::GetHitpoints() const {
-  return hitpoints_;
+void Tank::UpdatePosition(const glm::vec2& velocity) {
+  barrel_pivot_position_ += velocity;
+  chassis_position_ += velocity;
 }
 
 void Tank::SubtractHitpoints(size_t lost_hitpoints) {
@@ -255,6 +240,25 @@ void Tank::SubtractHitpoints(size_t lost_hitpoints) {
   } else {
     hitpoints_ -= lost_hitpoints;
   }
+}
+
+float Tank::GetBarrelRotation() const {
+  return barrel_rotation_;
+}
+
+std::pair<float, float> Tank::GetTreadsXCoordinates() const {
+  // Get the coordinates in context of the actual frame,
+  // NOT the reference frame when rendering the tank
+  return {treads_rect_.x1 + chassis_position_.x,
+          treads_rect_.x2 + chassis_position_.x};
+}
+
+size_t Tank::GetHitpoints() const {
+  return hitpoints_;
+}
+
+const ci::ColorA8u& Tank::GetChassisColor() const {
+  return chassis_color_;
 }
 
 } // namespace artillery

@@ -77,8 +77,16 @@ void GameEngine::DrawHitpointsBar(const Tank& tank, size_t index) const {
            hp_render_settings_.bar_height_);
   Rectf front = Rectf(upper_pt, upper_pt + front_horizontal_change);
 
-  ci::gl::color(hp_render_settings_.remaining_hitpoints_color_);
+  ci::gl::color(tank.GetChassisColor());
   ci::gl::drawSolidRect(front);
+
+  // Label the hitpoints bar
+  std::string label = hp_render_settings_.label_prefix_
+                      + std::to_string(index + 1)
+                      + hp_render_settings_.label_suffix_
+                      + std::to_string(tank.GetHitpoints());
+  ci::gl::drawString(label, upper_pt + hp_render_settings_.label_padding_,
+                     hp_render_settings_.label_color_);
 }
 
 void GameEngine::AdvanceToNextFrame() {
@@ -114,12 +122,12 @@ void GameEngine::AdvanceToNextFrame() {
     if (bullet_.IsActive() && tank.WasTankHit(bullet_position, radius)) {
       were_tanks_hit = true;
       tank.SubtractHitpoints(CalculateBulletImpactSize());
-      AdvanceToNextPlayerTurn();
     }
   }
 
   if (were_tanks_hit) {
     bullet_.Stop();
+    AdvanceToNextPlayerTurn();
   }
 }
 

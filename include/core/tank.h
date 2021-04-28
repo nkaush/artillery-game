@@ -87,10 +87,26 @@ class Tank {
   void PointBarrel(const glm::vec2& position_pointed_at);
 
   /**
+   * Determines whether the tank was hit at the given point with a given radius.
+   * @param point - a vec2 indicating the location to check
+   * @param radius - a float indicating the margin to check around
+   * @return a bool indicating whether the tank was hit (true) or not (false)
+   */
+  bool WasTankHit(const glm::vec2& point, float radius) const;
+
+  /**
    * Update the position of the tank by incrementing by the given velocity.
    * @param velocity - a glm::vec2 indicating the speed on each axis
    */
   void UpdatePosition(const glm::vec2& velocity);
+
+  /**
+   * Subtract the given hitpoints from the tank's remaining hitpoints. If the
+   * the tank has 0 hitpoints or if the number to subtract is larger than the
+   * tank's remaining hitpoints, set the number of hitpoints to 0.
+   * @param lost_hitpoints - a size_t indicating the number of hitpoints lost
+   */
+  void SubtractHitpoints(size_t lost_hitpoints);
 
   /**
    * Getter for the angle the barrel is rotated between -1 * PI and PI.
@@ -105,26 +121,12 @@ class Tank {
   std::pair<float, float> GetTreadsXCoordinates() const;
 
   /**
-   * Determines whether the tank was hit at the given point with a given radius.
-   * @param point - a vec2 indicating the location to check
-   * @param radius - a float indicating the margin to check around
-   * @return a bool indicating whether the tank was hit (true) or not (false)
-   */
-  bool WasTankHit(const glm::vec2& point, float radius) const;
-
-  /**
    * Get the remaining number of hitpoints this tank has.
    * @return a size_t indicating the number of hitpoints this tank has
    */
   size_t GetHitpoints() const;
 
-  /**
-   * Subtract the given hitpoints from the tank's remaining hitpoints. If the
-   * the tank has 0 hitpoints or if the number to subtract is larger than the
-   * tank's remaining hitpoints, set the number of hitpoints to 0.
-   * @param lost_hitpoints - a size_t indicating the number of hitpoints lost
-   */
-  void SubtractHitpoints(size_t lost_hitpoints);
+  const ci::ColorA8u& GetChassisColor() const;
 
  private:
   // Tracks the position of the tank's chassis
