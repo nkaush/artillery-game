@@ -216,7 +216,10 @@ void Tank::PointBarrel(const vec2& position_pointed_at) {
                                loaded_bullet_velocity_.x);
 }
 
-bool Tank::WasTankHit(const vec2& point, float radius) const {
+bool Tank::WasTankHit(const Bullet& bullet) const {
+  const vec2& point = bullet.GetPosition();
+  float radius = bullet.GetRadius();
+
   // Check if each of the components of the tank were hit
   bool was_chassis_hit =
       chassis_rect_.getOffset(chassis_position_).contains(point);

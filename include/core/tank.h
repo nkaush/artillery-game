@@ -87,12 +87,11 @@ class Tank {
   void PointBarrel(const glm::vec2& position_pointed_at);
 
   /**
-   * Determines whether the tank was hit at the given point with a given radius.
-   * @param point - a vec2 indicating the location to check
-   * @param radius - a float indicating the margin to check around
+   * Determines whether the tank was hit by a bullet.
+   * @param bullet - the Bullet to check for collisions with
    * @return a bool indicating whether the tank was hit (true) or not (false)
    */
-  bool WasTankHit(const glm::vec2& point, float radius) const;
+  bool WasTankHit(const Bullet& bullet) const;
 
   /**
    * Update the position of the tank by incrementing by the given velocity.

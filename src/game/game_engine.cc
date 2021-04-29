@@ -92,34 +92,24 @@ void GameEngine::DrawHitpointsBar(const Tank& tank, size_t index) const {
 void GameEngine::AdvanceToNextFrame() {
   bullet_.AdvanceToNextFrame();
 
-  vec2 bullet_position = bullet_.GetPosition();
-  float radius = bullet_.GetRadius();
-
-  // Check all bounds EXCEPT the top bound since a bullet can come back down
-  bool is_bullet_past_map_bound =
-      bullet_position.x - radius > static_cast<float>(terrain_.GetMaxWidth());
-  is_bullet_past_map_bound |= bullet_position.x + radius < 0;
-  is_bullet_past_map_bound |=
-      bullet_position.y - radius > static_cast<float>(terrain_.GetMaxHeight());
-
   bool did_bullet_hit_terrain = IsBulletCollidingWithTerrain();
-  bool should_bullet_stop = is_bullet_past_map_bound || did_bullet_hit_terrain;
+  bool should_bullet_stop = IsBulletOutOfBounds() || did_bullet_hit_terrain;
 
   // If the bullet leaves the map bounds, make it inactive
   if (bullet_.IsActive() && should_bullet_stop) {
     bullet_.Stop();
     AdvanceToNextPlayerTurn();
-  }
 
-  // If the bullet is active and collides with some terrain, destroy the terrain
-  if (did_bullet_hit_terrain) {
-    terrain_.DestroyTerrainInRadius(
-        bullet_.GetPosition(), CalculateBulletImpactSize());
+    // If the bullet is active and collides with terrain, destroy the terrain
+    if (did_bullet_hit_terrain) {
+      terrain_.DestroyTerrainInRadius(
+          bullet_.GetPosition(), CalculateBulletImpactSize());
+    }
   }
 
   bool were_tanks_hit = false;
   for (Tank& tank : tanks_) {
-    if (bullet_.IsActive() && tank.WasTankHit(bullet_position, radius)) {
+    if (bullet_.IsActive() && tank.WasTankHit(bullet_)) {
       were_tanks_hit = true;
       tank.SubtractHitpoints(CalculateBulletImpactSize());
     }
@@ -129,6 +119,22 @@ void GameEngine::AdvanceToNextFrame() {
     bullet_.Stop();
     AdvanceToNextPlayerTurn();
   }
+}
+
+bool GameEngine::IsBulletOutOfBounds() const {
+  vec2 bullet_position = bullet_.GetPosition();
+  float radius = bullet_.GetRadius();
+
+  // Check all bounds EXCEPT the top bound since a bullet can come back down
+  bool is_bullet_past_map_bound =
+      bullet_position.x - radius > static_cast<float>(terrain_.GetMaxWidth());
+
+  is_bullet_past_map_bound |= bullet_position.x + radius < 0;
+
+  is_bullet_past_map_bound |=
+      bullet_position.y - radius > static_cast<float>(terrain_.GetMaxHeight());
+
+  return is_bullet_past_map_bound;
 }
 
 bool GameEngine::IsBulletCollidingWithTerrain() const {
@@ -157,11 +163,23 @@ void GameEngine::ShootBulletFromActiveTank() {
 }
 
 void GameEngine::AdvanceToNextPlayerTurn() {
-  current_tank_idx_++;
+  size_t previous_idx = current_tank_idx_;
+  bool is_first_iteration = true;
 
-  // if we have gone through each player's turn, go back to the 1st player
-  if (current_tank_idx_ == tanks_.size()) {
-    current_tank_idx_ = 0;
+  while(is_first_iteration || tanks_.at(current_tank_idx_).GetHitpoints() == 0) {
+    is_first_iteration = false;
+
+    current_tank_idx_++;
+
+    // if we have gone through each player's turn, go back to the 1st player
+    if (current_tank_idx_ == tanks_.size()) {
+      current_tank_idx_ = 0;
+    }
+
+    if (previous_idx == current_tank_idx_) {
+      std::cout << "game finished" << std::endl; // TODO handle this case
+      break;
+    }
   }
 }
 

@@ -138,6 +138,8 @@ class GameEngine {
    */
   bool IsBulletCollidingWithTerrain() const;
 
+  bool IsBulletOutOfBounds() const;
+
   /**
    * Calculates the radius of the blast caused by a bullet using the bullet
    * speed, the blast radius scalar, and the max and min radius sizes.
