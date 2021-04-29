@@ -6,6 +6,7 @@
 #define ARTILLERY_ARTILLERY_APP_H
 
 #include "game_engine.h"
+#include "button.h"
 
 #include "cinder/app/RendererGl.h"
 #include "cinder/app/App.h"
@@ -36,6 +37,11 @@ class ArtilleryApp : public ci::app::App {
   void update() override;
 
   /**
+   *
+   */
+  void mouseDown(ci::app::MouseEvent event) override;
+
+  /**
    * Updates the stored mouse position whenever the user moves the mouse.
    * @param event - a MouseEvent class containing the new mouse coordinates
    */
@@ -56,6 +62,8 @@ class ArtilleryApp : public ci::app::App {
 
   // The game engine object that manages and executes all the logic of the game
   GameEngine game_engine_;
+
+  Button start_button_;
 };
 
 }

@@ -37,16 +37,19 @@ struct HitpointsRenderingSettings {
   ci::ColorA8u label_color_;
 };
 
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+    HitpointsRenderingSettings, vertical_padding_, horizontal_padding_,
+    bar_height_, bar_length_scalar_, total_hitpoints_color_, label_prefix_,
+    label_suffix_, label_color_, label_padding_)
+
+/**
+ *
+ */
 enum class GameState {
   kGameStart,
   kInProgress,
   kGameOver
 };
-
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-    HitpointsRenderingSettings, vertical_padding_, horizontal_padding_,
-    bar_height_, bar_length_scalar_, total_hitpoints_color_, label_prefix_,
-    label_suffix_, label_color_, label_padding_)
 
 /**
  * This class contains and executes all the logic involved in this game.
@@ -125,7 +128,7 @@ class GameEngine {
   float blast_size_scalar_;
   size_t min_blast_size_;
   size_t max_blast_size_;
-  float max_hitpoints_;
+  size_t max_hitpoints_;
 
   std::vector<Tank> tanks_;
   size_t current_tank_idx_;
@@ -148,6 +151,10 @@ class GameEngine {
    */
   bool IsBulletCollidingWithTerrain() const;
 
+  /**
+   *
+   * @return
+   */
   bool IsBulletOutOfBounds() const;
 
   /**

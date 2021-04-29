@@ -54,6 +54,8 @@ class Tank {
    */
   void Configure(const TankConfiguration& config);
 
+  void SetXCoordinate(float x_coord);
+
   /**
    * Sets the height of the tank in the frame. Used when configuring the tank
    * after creating it with deserialized json.
@@ -106,6 +108,8 @@ class Tank {
    * @param lost_hitpoints - a size_t indicating the number of hitpoints lost
    */
   void SubtractHitpoints(size_t lost_hitpoints);
+
+  void ResetHitpoints(size_t max_hitpoints);
 
   /**
    * Getter for the angle the barrel is rotated between -1 * PI and PI.

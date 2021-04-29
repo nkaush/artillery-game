@@ -27,6 +27,11 @@ class JsonManager {
   static const std::string kJsonBlueColorKey;
   static const std::string kJsonAlphaChannelKey;
 
+  // These constants are used in deserializing ci::RectT objects from json
+  static const std::string kJsonRectCenterPointKey;
+  static const std::string kJsonRectHeightKey;
+  static const std::string kJsonRectWidthKey;
+
   // These constants are used in deserializing json objects describing terrain
   static const std::string kJsonRidgeExtremaKey;
   static const std::string kJsonBackgroundColorKey;
@@ -71,7 +76,7 @@ template<> struct adl_serializer<glm::vec2> {
 template<> struct adl_serializer<ci::ColorA8u> {
   /**
    * Serialize a ci::ColorA8u.
-   * @param json_array - the json object to populate
+   * @param json_object - the json object to populate
    * @param color - the ci::ColorA8u to serialize
    */
   static void to_json(json& json_object, const ci::ColorA8u& color);
@@ -79,10 +84,29 @@ template<> struct adl_serializer<ci::ColorA8u> {
   /**
    * Deserialize a ci::ColorA8u. If the passed json object does not
    * define an alpha (opacity), sets the alpha to the default 255.
-   * @param json_array - the json object to deserialize from
+   * @param json_object - the json object to deserialize from
    * @param vec - the ci::ColorA8u to populate
    */
   static void from_json(const json& json_object, ci::ColorA8u& color);
+};
+
+/**
+ * Argument dependent lookup struct to (de)serialize ci::Rectf.
+ */
+template<> struct adl_serializer<ci::Rectf> {
+  /**
+   * Serialize a ci::Rectf.
+   * @param json_object - the json object to populate
+   * @param rect - the ci::ColorA8u to serialize
+   */
+  static void to_json(json& json_object, const ci::Rectf& rect);
+
+  /**
+   * Deserialize a ci::Rectf.
+   * @param json_object - the json object to deserialize from
+   * @param rect - the ci::RectT to populate
+   */
+  static void from_json(const json& json_object, ci::Rectf& rect);
 };
 
 } // namespace nlohmann

@@ -72,6 +72,7 @@ list(APPEND CORE_SOURCE_FILES src/core/tank.cc
                               src/utilities/json_manager.cc
                               src/utilities/quadratic_model.cc)
 list(APPEND SOURCE_FILES    ${CORE_SOURCE_FILES}
+                            src/game/button.cc
                             src/game/game_engine.cc
                             src/game/artillery_app.cc)
 

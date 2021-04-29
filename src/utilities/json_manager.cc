@@ -16,6 +16,11 @@ const string JsonManager::kJsonGreenColorKey = "green";
 const string JsonManager::kJsonBlueColorKey = "blue";
 const string JsonManager::kJsonAlphaChannelKey = "alpha";
 
+// These constants are used in deserializing ci::RectT objects from json
+const string JsonManager::kJsonRectCenterPointKey = "center";
+const string JsonManager::kJsonRectHeightKey = "height";
+const string JsonManager::kJsonRectWidthKey = "width";
+
 // These constants are used in deserializing json objects describing terrain
 const string JsonManager::kJsonRidgeExtremaKey = "ridge_extrema";
 const string JsonManager::kJsonBackgroundColorKey = "background_color";
@@ -94,6 +99,26 @@ void adl_serializer<ColorA8u>::from_json(const json& json_object,
   } catch (json::exception& e) {
     color.a = JsonManager::kDefaultAlphaChannel;
   }
+}
+
+void adl_serializer<ci::Rectf>::to_json(
+    json& json_object, const ci::Rectf& rect) {
+  json_object = json {
+      {JsonManager::kJsonRectCenterPointKey, rect.getCenter()},
+      {JsonManager::kJsonRectHeightKey, rect.getHeight()},
+      {JsonManager::kJsonRectWidthKey, rect.getWidth()}
+  };
+}
+
+void adl_serializer<ci::Rectf>::from_json(
+    const json& json_object, ci::Rectf& rect) {
+  vec2 center = json_object.at(JsonManager::kJsonRectCenterPointKey);
+  auto height = json_object.at(JsonManager::kJsonRectHeightKey).get<float>();
+  auto width = json_object.at(JsonManager::kJsonRectWidthKey).get<float>();
+
+  vec2 offset(width, height);
+
+  rect = ci::Rectf(center - offset, center + offset);
 }
 
 } // namespace nlohmann

@@ -90,6 +90,11 @@ void Tank::ConfigureTurretAndBarrel(const TankConfiguration& config) {
   bullet_velocity_damping_ = config.bullet_velocity_damping_;
 }
 
+void Tank::SetXCoordinate(float x_coord) {
+  chassis_position_.x = x_coord;
+  barrel_pivot_position_ = chassis_position_ + turret_offset_ + chassis_offset_;
+}
+
 void Tank::SetYCoordinate(float treads_y1, float treads_y2) {
   std::pair<float, float> x_coords = GetTreadsXCoordinates();
   chassis_rotation_ =
@@ -243,6 +248,10 @@ void Tank::SubtractHitpoints(size_t lost_hitpoints) {
   } else {
     hitpoints_ -= lost_hitpoints;
   }
+}
+
+void Tank::ResetHitpoints(size_t max_hitpoints) {
+  hitpoints_ = max_hitpoints;
 }
 
 float Tank::GetBarrelRotation() const {

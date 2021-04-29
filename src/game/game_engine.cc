@@ -6,6 +6,8 @@
 
 #include "utilities/json_manager.h"
 
+#include "glm/gtc/random.hpp"
+
 namespace artillery {
 
 using nlohmann::json;
@@ -168,14 +170,14 @@ void GameEngine::ShootBulletFromActiveTank() {
 }
 
 void GameEngine::AdvanceToNextPlayerTurn() {
-  size_t previous_idx = current_tank_idx_;
-  bool is_first_iteration = true;
-
   if (game_state_ == GameState::kGameStart) {
     game_state_ = GameState::kInProgress;
   }
 
-  while(is_first_iteration || tanks_.at(current_tank_idx_).GetHitpoints() == 0) {
+  size_t starting_idx = current_tank_idx_;
+  bool is_first_iteration = true;
+
+  while(tanks_.at(current_tank_idx_).GetHitpoints() == 0 || is_first_iteration) {
     is_first_iteration = false;
 
     current_tank_idx_++;
@@ -185,7 +187,7 @@ void GameEngine::AdvanceToNextPlayerTurn() {
       current_tank_idx_ = 0;
     }
 
-    if (previous_idx == current_tank_idx_) {
+    if (starting_idx == current_tank_idx_) {
       std::cout << "game finished" << std::endl; // TODO handle this case
       game_state_ = GameState::kGameOver;
       break;
@@ -217,10 +219,18 @@ void GameEngine::MoveCurrentTank(bool should_move_left) {
 void GameEngine::Reload() {
   terrain_.Reload();
 
-  current_tank_idx_ = 0;
+  current_tank_idx_ = static_cast<size_t>(
+      glm::linearRand(0, static_cast<int>(tanks_.size())));
   game_state_ = GameState::kInProgress;
 
-  // TODO reload hitpoints
+  for (Tank& tank : tanks_) {
+    tank.ResetHitpoints(max_hitpoints_);
+
+    int random_x = glm::linearRand(0, static_cast<int>(terrain_.GetMaxWidth()));
+    tank.SetXCoordinate(static_cast<float>(random_x));
+
+    UpdateTankYCoordinate(tank);
+  }
 }
 
 } // namespace artillery
