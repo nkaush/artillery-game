@@ -33,16 +33,20 @@ struct HitpointsRenderingSettings {
   std::string label_prefix_;
   std::string label_suffix_;
 
-  ci::ColorA8u remaining_hitpoints_color_;
   ci::ColorA8u total_hitpoints_color_;
   ci::ColorA8u label_color_;
 };
 
+enum class GameState {
+  kGameStart,
+  kInProgress,
+  kGameOver
+};
+
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
     HitpointsRenderingSettings, vertical_padding_, horizontal_padding_,
-    bar_height_, bar_length_scalar_, remaining_hitpoints_color_,
-    total_hitpoints_color_, label_prefix_, label_suffix_, label_color_,
-    label_padding_)
+    bar_height_, bar_length_scalar_, total_hitpoints_color_, label_prefix_,
+    label_suffix_, label_color_, label_padding_)
 
 /**
  * This class contains and executes all the logic involved in this game.
@@ -110,6 +114,10 @@ class GameEngine {
    */
   const ci::ColorA8u& GetBackgroundColor() const;
 
+  const GameState& GetGameState() const;
+
+  void Reload();
+
  private:
   Bullet bullet_;
   Terrain terrain_;
@@ -123,6 +131,8 @@ class GameEngine {
   size_t current_tank_idx_;
 
   glm::vec2 tank_speed_on_move_;
+
+  GameState game_state_;
 
   TankConfiguration tank_config_;
   HitpointsRenderingSettings hp_render_settings_;

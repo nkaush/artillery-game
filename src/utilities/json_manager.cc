@@ -21,6 +21,7 @@ const string JsonManager::kJsonRidgeExtremaKey = "ridge_extrema";
 const string JsonManager::kJsonBackgroundColorKey = "background_color";
 const string JsonManager::kJsonVisibleTerrainColorKey = "visible_terrain_color";
 const string JsonManager::kJsonRemovedTerrainColorKey = "removed_terrain_color";
+const string JsonManager::kJsonColorRandomizationKey = "color_randomization_";
 
 } // namespace artillery
 
@@ -28,6 +29,7 @@ namespace nlohmann {
 
 using artillery::JsonManager;
 using ci::ColorA8u;
+using std::string;
 using std::vector;
 using glm::vec2;
 
@@ -74,9 +76,18 @@ void adl_serializer<ColorA8u>::to_json(json& json_object,
 
 void adl_serializer<ColorA8u>::from_json(const json& json_object,
                                          ColorA8u& color) {
-  json_object.at(JsonManager::kJsonRedColorKey).get_to(color.r);
-  json_object.at(JsonManager::kJsonGreenColorKey).get_to(color.g);
-  json_object.at(JsonManager::kJsonBlueColorKey).get_to(color.b);
+  vector<uint8_t*> colors = {&color.r, &color.g, &color.b};
+  vector<string> keys = {JsonManager::kJsonRedColorKey,
+                         JsonManager::kJsonGreenColorKey,
+                         JsonManager::kJsonBlueColorKey};
+
+  for (size_t i = 0; i < colors.size(); i++) {
+    try {
+      json_object.at( keys.at(i) ).get_to( *colors.at(i) );
+    } catch (json::exception& e) {
+      *colors.at(i) = 0;
+    }
+  }
 
   try { // if 'alpha' is missing, set it to the default 255
     json_object.at(JsonManager::kJsonAlphaChannelKey).get_to(color.a);

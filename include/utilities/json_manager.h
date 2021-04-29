@@ -32,6 +32,7 @@ class JsonManager {
   static const std::string kJsonBackgroundColorKey;
   static const std::string kJsonVisibleTerrainColorKey;
   static const std::string kJsonRemovedTerrainColorKey;
+  static const std::string kJsonColorRandomizationKey;
 };
 
 } // namespace artillery

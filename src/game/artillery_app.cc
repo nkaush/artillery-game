@@ -55,6 +55,13 @@ void ArtilleryApp::keyDown(KeyEvent event) {
     case ci::app::KeyEvent::KEY_LEFT:
       game_engine_.MoveCurrentTank(true);
       break;
+    case ci::app::KeyEvent::KEY_r:
+      std::cout << "r pressed" << std::endl; // TODO fix this
+      if (game_engine_.GetGameState() == GameState::kGameOver) {
+        std::cout << "reloaded" << std::endl;
+        game_engine_.Reload();
+      }
+      break;
   }
 }
 

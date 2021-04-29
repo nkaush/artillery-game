@@ -16,7 +16,8 @@ using glm::vec2;
 
 GameEngine::GameEngine()
     : bullet_(), blast_size_scalar_(0), min_blast_size_(0),
-      max_blast_size_(0), max_hitpoints_(0), current_tank_idx_(0) {}
+      max_blast_size_(0), max_hitpoints_(0), current_tank_idx_(0),
+      game_state_(GameState::kGameStart) {}
 
 void GameEngine::ConfigureTanks() {
   for (Tank& tank : tanks_) {
@@ -40,6 +41,10 @@ void GameEngine::UpdateTankYCoordinate(Tank& tank) {
 
 const ci::ColorA8u& GameEngine::GetBackgroundColor() const {
   return terrain_.GetBackgroundColor();
+}
+
+const GameState& GameEngine::GetGameState() const {
+  return game_state_;
 }
 
 void GameEngine::Draw(const glm::vec2& mouse_location) const {
@@ -166,6 +171,10 @@ void GameEngine::AdvanceToNextPlayerTurn() {
   size_t previous_idx = current_tank_idx_;
   bool is_first_iteration = true;
 
+  if (game_state_ == GameState::kGameStart) {
+    game_state_ = GameState::kInProgress;
+  }
+
   while(is_first_iteration || tanks_.at(current_tank_idx_).GetHitpoints() == 0) {
     is_first_iteration = false;
 
@@ -178,6 +187,7 @@ void GameEngine::AdvanceToNextPlayerTurn() {
 
     if (previous_idx == current_tank_idx_) {
       std::cout << "game finished" << std::endl; // TODO handle this case
+      game_state_ = GameState::kGameOver;
       break;
     }
   }
@@ -202,6 +212,15 @@ void GameEngine::MoveCurrentTank(bool should_move_left) {
   } else { // otherwise, undo advancing via velocity by negating the change
     current_tank.UpdatePosition(speed * vec2(-1, -1));
   }
+}
+
+void GameEngine::Reload() {
+  terrain_.Reload();
+
+  current_tank_idx_ = 0;
+  game_state_ = GameState::kInProgress;
+
+  // TODO reload hitpoints
 }
 
 } // namespace artillery

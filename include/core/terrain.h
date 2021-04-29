@@ -79,6 +79,8 @@ class Terrain {
    */
   void Draw() const;
 
+  void Reload();
+
   /**
    * Get the height of the terrain as it was at the start of the game.
    * @param x_coordinate - the x_coordinate to get the height at
@@ -121,6 +123,8 @@ class Terrain {
   ci::ColorA8u removed_terrain_color_;
   ci::ColorA8u background_color_;
 
+  int color_randomization_;
+
   /**
    * Set the color and state of each pixel according to the number of pixels in
    * each column of the frame given by each entry in the vector of heights.
@@ -138,7 +142,7 @@ class Terrain {
   std::vector<size_t> ComputerSurfaceHeights(
       const std::vector<std::vector<glm::vec2>>& points) const;
 
-  static ci::ColorA8u RandomizeColor(const ci::ColorA8u& original_color);
+  ci::ColorA8u RandomizeColor(const ci::ColorA8u& original_color) const;
 };
 
 } // namespace artillery

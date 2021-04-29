@@ -38,6 +38,9 @@ void from_json(const json& json_object, Terrain& terrain) {
   json_object.at(JsonManager::kJsonRemovedTerrainColorKey)
       .get_to(terrain.removed_terrain_color_);
 
+  json_object.at(JsonManager::kJsonColorRandomizationKey)
+      .get_to(terrain.color_randomization_);
+
   // Deserialize the groups of 3 points in the json object passed
   json ridge_extrema = json_object.at(JsonManager::kJsonRidgeExtremaKey);
   auto points_matrix = ridge_extrema.get<vector<vector<vec2>>>();
@@ -92,7 +95,7 @@ void Terrain::LoadSurfaceFromHeights(const vector<size_t>& column_heights) {
           landscape_.at(row - 1).at(col) = TerrainVisibility::kNone;
         }
       } catch (std::out_of_range& e) {
-        std::cout << row << " " << col << std::endl;
+        std::cout << row << " " << col << std::endl; // TODO fix this
       }
     }
   }
@@ -165,16 +168,22 @@ void Terrain::DestroyTerrainInRadius(
   display_->update(pixels_); // update the texture with the new pixel colors
 }
 
-ci::ColorA8u Terrain::RandomizeColor(const ColorA8u& original_color) {
+ci::ColorA8u Terrain::RandomizeColor(const ColorA8u& original_color) const {
   ci::ColorA8u new_color(original_color);
 
-  int modification = glm::linearRand(-10, 10);
+  int modification =
+      glm::linearRand(-1 * color_randomization_, color_randomization_);
 
   new_color.r += modification;
   new_color.g += modification;
   new_color.b += modification;
 
   return new_color;
+}
+
+void Terrain::Reload() {
+  LoadSurfaceFromHeights(starting_heights_);
+  display_ = ci::gl::Texture::create(pixels_);
 }
 
 }
