@@ -128,7 +128,7 @@ class GameEngine {
   float blast_size_scalar_;
   size_t min_blast_size_;
   size_t max_blast_size_;
-  size_t max_hitpoints_;
+  float max_hitpoints_;
 
   std::vector<Tank> tanks_;
   size_t current_tank_idx_;

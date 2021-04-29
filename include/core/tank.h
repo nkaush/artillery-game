@@ -123,6 +123,8 @@ class Tank {
    */
   std::pair<float, float> GetTreadsXCoordinates() const;
 
+  std::pair<float, float> GetXBounds() const;
+
   /**
    * Get the remaining number of hitpoints this tank has.
    * @return a size_t indicating the number of hitpoints this tank has

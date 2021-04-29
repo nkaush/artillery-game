@@ -265,6 +265,10 @@ std::pair<float, float> Tank::GetTreadsXCoordinates() const {
           treads_rect_.x2 + chassis_position_.x};
 }
 
+std::pair<float, float> Tank::GetXBounds() const {
+  return {treads_rect_.x1, treads_rect_.x2};
+}
+
 size_t Tank::GetHitpoints() const {
   return hitpoints_;
 }

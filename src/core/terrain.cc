@@ -171,12 +171,17 @@ void Terrain::DestroyTerrainInRadius(
 ci::ColorA8u Terrain::RandomizeColor(const ColorA8u& original_color) const {
   ci::ColorA8u new_color(original_color);
 
+  vector<uint8_t*> intensities = {&new_color.r, &new_color.g, &new_color.b};
   int modification =
       glm::linearRand(-1 * color_randomization_, color_randomization_);
 
-  new_color.r += modification;
-  new_color.g += modification;
-  new_color.b += modification;
+  for (uint8_t *intensity : intensities) {
+    if (*intensity <= color_randomization_) {
+      *intensity = 0;
+    } else {
+      *intensity += modification;
+    }
+  }
 
   return new_color;
 }

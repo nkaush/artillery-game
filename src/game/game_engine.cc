@@ -6,6 +6,7 @@
 
 #include "utilities/json_manager.h"
 
+#include "cinder/Rand.h"
 #include "glm/gtc/random.hpp"
 
 namespace artillery {
@@ -188,7 +189,6 @@ void GameEngine::AdvanceToNextPlayerTurn() {
     }
 
     if (starting_idx == current_tank_idx_) {
-      std::cout << "game finished" << std::endl; // TODO handle this case
       game_state_ = GameState::kGameOver;
       break;
     }
@@ -220,15 +220,20 @@ void GameEngine::Reload() {
   terrain_.Reload();
 
   current_tank_idx_ = static_cast<size_t>(
-      glm::linearRand(0, static_cast<int>(tanks_.size())));
+      glm::linearRand(0, static_cast<int>(tanks_.size() - 1)));
   game_state_ = GameState::kInProgress;
 
+  ci::Rand random = ci::Rand();
+
   for (Tank& tank : tanks_) {
-    tank.ResetHitpoints(max_hitpoints_);
+    tank.ResetHitpoints(static_cast<size_t>(max_hitpoints_));
 
-    int random_x = glm::linearRand(0, static_cast<int>(terrain_.GetMaxWidth()));
-    tank.SetXCoordinate(static_cast<float>(random_x));
+    std::pair<float, float> x_bounds = tank.GetXBounds();
+    float min_bound = glm::max(-1 * x_bounds.first, 0.0f);
+    float max_bound =
+        static_cast<float>(terrain_.GetMaxWidth()) - x_bounds.second - 1;
 
+    tank.SetXCoordinate(random.nextFloat(min_bound, max_bound));
     UpdateTankYCoordinate(tank);
   }
 }
