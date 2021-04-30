@@ -139,7 +139,7 @@ class Terrain {
    * @return a vector of size_t heights resulting from the curves fit to the
    * groups of points passed in the vector of vector of vec2 points.
    */
-  std::vector<size_t> ComputerSurfaceHeights(
+  std::vector<size_t> ComputeSurfaceHeights(
       const std::vector<std::vector<glm::vec2>>& points) const;
 
   ci::ColorA8u RandomizeColor(const ci::ColorA8u& original_color) const;

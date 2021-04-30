@@ -44,13 +44,13 @@ void from_json(const json& json_object, Terrain& terrain) {
   // Deserialize the groups of 3 points in the json object passed
   json ridge_extrema = json_object.at(JsonManager::kJsonRidgeExtremaKey);
   auto points_matrix = ridge_extrema.get<vector<vector<vec2>>>();
-  terrain.starting_heights_ = terrain.ComputerSurfaceHeights(points_matrix);
+  terrain.starting_heights_ = terrain.ComputeSurfaceHeights(points_matrix);
   terrain.LoadSurfaceFromHeights(terrain.starting_heights_);
 
   terrain.display_ = ci::gl::Texture::create(terrain.pixels_);
 }
 
-vector<size_t> Terrain::ComputerSurfaceHeights(
+vector<size_t> Terrain::ComputeSurfaceHeights(
     const vector<vector<vec2>>& points_matrix) const {
   // TODO check if window size == last point x value
   vector<float> curve_fits = vector<float>();

@@ -86,6 +86,20 @@
       "chassis_position_": 100,
       "aim_assistance_": 0,
       "hitpoints_": 100
+    },
+    {
+      "chassis_color_": {
+        "red": 31,
+        "green": 72,
+        "blue": 126
+      },
+      "bullet_color_": {},
+      "laser_color_": {
+        "blue": 255
+      },
+      "chassis_position_": 375,
+      "aim_assistance_": 150,
+      "hitpoints_": 100
     }
   ],
   "terrain_": {

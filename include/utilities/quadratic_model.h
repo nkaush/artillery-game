@@ -46,7 +46,7 @@ class QuadraticModel {
    * @return a vector of floats computed by fitting each x_value in the range
    * to the quadratic modeled by this class.
    */
-  std::vector<float> ComputePointsInRange(float start_x, float end_x) const;
+  const std::vector<float> ComputePointsInRange(float start_x, float end_x) const;
 
   /**
    * Create a range of floats from start to end, incremented by 1.
@@ -54,7 +54,7 @@ class QuadraticModel {
    * @param end - a float to end the range at (exclusive)
    * @return a range of floats from start to end
    */
-  static std::vector<float> CreateRange(float start, float end);
+  static const std::vector<float> CreateRange(float start, float end);
 
  private:
   // constants at each index correspond to terms with power equal to that index
@@ -66,7 +66,7 @@ class QuadraticModel {
    * @param observation_vector - a vec3 of the solutions to the system
    * @return a vec3 of the solution to the system of equations
    */
-  static glm::vec3 Solve(
+  static const glm::vec3 Solve(
       const glm::mat3& design_matrix, const glm::vec3& observation_vector);
 };
 
