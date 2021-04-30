@@ -38,7 +38,8 @@ ArtilleryApp::ArtilleryApp() {
     render_settings >> render_settings_json;
 
     ui_handler_ = render_settings_json.get<UIHandler>();
-    ui_handler_.Configure();
+    ui_handler_.Configure(game_engine_.GetTankColors(),
+                          game_engine_.GetMaxHitpoints());
 
     render_settings.close();
   }
@@ -48,9 +49,7 @@ void ArtilleryApp::draw() {
   ci::gl::clear(game_engine_.GetBackgroundColor());
   game_engine_.Draw(mouse_location_);
 
-  ui_handler_.Draw(game_engine_.GetPlayerHitpoints(),
-                   game_engine_.GetTankColors(),
-                   game_engine_.GetMaxHitPoints());
+  ui_handler_.Draw();
 
   ci::gl::color(ci::Color(1, 1, 1));
 }
@@ -59,7 +58,8 @@ void ArtilleryApp::update() {
   game_engine_.AdvanceToNextFrame();
   game_engine_.PointActiveTankBarrel(mouse_location_);
 
-  ui_handler_.Update(game_engine_.GetGameState(), mouse_location_);
+  ui_handler_.Update(mouse_location_, game_engine_.GetGameState(),
+                     game_engine_.GetPlayerHitpoints());
 }
 
 void ArtilleryApp::mouseDown(MouseEvent event) {

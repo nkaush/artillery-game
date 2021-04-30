@@ -9,10 +9,14 @@
 namespace artillery {
 
 using nlohmann::json;
+
 using glm::length;
-using std::vector;
-using ci::Rectf;
 using glm::vec2;
+
+using ci::Rectf;
+
+using std::transform;
+using std::vector;
 
 GameEngine::GameEngine()
     : bullet_(), blast_size_scalar_(0), min_blast_size_(0),
@@ -49,10 +53,8 @@ const GameState& GameEngine::GetGameState() const {
 
 vector<size_t> GameEngine::GetPlayerHitpoints() const {
   vector<size_t> hitpoints(tanks_.size());
-
-  for (size_t idx = 0; idx < tanks_.size(); idx++) {
-    hitpoints.at(idx) = tanks_.at(idx).GetHitpoints();
-  }
+  auto getter = [] (const Tank& tank) { return tank.GetHitpoints(); };
+  transform(tanks_.begin(), tanks_.end(), hitpoints.begin(), getter);
 
   return hitpoints;
 }
@@ -67,7 +69,7 @@ vector<ci::ColorA8u> GameEngine::GetTankColors() const {
   return colors;
 }
 
-size_t GameEngine::GetMaxHitPoints() const {
+float GameEngine::GetMaxHitpoints() const {
   return max_hitpoints_;
 }
 

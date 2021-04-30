@@ -47,10 +47,10 @@
     "horizontal_padding_": [10, 0],
     "label_padding_": [5, 5],
     "bar_height_": 15,
-    "bar_length_scalar_": 2,
+    "bar_width_": 200,
     "label_prefix_": "Player ",
     "label_suffix_": " Hitpoints: ",
-    "total_hitpoints_color_": {
+    "background_color_": {
       "red": 75,
       "green": 75,
       "blue": 75
