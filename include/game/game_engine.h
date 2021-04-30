@@ -19,30 +19,6 @@
 namespace artillery {
 
 /**
- * This struct contains information on how to render the bars that indicate
- * the number of hitpoints each player has.
- */
-struct HitpointsRenderingSettings {
-  glm::vec2 vertical_padding_;
-  glm::vec2 horizontal_padding_;
-  glm::vec2 label_padding_;
-
-  size_t bar_height_;
-  float bar_length_scalar_;
-
-  std::string label_prefix_;
-  std::string label_suffix_;
-
-  ci::ColorA8u total_hitpoints_color_;
-  ci::ColorA8u label_color_;
-};
-
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-    HitpointsRenderingSettings, vertical_padding_, horizontal_padding_,
-    bar_height_, bar_length_scalar_, total_hitpoints_color_, label_prefix_,
-    label_suffix_, label_color_, label_padding_)
-
-/**
  *
  */
 enum class GameState {
@@ -64,8 +40,7 @@ class GameEngine {
    */
   NLOHMANN_DEFINE_TYPE_INTRUSIVE(
       GameEngine, tanks_, tank_config_, terrain_, blast_size_scalar_,
-      min_blast_size_, max_blast_size_, max_hitpoints_,
-      hp_render_settings_, tank_speed_on_move_)
+      min_blast_size_, max_blast_size_, max_hitpoints_, tank_speed_on_move_)
 
   /**
    * Default constructor that initializes a default bullet.
@@ -117,8 +92,21 @@ class GameEngine {
    */
   const ci::ColorA8u& GetBackgroundColor() const;
 
+  /**
+   *
+   * @return
+   */
   const GameState& GetGameState() const;
 
+  std::vector<size_t> GetPlayerHitpoints() const;
+
+  std::vector<ci::ColorA8u> GetTankColors() const;
+
+  size_t GetMaxHitPoints() const;
+
+  /**
+   *
+   */
   void Reload();
 
  private:
@@ -128,7 +116,7 @@ class GameEngine {
   float blast_size_scalar_;
   size_t min_blast_size_;
   size_t max_blast_size_;
-  float max_hitpoints_;
+  size_t max_hitpoints_;
 
   std::vector<Tank> tanks_;
   size_t current_tank_idx_;
@@ -138,7 +126,6 @@ class GameEngine {
   GameState game_state_;
 
   TankConfiguration tank_config_;
-  HitpointsRenderingSettings hp_render_settings_;
 
   /**
    * Moves to the next player's turn.
@@ -170,13 +157,6 @@ class GameEngine {
    * @param tank - the tank to update y-coordinates for
    */
   void UpdateTankYCoordinate(Tank& tank);
-
-  /**
-   * Draw a bar indicating the number of hitpoints the given tank has remaining.
-   * @param tank - the tank to draw the hitpoints bar for
-   * @param index - the index of the tank in the vector 'tanks_'
-   */
-  void DrawHitpointsBar(const Tank& tank, size_t index) const;
 };
 
 } // namespace artillery

@@ -116,7 +116,7 @@ void adl_serializer<ci::Rectf>::from_json(
   auto height = json_object.at(JsonManager::kJsonRectHeightKey).get<float>();
   auto width = json_object.at(JsonManager::kJsonRectWidthKey).get<float>();
 
-  vec2 offset(width, height);
+  vec2 offset(width / 2, height / 2);
 
   rect = ci::Rectf(center - offset, center + offset);
 }

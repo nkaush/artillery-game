@@ -1,24 +1,4 @@
 {
-  "start_button_": {
-    "main_label_": "Start",
-    "alternate_label_": "Restart",
-    "border_width_": 2,
-    "rectangle_": {
-      "center": [375, 250],
-      "width": 50,
-      "height": 25
-    },
-    "background_color_": {
-      "red": 242,
-      "green": 187,
-      "blue": 5
-    },
-    "hover_color_": {
-      "red": 200,
-      "green": 147,
-      "blue": 5
-    }
-  },
   "tank_config_": {
     "chassis_length_": 40,
     "chassis_height_": 15,
@@ -34,21 +14,6 @@
     "aim_assist_frequency_": 3,
     "aim_assist_render_size_": 2,
     "tread_color_": {}
-  },
-  "hp_render_settings_": {
-    "vertical_padding_": [0, 10],
-    "horizontal_padding_": [10, 0],
-    "label_padding_": [5, 5],
-    "bar_height_": 15,
-    "bar_length_scalar_": 2,
-    "label_prefix_": "Player ",
-    "label_suffix_": " Hitpoints: ",
-    "total_hitpoints_color_": {
-      "red": 75,
-      "green": 75,
-      "blue": 75
-    },
-    "label_color_": {}
   },
   "max_blast_size_": 30,
   "min_blast_size_": 10,

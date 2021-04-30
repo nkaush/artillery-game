@@ -4,8 +4,6 @@
 
 #include "game/game_engine.h"
 
-#include "utilities/json_manager.h"
-
 #include "cinder/Rand.h"
 
 namespace artillery {
@@ -49,51 +47,39 @@ const GameState& GameEngine::GetGameState() const {
   return game_state_;
 }
 
+vector<size_t> GameEngine::GetPlayerHitpoints() const {
+  vector<size_t> hitpoints(tanks_.size());
+
+  for (size_t idx = 0; idx < tanks_.size(); idx++) {
+    hitpoints.at(idx) = tanks_.at(idx).GetHitpoints();
+  }
+
+  return hitpoints;
+}
+
+vector<ci::ColorA8u> GameEngine::GetTankColors() const {
+  vector<ci::ColorA8u> colors(tanks_.size());
+
+  for (size_t idx = 0; idx < tanks_.size(); idx++) {
+    colors.at(idx) = tanks_.at(idx).GetChassisColor();
+  }
+
+  return colors;
+}
+
+size_t GameEngine::GetMaxHitPoints() const {
+  return max_hitpoints_;
+}
+
 void GameEngine::Draw(const glm::vec2& mouse_location) const {
   terrain_.Draw();
   bullet_.Draw();
 
   for (size_t idx = 0; idx < tanks_.size(); idx++) {
     tanks_.at(idx).Draw(mouse_location, idx == current_tank_idx_);
-    DrawHitpointsBar(tanks_.at(idx), idx);
   }
 
   ci::gl::color(ci::Color(1, 1, 1));
-}
-
-void GameEngine::DrawHitpointsBar(const Tank& tank, size_t index) const {
-  // find the top left point of the hitpoints bar
-  vec2 vertical_component =
-    hp_render_settings_.vertical_padding_ * vec2(0, index + 1);
-  vertical_component += vec2(0, hp_render_settings_.bar_height_ * index);
-  vec2 upper_pt = hp_render_settings_.horizontal_padding_ + vertical_component;
-
-  // find the lower right point of the hitpoints bar background
-  vec2 back_horizontal_change =
-      vec2(max_hitpoints_ * hp_render_settings_.bar_length_scalar_,
-           hp_render_settings_.bar_height_);
-  Rectf back = Rectf(upper_pt, upper_pt + back_horizontal_change);
-
-  ci::gl::color(hp_render_settings_.total_hitpoints_color_);
-  ci::gl::drawSolidRect(back);
-
-  // find the lower right point of the hitpoints bar front display
-  vec2 front_horizontal_change =
-      vec2(static_cast<float>(tank.GetHitpoints())
-               * hp_render_settings_.bar_length_scalar_,
-           hp_render_settings_.bar_height_);
-  Rectf front = Rectf(upper_pt, upper_pt + front_horizontal_change);
-
-  ci::gl::color(tank.GetChassisColor());
-  ci::gl::drawSolidRect(front);
-
-  // Label the hitpoints bar
-  std::string label = hp_render_settings_.label_prefix_
-                      + std::to_string(index + 1)
-                      + hp_render_settings_.label_suffix_
-                      + std::to_string(tank.GetHitpoints());
-  ci::gl::drawString(label, upper_pt + hp_render_settings_.label_padding_,
-                     hp_render_settings_.label_color_);
 }
 
 void GameEngine::AdvanceToNextFrame() {

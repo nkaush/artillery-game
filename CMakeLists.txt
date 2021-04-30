@@ -71,8 +71,13 @@ list(APPEND CORE_SOURCE_FILES src/core/tank.cc
                               src/core/terrain.cc
                               src/utilities/json_manager.cc
                               src/utilities/quadratic_model.cc)
+
+list(APPEND UI_SOURCE_FILES src/ui/button.cc
+                            src/ui/click_button.cc
+                            src/ui/toggle_button.cc)
 list(APPEND SOURCE_FILES    ${CORE_SOURCE_FILES}
-                            src/game/button.cc
+                            ${UI_SOURCE_FILES}
+                            src/game/ui_handler.cc
                             src/game/game_engine.cc
                             src/game/artillery_app.cc)
 

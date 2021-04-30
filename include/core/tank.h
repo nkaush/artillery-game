@@ -54,6 +54,10 @@ class Tank {
    */
   void Configure(const TankConfiguration& config);
 
+  /**
+   *
+   * @param x_coord
+   */
   void SetXCoordinate(float x_coord);
 
   /**
@@ -109,6 +113,10 @@ class Tank {
    */
   void SubtractHitpoints(size_t lost_hitpoints);
 
+  /**
+   *
+   * @param max_hitpoints
+   */
   void ResetHitpoints(size_t max_hitpoints);
 
   /**
@@ -123,6 +131,10 @@ class Tank {
    */
   std::pair<float, float> GetTreadsXCoordinates() const;
 
+  /**
+   *
+   * @return
+   */
   std::pair<float, float> GetXBounds() const;
 
   /**
@@ -131,6 +143,10 @@ class Tank {
    */
   size_t GetHitpoints() const;
 
+  /**
+   *
+   * @return
+   */
   const ci::ColorA8u& GetChassisColor() const;
 
  private:
@@ -174,6 +190,10 @@ class Tank {
   ci::ColorA8u tread_color_;
   ci::ColorA8u laser_color_;
 
+  /**
+   *
+   * @return
+   */
   std::vector<glm::vec2> PredictBulletPath() const;
 
   /**

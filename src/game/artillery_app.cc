@@ -16,19 +16,31 @@ using std::string;
 using glm::vec2;
 
 const string ArtilleryApp::kGameSettingsFilePath = "data/game_settings.json";
+const string ArtilleryApp::kRenderSettingsFilePath = "data/render_settings.json";
 
 ArtilleryApp::ArtilleryApp() {
   std::ifstream game_settings(kGameSettingsFilePath);
 
   if (game_settings.is_open()) {
-    json json_object;
-    game_settings >> json_object;
+    json game_engine_json;
+    game_settings >> game_engine_json;
 
-    start_button_ = json_object.at("start_button_").get<Button>();
-    start_button_.ChangeLabel(true);
-
-    game_engine_ = json_object.get<GameEngine>();
+    game_engine_ = game_engine_json.get<GameEngine>();
     game_engine_.ConfigureTanks();
+
+    game_settings.close();
+  }
+
+  std::ifstream render_settings(kRenderSettingsFilePath);
+
+  if (render_settings.is_open()) {
+    json render_settings_json;
+    render_settings >> render_settings_json;
+
+    ui_handler_ = render_settings_json.get<UIHandler>();
+    ui_handler_.Configure();
+
+    render_settings.close();
   }
 }
 
@@ -36,28 +48,26 @@ void ArtilleryApp::draw() {
   ci::gl::clear(game_engine_.GetBackgroundColor());
   game_engine_.Draw(mouse_location_);
 
-  start_button_.Draw();
+  ui_handler_.Draw(game_engine_.GetPlayerHitpoints(),
+                   game_engine_.GetTankColors(),
+                   game_engine_.GetMaxHitPoints());
+
   ci::gl::color(ci::Color(1, 1, 1));
 }
 
 void ArtilleryApp::update() {
   game_engine_.AdvanceToNextFrame();
-  start_button_.Update(mouse_location_);
   game_engine_.PointActiveTankBarrel(mouse_location_);
 
-  if (game_engine_.GetGameState() == GameState::kGameOver) {
-    start_button_.ChangeLabel(false);
-    start_button_.SetVisibility(true);
-  }
+  ui_handler_.Update(game_engine_.GetGameState(), mouse_location_);
 }
 
 void ArtilleryApp::mouseDown(MouseEvent event) {
-  if (start_button_.IsHoveredOver()) {
-    start_button_.SetVisibility(false);
+  ui_handler_.HandleMouseDown(event.getPos());
 
-    if (game_engine_.GetGameState() == GameState::kGameOver) {
-      game_engine_.Reload();
-    }
+  if (ui_handler_.IsStartButtonHoveredOver()
+      && game_engine_.GetGameState() == GameState::kGameOver) {
+    game_engine_.Reload();
   }
 }
 
@@ -67,7 +77,7 @@ void ArtilleryApp::mouseMove(MouseEvent event) {
 
 void ArtilleryApp::keyDown(KeyEvent event) {
   // If the start button is active, do not allow commands until game is started
-  if (start_button_.IsVisible()) {
+  if (ui_handler_.IsStartButtonVisible()) {
     return;
   }
 

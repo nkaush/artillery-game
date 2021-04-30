@@ -6,7 +6,10 @@
 #define ARTILLERY_ARTILLERY_APP_H
 
 #include "game_engine.h"
-#include "button.h"
+#include "ui_handler.h"
+
+#include "ui/toggle_button.h"
+#include "ui/click_button.h"
 
 #include "cinder/app/RendererGl.h"
 #include "cinder/app/App.h"
@@ -54,8 +57,9 @@ class ArtilleryApp : public ci::app::App {
   void keyDown(ci::app::KeyEvent event) override;
 
  private:
-  // The path to the game settings json file in the cmake working directory
+  // The path to the settings json files in the cmake working directory
   static const std::string kGameSettingsFilePath;
+  static const std::string kRenderSettingsFilePath;
 
   // The location of the user's mouse in relation to the origin at the top left
   glm::vec2 mouse_location_;
@@ -63,7 +67,8 @@ class ArtilleryApp : public ci::app::App {
   // The game engine object that manages and executes all the logic of the game
   GameEngine game_engine_;
 
-  Button start_button_;
+
+  UIHandler ui_handler_;
 };
 
 }
