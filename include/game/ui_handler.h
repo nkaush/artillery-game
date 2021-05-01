@@ -7,7 +7,7 @@
 
 #include "game/game_engine.h"
 
-#include "ui/toggle_button.h"
+#include "ui/pause_button.h"
 #include "ui/click_button.h"
 #include "ui/progress_bar.h"
 
@@ -22,7 +22,7 @@ class UIHandler {
   UIHandler();
 
   NLOHMANN_DEFINE_TYPE_INTRUSIVE(
-      UIHandler, start_button_, toggle_button_, hp_render_settings_)
+      UIHandler, start_button_, pause_button_, hp_render_settings_)
 
   void Configure(const std::vector<ci::ColorA8u>& tank_colors,
                  float max_hitpoints);
@@ -40,7 +40,7 @@ class UIHandler {
 
  private:
   ClickButton start_button_;
-  ToggleButton toggle_button_;
+  PauseButton pause_button_;
 
   ProgressBarRenderSettings hp_render_settings_;
   std::vector<ProgressBar> hitpoints_bars_;

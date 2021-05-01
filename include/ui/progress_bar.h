@@ -9,7 +9,6 @@
 
 #include <nlohmann/json.hpp>
 #include "cinder/gl/gl.h"
-#include <sstream>
 #include <string>
 
 namespace artillery {

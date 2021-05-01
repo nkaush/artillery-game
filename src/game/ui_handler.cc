@@ -17,7 +17,7 @@ UIHandler::UIHandler() {}
 
 void UIHandler::Draw() const {
   start_button_.Draw();
-  toggle_button_.Draw();
+  pause_button_.Draw();
 
   for (const ProgressBar& progress_bar : hitpoints_bars_) {
     progress_bar.Draw();
@@ -40,7 +40,7 @@ void UIHandler::Configure(const vector<ci::ColorA8u>& tank_colors,
 void UIHandler::Update(const vec2& mouse_location, const GameState& game_state,
                        const vector<size_t>& player_hitpoints) {
   start_button_.Update(mouse_location);
-  toggle_button_.Update(mouse_location);
+  pause_button_.Update(mouse_location);
 
   for (size_t idx = 0; idx < hitpoints_bars_.size(); idx++) {
     hitpoints_bars_.at(idx).UpdateProgress(
@@ -54,7 +54,7 @@ void UIHandler::Update(const vec2& mouse_location, const GameState& game_state,
 }
 
 void UIHandler::HandleMouseDown(const vec2& mouse_location) {
-  toggle_button_.Toggle(mouse_location);
+  pause_button_.Toggle(mouse_location);
 
   if (start_button_.IsHoveredOver()) {
     start_button_.SetVisibility(false);

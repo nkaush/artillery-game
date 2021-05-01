@@ -31,7 +31,6 @@ class ToggleButton : public Button {
 
  private:
   ci::Rectf toggle_rect_;
-
   bool is_toggled_;
 };
 

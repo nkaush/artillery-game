@@ -73,9 +73,12 @@ list(APPEND CORE_SOURCE_FILES src/core/tank.cc
                               src/utilities/quadratic_model.cc)
 
 list(APPEND UI_SOURCE_FILES src/ui/button.cc
+                            src/ui/pause_menu.cc
+                            src/ui/pause_button.cc
                             src/ui/click_button.cc
                             src/ui/progress_bar.cc
                             src/ui/toggle_button.cc)
+
 list(APPEND SOURCE_FILES    ${CORE_SOURCE_FILES}
                             ${UI_SOURCE_FILES}
                             src/game/ui_handler.cc
