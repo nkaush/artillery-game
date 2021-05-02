@@ -120,6 +120,12 @@ class Tank {
   void ResetHitpoints(size_t max_hitpoints);
 
   /**
+   *
+   * @param aim_assistance
+   */
+  void SetAimAssistance(size_t aim_assistance);
+
+  /**
    * Getter for the angle the barrel is rotated between -1 * PI and PI.
    * @return a float indicating the barrel's angle of rotation
    */
@@ -142,6 +148,12 @@ class Tank {
    * @return a size_t indicating the number of hitpoints this tank has
    */
   size_t GetHitpoints() const;
+
+  /**
+   *
+   * @return
+   */
+  size_t GetAimAssistance() const;
 
   /**
    *

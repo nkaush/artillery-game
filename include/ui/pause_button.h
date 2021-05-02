@@ -19,6 +19,8 @@ class PauseButton : public Button {
  public:
   PauseButton();
 
+  ~PauseButton() override = default;
+
   NLOHMANN_DEFINE_TYPE_INTRUSIVE(
       PauseButton, rectangle_, pause_icon_, play_icon_,
       background_color_, hover_color_, border_width_)

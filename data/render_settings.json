@@ -42,6 +42,34 @@
       "blue": 5
     }
   },
+  "pause_menu_": {
+    "menu_rectangle_center_": [375, 250],
+    "background_color_": {
+      "red": 200,
+      "green": 200,
+      "blue": 200
+    },
+    "button_background_color_": {
+      "red": 242,
+      "green": 187,
+      "blue": 5
+    },
+    "button_hover_color_": {
+      "red": 200,
+      "green": 147,
+      "blue": 5
+    },
+    "button_label_prefix_": "Player ",
+    "menu_label_": "Aim Assistance Settings:",
+    "label_padding_": 5,
+    "vertical_padding_": 5,
+    "button_left_padding_": 120,
+    "button_height_": 20,
+    "button_width_": 20,
+    "button_toggle_width_": 15,
+    "button_toggle_height_": 15,
+    "button_border_width_": 1.5
+  },
   "pause_button_": {
     "border_width_": 1.5,
     "rectangle_": {

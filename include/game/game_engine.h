@@ -40,7 +40,8 @@ class GameEngine {
    */
   NLOHMANN_DEFINE_TYPE_INTRUSIVE(
       GameEngine, tanks_, tank_config_, terrain_, blast_size_scalar_,
-      min_blast_size_, max_blast_size_, max_hitpoints_, tank_speed_on_move_)
+      min_blast_size_, max_blast_size_, max_hitpoints_, tank_speed_on_move_,
+      default_aim_assistance_)
 
   /**
    * Default constructor that initializes a default bullet.
@@ -87,6 +88,12 @@ class GameEngine {
   void MoveCurrentTank(bool should_move_left);
 
   /**
+   *
+   * @param has_aim_assistance
+   */
+  void SetPlayerAimAssistance(const std::vector<bool>& has_aim_assistance);
+
+  /**
    * Get the background color of the terrain.
    * @return a ColorA8u indicating the background color
    */
@@ -100,6 +107,8 @@ class GameEngine {
 
   std::vector<size_t> GetPlayerHitpoints() const;
 
+  std::vector<bool> GetPlayerAimAssistanceStatus() const;
+
   std::vector<ci::ColorA8u> GetTankColors() const;
 
   float GetMaxHitpoints() const;
@@ -107,7 +116,7 @@ class GameEngine {
   /**
    *
    */
-  void Reload();
+  void Restart();
 
  private:
   Bullet bullet_;
@@ -116,7 +125,9 @@ class GameEngine {
   float blast_size_scalar_;
   size_t min_blast_size_;
   size_t max_blast_size_;
+
   float max_hitpoints_;
+  size_t default_aim_assistance_;
 
   std::vector<Tank> tanks_;
   size_t current_tank_idx_;

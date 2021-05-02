@@ -13,6 +13,12 @@ class Button {
  public:
   explicit Button(const ci::ColorA8u& border_color=ci::ColorA8u(0, 0, 0, 255));
 
+  Button(const glm::vec2& center, float width, float height, float border_width,
+         const ci::ColorA8u& background_color, const ci::ColorA8u& hover_color,
+         const ci::ColorA8u& border_color=ci::ColorA8u(0, 0, 0, 255));
+
+  virtual ~Button() = default;
+
   virtual void Draw() const;
 
   virtual void Update(const glm::vec2& mouse_location);

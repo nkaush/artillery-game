@@ -7,10 +7,23 @@
 namespace artillery {
 
 using ci::ColorA8u;
+using ci::Rectf;
+using glm::vec2;
 
 Button::Button(const ColorA8u& border_color)
     : border_color_(border_color), is_visible_(true),
       is_hovered_(false), border_width_(0) {}
+
+Button::Button(
+    const vec2& center, float width, float height, float border_width,
+    const ci::ColorA8u& background_color, const ci::ColorA8u& hover_color,
+    const ci::ColorA8u& border_color)
+    : hover_color_(hover_color), border_color_(border_color),
+      background_color_(background_color), is_visible_(true),
+      is_hovered_(false), border_width_(border_width) {
+  vec2 offset(width / 2, height / 2);
+  rectangle_ = Rectf(center - offset, center + offset);
+}
 
 void Button::Draw() const {
   if (!is_visible_) {

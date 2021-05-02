@@ -20,8 +20,8 @@ using std::vector;
 
 GameEngine::GameEngine()
     : bullet_(), blast_size_scalar_(0), min_blast_size_(0),
-      max_blast_size_(0), max_hitpoints_(0), current_tank_idx_(0),
-      game_state_(GameState::kGameStart) {}
+      max_blast_size_(0), max_hitpoints_(0), default_aim_assistance_(0),
+      current_tank_idx_(0), game_state_(GameState::kGameStart) {}
 
 void GameEngine::ConfigureTanks() {
   for (Tank& tank : tanks_) {
@@ -43,6 +43,16 @@ void GameEngine::UpdateTankYCoordinate(Tank& tank) {
   tank.SetYCoordinate(y1_coord, y2_coord);
 }
 
+void GameEngine::SetPlayerAimAssistance(const vector<bool>& has_aim_assistance) {
+  for (size_t idx = 0; idx < has_aim_assistance.size(); idx++) {
+    if (has_aim_assistance.at(idx)) {
+      tanks_.at(idx).SetAimAssistance(default_aim_assistance_);
+    } else {
+      tanks_.at(idx).SetAimAssistance(0);
+    }
+  }
+}
+
 const ci::ColorA8u& GameEngine::GetBackgroundColor() const {
   return terrain_.GetBackgroundColor();
 }
@@ -57,6 +67,14 @@ vector<size_t> GameEngine::GetPlayerHitpoints() const {
   transform(tanks_.begin(), tanks_.end(), hitpoints.begin(), getter);
 
   return hitpoints;
+}
+
+std::vector<bool> GameEngine::GetPlayerAimAssistanceStatus() const {
+  vector<bool> status(tanks_.size());
+  auto checker = [] (const Tank& tank) { return tank.GetAimAssistance() > 0; };
+  transform(tanks_.begin(), tanks_.end(), status.begin(), checker);
+
+  return status;
 }
 
 vector<ci::ColorA8u> GameEngine::GetTankColors() const {
@@ -214,7 +232,7 @@ void GameEngine::MoveCurrentTank(bool should_move_left) {
   }
 }
 
-void GameEngine::Reload() {
+void GameEngine::Restart() {
   terrain_.Reload();
 
   current_tank_idx_ = static_cast<size_t>(

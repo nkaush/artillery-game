@@ -19,6 +19,8 @@ class ClickButton : public Button {
  public:
   ClickButton();
 
+  ~ClickButton() override = default;
+
   NLOHMANN_DEFINE_TYPE_INTRUSIVE(
       ClickButton, main_label_, alternate_label_, rectangle_,
       background_color_, hover_color_, border_width_)

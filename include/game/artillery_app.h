@@ -67,7 +67,7 @@ class ArtilleryApp : public ci::app::App {
   // The game engine object that manages and executes all the logic of the game
   GameEngine game_engine_;
 
-
+  // TODO COMMENT
   UIHandler ui_handler_;
 };
 

@@ -254,6 +254,10 @@ void Tank::ResetHitpoints(size_t max_hitpoints) {
   hitpoints_ = max_hitpoints;
 }
 
+void Tank::SetAimAssistance(size_t aim_assistance) {
+  aim_assistance_ = aim_assistance;
+}
+
 float Tank::GetBarrelRotation() const {
   return barrel_rotation_;
 }
@@ -271,6 +275,10 @@ std::pair<float, float> Tank::GetXBounds() const {
 
 size_t Tank::GetHitpoints() const {
   return hitpoints_;
+}
+
+size_t Tank::GetAimAssistance() const {
+  return aim_assistance_;
 }
 
 const ci::ColorA8u& Tank::GetChassisColor() const {

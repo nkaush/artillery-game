@@ -65,9 +65,18 @@ void ArtilleryApp::update() {
 void ArtilleryApp::mouseDown(MouseEvent event) {
   ui_handler_.HandleMouseDown(event.getPos());
 
+  GamePauseStatus pause_status = ui_handler_.RetrieveGamePauseStatus();
+
+  if (pause_status == GamePauseStatus::kGamePaused) {
+    ui_handler_.SetPauseMenuStates(game_engine_.GetPlayerAimAssistanceStatus());
+  } else if (pause_status == GamePauseStatus::kGameUnPaused) {
+    game_engine_.SetPlayerAimAssistance(ui_handler_.GetPauseMenuStates());
+  }
+
   if (ui_handler_.IsStartButtonHoveredOver()
-      && game_engine_.GetGameState() == GameState::kGameOver) {
-    game_engine_.Reload();
+      && game_engine_.GetGameState() == GameState::kGameOver
+      && !ui_handler_.IsGamePaused()) {
+    game_engine_.Restart();
   }
 }
 
@@ -77,7 +86,7 @@ void ArtilleryApp::mouseMove(MouseEvent event) {
 
 void ArtilleryApp::keyDown(KeyEvent event) {
   // If the start button is active, do not allow commands until game is started
-  if (ui_handler_.IsStartButtonVisible()) {
+  if (ui_handler_.IsStartButtonVisible() || ui_handler_.IsGamePaused()) {
     return;
   }
 

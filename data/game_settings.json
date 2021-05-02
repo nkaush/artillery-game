@@ -19,6 +19,7 @@
   "min_blast_size_": 10,
   "blast_size_scalar_": 2,
   "max_hitpoints_": 100,
+  "default_aim_assistance_": 150,
   "tank_speed_on_move_": 2,
   "tanks_": [
     {
