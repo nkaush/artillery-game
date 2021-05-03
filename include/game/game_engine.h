@@ -5,6 +5,8 @@
 #ifndef ARTILLERY_GAME_ENGINE_H
 #define ARTILLERY_GAME_ENGINE_H
 
+#include "game_status.h"
+
 #include "utilities/json_manager.h"
 
 #include "core/terrain.h"
@@ -17,15 +19,6 @@
 #include <string>
 
 namespace artillery {
-
-/**
- *
- */
-enum class GameState {
-  kGameStart,
-  kInProgress,
-  kGameOver
-};
 
 /**
  * This class contains and executes all the logic involved in this game.
@@ -88,8 +81,12 @@ class GameEngine {
   void MoveCurrentTank(bool should_move_left);
 
   /**
-   *
-   * @param has_aim_assistance
+   * Sets the aim assistance for each player depending on the value of the
+   * bool in the corresponding index in the passed array. If the bool is true,
+   * set the player aim assistance to the default aim assistance value, else
+   * set the player aim assistance to zero.
+   * @param has_aim_assistance - a vector of bool indicating the aim assistance
+   *                             status to set for each corresponding player
    */
   void SetPlayerAimAssistance(const std::vector<bool>& has_aim_assistance);
 
@@ -100,21 +97,41 @@ class GameEngine {
   const ci::ColorA8u& GetBackgroundColor() const;
 
   /**
-   *
-   * @return
+   * Get the current game activity state - InProgress, GameStart, or GameOver.
+   * @return a GameActivityState enum indicating the state of the game
    */
-  const GameState& GetGameState() const;
+  const GameActivityState& GetGameActivityState() const;
 
+  HitpointsUpdateStatus RetrieveHitpointsUpdateStatus();
+
+  /**
+   * Get the number of hitpoints each player has.
+   * @return a vector of the hitpoints of each player, indexed by player number
+   */
   std::vector<size_t> GetPlayerHitpoints() const;
 
+  /**
+   * Get whether each player has aim assistance enabled.
+   * @return a vector of the aim assist status of each player,
+   * indexed by player number
+   */
   std::vector<bool> GetPlayerAimAssistanceStatus() const;
 
+  /**
+   * Get the color of each tank.
+   * @return a vector of the color of each tank,
+   * indexed by the corresponding player number
+   */
   std::vector<ci::ColorA8u> GetTankColors() const;
 
+  /**
+   * Get the max number of hitpoints a player can have.
+   * @return a float indicating the max number of hitpoints a player can have
+   */
   float GetMaxHitpoints() const;
 
   /**
-   *
+   * Restarts the game. Reloads the terrain. Reloads all player hitpoints.
    */
   void Restart();
 
@@ -122,21 +139,30 @@ class GameEngine {
   Bullet bullet_;
   Terrain terrain_;
 
+  // Constants pertaining to calculating a bullet's impact size
   float blast_size_scalar_;
   size_t min_blast_size_;
   size_t max_blast_size_;
 
+  // Constants pertaining to default in-game tank settings
   float max_hitpoints_;
   size_t default_aim_assistance_;
-
-  std::vector<Tank> tanks_;
-  size_t current_tank_idx_;
-
   glm::vec2 tank_speed_on_move_;
 
-  GameState game_state_;
-
+  // Stores information on the dimensions of tanks
   TankConfiguration tank_config_;
+
+  // Stores each tank in the game with each tank representing a player
+  std::vector<Tank> tanks_;
+
+  // The index of the tank belonging to the player whose turn it is
+  size_t current_tank_idx_;
+
+  // The status of the game used to convey how to render UI elements
+  GameActivityState game_state_;
+
+  //
+  HitpointsUpdateStatus hitpoints_update_status_;
 
   /**
    * Moves to the next player's turn.
@@ -150,8 +176,8 @@ class GameEngine {
   bool IsBulletCollidingWithTerrain() const;
 
   /**
-   *
-   * @return
+   * Checks whether the bullet has left the game window bounds.
+   * @return a bool indicating whether the bullet has left the window bounds
    */
   bool IsBulletOutOfBounds() const;
 
@@ -168,6 +194,21 @@ class GameEngine {
    * @param tank - the tank to update y-coordinates for
    */
   void UpdateTankYCoordinate(Tank& tank);
+
+  /**
+   *
+   * @return
+   */
+  bool WasGameWon() const;
+
+  /**
+   *
+   */
+  void FindNextSurvivingTank();
+
+  void HandleBulletTerrainCollisions();
+
+  void HandleBulletTankCollisions();
 };
 
 } // namespace artillery

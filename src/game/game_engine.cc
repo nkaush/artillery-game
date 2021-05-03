@@ -21,7 +21,8 @@ using std::vector;
 GameEngine::GameEngine()
     : bullet_(), blast_size_scalar_(0), min_blast_size_(0),
       max_blast_size_(0), max_hitpoints_(0), default_aim_assistance_(0),
-      current_tank_idx_(0), game_state_(GameState::kGameStart) {}
+      current_tank_idx_(0), game_state_(GameActivityState::kGameStart),
+      hitpoints_update_status_(HitpointsUpdateStatus::kForcedUpdate) {}
 
 void GameEngine::ConfigureTanks() {
   for (Tank& tank : tanks_) {
@@ -53,11 +54,21 @@ void GameEngine::SetPlayerAimAssistance(const vector<bool>& has_aim_assistance) 
   }
 }
 
+HitpointsUpdateStatus GameEngine::RetrieveHitpointsUpdateStatus() {
+  HitpointsUpdateStatus status = hitpoints_update_status_;
+
+  if (status != HitpointsUpdateStatus::kNoTanksHit) {
+    hitpoints_update_status_ = HitpointsUpdateStatus::kNoTanksHit;
+  }
+
+  return status;
+}
+
 const ci::ColorA8u& GameEngine::GetBackgroundColor() const {
   return terrain_.GetBackgroundColor();
 }
 
-const GameState& GameEngine::GetGameState() const {
+const GameActivityState& GameEngine::GetGameActivityState() const {
   return game_state_;
 }
 
@@ -105,6 +116,11 @@ void GameEngine::Draw(const glm::vec2& mouse_location) const {
 void GameEngine::AdvanceToNextFrame() {
   bullet_.AdvanceToNextFrame();
 
+  HandleBulletTerrainCollisions();
+  HandleBulletTankCollisions();
+}
+
+void GameEngine::HandleBulletTerrainCollisions() {
   bool did_bullet_hit_terrain = IsBulletCollidingWithTerrain();
   bool should_bullet_stop = IsBulletOutOfBounds() || did_bullet_hit_terrain;
 
@@ -118,19 +134,6 @@ void GameEngine::AdvanceToNextFrame() {
       terrain_.DestroyTerrainInRadius(
           bullet_.GetPosition(), CalculateBulletImpactSize());
     }
-  }
-
-  bool were_tanks_hit = false;
-  for (Tank& tank : tanks_) {
-    if (bullet_.IsActive() && tank.WasTankHit(bullet_)) {
-      were_tanks_hit = true;
-      tank.SubtractHitpoints(CalculateBulletImpactSize());
-    }
-  }
-
-  if (were_tanks_hit) {
-    bullet_.Stop();
-    AdvanceToNextPlayerTurn();
   }
 }
 
@@ -159,27 +162,36 @@ bool GameEngine::IsBulletCollidingWithTerrain() const {
          == TerrainVisibility::kVisible;
 }
 
-size_t GameEngine::CalculateBulletImpactSize() const {
-  float scaled_size = length(bullet_.GetVelocity()) * blast_size_scalar_;
-  return glm::clamp(static_cast<size_t>(scaled_size),
-                    min_blast_size_, max_blast_size_);
-}
+void GameEngine::HandleBulletTankCollisions() {
+  bool were_tanks_hit = false;
+  for (Tank& tank : tanks_) {
+    if (bullet_.IsActive() && tank.WasTankHit(bullet_)) {
+      were_tanks_hit = true;
+      tank.SubtractHitpoints(CalculateBulletImpactSize());
+    }
+  }
 
-void GameEngine::PointActiveTankBarrel(const vec2& mouse_location) {
-  tanks_.at(current_tank_idx_).PointBarrel(mouse_location);
-}
-
-void GameEngine::ShootBulletFromActiveTank() {
-  if (!bullet_.IsActive()) { // prevent tank from removing bullet if in action
-    bullet_ = tanks_.at(current_tank_idx_).ShootBullet();
+  if (were_tanks_hit) {
+    bullet_.Stop();
+    AdvanceToNextPlayerTurn();
+    hitpoints_update_status_ = HitpointsUpdateStatus::kTanksHit;
   }
 }
 
 void GameEngine::AdvanceToNextPlayerTurn() {
-  if (game_state_ == GameState::kGameStart) {
-    game_state_ = GameState::kInProgress;
+  if (game_state_ == GameActivityState::kGameStart) {
+    game_state_ = GameActivityState::kInProgress;
   }
 
+  if (WasGameWon()) {
+    game_state_ = GameActivityState::kGameOver;
+    return;
+  }
+
+  FindNextSurvivingTank();
+}
+
+bool GameEngine::WasGameWon() const {
   size_t tanks_alive = 0;
   for (const Tank& tank : tanks_) {
     if (tank.GetHitpoints() > 0) {
@@ -187,11 +199,11 @@ void GameEngine::AdvanceToNextPlayerTurn() {
     }
   }
 
-  if (tanks_alive == 1) {
-    game_state_ = GameState::kGameOver;
-    return;
-  }
+  // If there are 1 or fewer tanks alive, the game is finished
+  return tanks_alive <= 1;
+}
 
+void GameEngine::FindNextSurvivingTank() {
   size_t starting_idx = current_tank_idx_;
   bool is_first_iteration = true;
 
@@ -208,6 +220,22 @@ void GameEngine::AdvanceToNextPlayerTurn() {
     if (starting_idx == current_tank_idx_) {
       break;
     }
+  }
+}
+
+size_t GameEngine::CalculateBulletImpactSize() const {
+  float scaled_size = length(bullet_.GetVelocity()) * blast_size_scalar_;
+  return glm::clamp(static_cast<size_t>(scaled_size),
+                    min_blast_size_, max_blast_size_);
+}
+
+void GameEngine::PointActiveTankBarrel(const vec2& mouse_location) {
+  tanks_.at(current_tank_idx_).PointBarrel(mouse_location);
+}
+
+void GameEngine::ShootBulletFromActiveTank() {
+  if (!bullet_.IsActive()) { // prevent tank from removing bullet if in action
+    bullet_ = tanks_.at(current_tank_idx_).ShootBullet();
   }
 }
 
@@ -237,7 +265,8 @@ void GameEngine::Restart() {
 
   current_tank_idx_ = static_cast<size_t>(
       ci::randInt(0, static_cast<int>(tanks_.size() - 1)));
-  game_state_ = GameState::kInProgress;
+  game_state_ = GameActivityState::kInProgress;
+  hitpoints_update_status_ = HitpointsUpdateStatus::kForcedUpdate;
 
   for (Tank& tank : tanks_) {
     tank.ResetHitpoints(static_cast<size_t>(max_hitpoints_));
