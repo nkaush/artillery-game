@@ -22,6 +22,8 @@ using std::string;
 const string ArtilleryApp::kGameSettingsFilePath = "data/game_settings.json";
 const string ArtilleryApp::kRenderSettingsFilePath = "data/render_settings.json";
 
+const string ArtilleryApp::kAppName = "Artillery";
+
 ArtilleryApp::ArtilleryApp() {
   std::ifstream game_settings(kGameSettingsFilePath);
 

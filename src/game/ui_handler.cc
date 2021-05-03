@@ -67,7 +67,7 @@ void UIHandler::Update(const glm::vec2& mouse_location,
 }
 
 void UIHandler::HandleMouseDown(const vec2& mouse_location) {
-  pause_button_.Toggle(mouse_location);
+  pause_button_.Pause(mouse_location);
 
   // If the pause button was just clicked, send a signal indicating so
   if (pause_status_ == GamePauseStatus::kUnPausedWaitingForAction

@@ -23,6 +23,12 @@ namespace artillery {
  */
 class ArtilleryApp : public ci::app::App {
  public:
+  // The number of frames to run through per second
+  static constexpr float kFrameRate = 100;
+
+  // The title of the window this app displays in
+  static const std::string kAppName;
+
   /**
    * Default constructor invoked when Cinder starts the app. Loads the game
    * settings json file containing all the settings for this game.

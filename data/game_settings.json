@@ -64,7 +64,7 @@
         "blue": 255
       },
       "chassis_position_": 375,
-      "aim_assistance_": 150,
+      "aim_assistance_": 0,
       "hitpoints_": 100
     }
   ],
