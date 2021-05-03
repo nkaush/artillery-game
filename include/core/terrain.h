@@ -79,6 +79,10 @@ class Terrain {
    */
   void Draw() const;
 
+  /**
+   * Reloads the terrain. Used when restarting the game and clearing the
+   * impact craters formed by bullet and terrain collisions.
+   */
   void Reload();
 
   /**
@@ -123,6 +127,7 @@ class Terrain {
   ci::ColorA8u removed_terrain_color_;
   ci::ColorA8u background_color_;
 
+  // The factor by which to randomize pixel colors in the terrain
   int color_randomization_;
 
   /**
@@ -142,6 +147,13 @@ class Terrain {
   std::vector<size_t> ComputeSurfaceHeights(
       const std::vector<std::vector<glm::vec2>>& points) const;
 
+  /**
+   * Get a color by randomizing the provided color by adding or subtracting
+   * the same random integer from each of the red, green, and blue components
+   * of the given color. Used to provide a 'rock' texture for the terrain.
+   * @param original_color - the original ColorA8u object to randomize
+   * @return a ColorA8u with modified color components
+   */
   ci::ColorA8u RandomizeColor(const ci::ColorA8u& original_color) const;
 };
 

@@ -52,8 +52,16 @@ void from_json(const json& json_object, Terrain& terrain) {
 
 vector<size_t> Terrain::ComputeSurfaceHeights(
     const vector<vector<vec2>>& points_matrix) const {
-  // TODO check if window size == last point x value
-  vector<float> curve_fits = vector<float>();
+  // Check whether the window size is spanned by the terrain extrema points
+  vector<vec2> last_points_trio = points_matrix.at(points_matrix.size() - 1);
+  vec2 last_point = last_points_trio.at(last_points_trio.size() - 1);
+
+  if (last_point.x != kWindowWidth) {
+    throw std::invalid_argument("Invalid terrain extrema points. "
+        "Points must span entire 750 pixel wide frame.");
+  }
+
+  vector<float> curve_fits;
   curve_fits.reserve(sizeof(float) * kWindowWidth);
 
   // Go through each group of 3 points in the passed vector
@@ -66,6 +74,7 @@ vector<size_t> Terrain::ComputeSurfaceHeights(
     std::vector<float> y_values =
         quad_solver.ComputePointsInRange(start.x, end.x);
 
+    // Add the computed terrain heights in this range to the vector of heights
     curve_fits.insert(curve_fits.end(), y_values.begin(), y_values.end());
   }
 
@@ -87,15 +96,18 @@ void Terrain::LoadSurfaceFromHeights(const vector<size_t>& column_heights) {
     // and shade the pixel if it is under the height at that column
     for (size_t row = landscape_.size(); row > 0; row--) {
       try {
+        // Shade all pixels under the terrain height
         if (row - 1 >= limit) {
           landscape_.at(row - 1).at(col) = TerrainVisibility::kVisible;
           pixels_.setPixel(vec2(col, row - 1),
                            RandomizeColor(visible_terrain_color_));
         } else {
+          // Leave the pixels above the terrain height unshaded
           landscape_.at(row - 1).at(col) = TerrainVisibility::kNone;
         }
       } catch (std::out_of_range& e) {
-        std::cout << row << " " << col << std::endl; // TODO fix this
+        throw std::invalid_argument("Invalid terrain extrema points. "
+            "Points must span entire 500 pixel high frame.");
       }
     }
   }
@@ -175,7 +187,9 @@ ci::ColorA8u Terrain::RandomizeColor(const ColorA8u& original_color) const {
   int modification =
       glm::linearRand(-1 * color_randomization_, color_randomization_);
 
+  // Modify the components of the new color with the randomly selected factor
   for (uint8_t *intensity : intensities) {
+    // if the factor modification is less than 0, prevent int addition wrapping
     if (*intensity <= color_randomization_) {
       *intensity = 0;
     } else {

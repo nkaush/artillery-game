@@ -55,8 +55,9 @@ class Tank {
   void Configure(const TankConfiguration& config);
 
   /**
-   *
-   * @param x_coord
+   * Set the x-coordinate of a tank. Used on game restarts when
+   * randomly placing tanks around the terrain.
+   * @param x_coord - a float indicating the new x-coordinate
    */
   void SetXCoordinate(float x_coord);
 
@@ -114,14 +115,14 @@ class Tank {
   void SubtractHitpoints(size_t lost_hitpoints);
 
   /**
-   *
-   * @param max_hitpoints
+   * Resets the tank's hitpoints to the specified max hitpoints provided.
+   * @param max_hitpoints - a size_t indicating the max number of hitpoints
    */
   void ResetHitpoints(size_t max_hitpoints);
 
   /**
-   *
-   * @param aim_assistance
+   * Sets the tank's aim assistance.
+   * @param aim_assistance - a size_t indicating the level of aim assistance
    */
   void SetAimAssistance(size_t aim_assistance);
 
@@ -138,8 +139,8 @@ class Tank {
   std::pair<float, float> GetTreadsXCoordinates() const;
 
   /**
-   *
-   * @return
+   * Get the x-axis bounds of this tank.
+   * @return an std::pair with the 2 x-coordinates of the bounds of the tank
    */
   std::pair<float, float> GetXBounds() const;
 
@@ -150,14 +151,14 @@ class Tank {
   size_t GetHitpoints() const;
 
   /**
-   *
-   * @return
+   * Gets the level of aim assistance this tank has.
+   * @return a size_t indicating the level of aim assistance this tank has
    */
   size_t GetAimAssistance() const;
 
   /**
-   *
-   * @return
+   * Gets the color of this tank's chassis.
+   * @return a ci::ColorA8u object indicating the color of this tank's chassis
    */
   const ci::ColorA8u& GetChassisColor() const;
 
@@ -185,6 +186,7 @@ class Tank {
   float barrel_span_;
   float turret_radius_;
 
+  // Used when rendering the aim assistance line/parabola
   size_t aim_assistance_;
   size_t aim_assist_frequency_;
   float aim_assist_render_size_;
@@ -203,8 +205,10 @@ class Tank {
   ci::ColorA8u laser_color_;
 
   /**
-   *
-   * @return
+   * Predicts the path of a bullet if the tank were to shoot a bullet in its
+   * current state. Computes trajectory on the interval defined by the current
+   * aim assistance level of this tank.
+   * @return a vector of vec2 indicating points on the computed trajectory
    */
   std::vector<glm::vec2> PredictBulletPath() const;
 

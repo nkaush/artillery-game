@@ -30,6 +30,7 @@ Tank::Tank(const vec2& chassis_position, const ColorA8u& chassis_color,
       chassis_color_(chassis_color), bullet_color_(bullet_color) {}
 
 void Tank::Configure(const TankConfiguration& config) {
+  // Configure each element of the tank with the passed configuration settings
   ConfigureChassis(config);
   ConfigureTreads(config);
   ConfigureTurretAndBarrel(config);
@@ -45,6 +46,7 @@ void Tank::ConfigureChassis(const TankConfiguration& config) {
   // Set up the fields defining the chassis appearance
   chassis_offset_ = vec2(-1 * half_chassis_length, -1 * half_chassis_height);
 
+  // Center the chassis at a reference frame anchored at the origin
   chassis_rect_ = Rectf(vec2(-1 * half_chassis_length, -1 * half_chassis_height),
                         vec2(half_chassis_length, half_chassis_height));
   chassis_rounding_ = config.chassis_rounding_;
@@ -59,6 +61,7 @@ void Tank::ConfigureTreads(const TankConfiguration& config) {
   tread_wheel_radius_ = config.tread_wheel_radius_;
   tread_wheel_padding_ = config.tread_wheel_padding_;
 
+  // Set the treads to be rendered in a reference frame anchored at the origin
   vec2 tread_upper_pt(-1 * half_chassis_length + config.tread_wheel_padding_,
                       half_chassis_height - config.tread_wheel_radius_);
   vec2 tread_lower_pt(half_chassis_length - config.tread_wheel_padding_,
@@ -92,6 +95,8 @@ void Tank::ConfigureTurretAndBarrel(const TankConfiguration& config) {
 
 void Tank::SetXCoordinate(float x_coord) {
   chassis_position_.x = x_coord;
+
+  // Update the pivot position of the barrel based on the new x-coordinate
   barrel_pivot_position_ = chassis_position_ + turret_offset_ + chassis_offset_;
 }
 
@@ -126,6 +131,7 @@ void Tank::DrawChassis() const {
   ci::gl::translate(chassis_position_);
   ci::gl::rotate(chassis_rotation_);
 
+  // Render the chassis in the rotated reference frame anchored at the origin
   ci::gl::color(chassis_color_);
   ci::gl::drawSolidRoundedRect(chassis_rect_, chassis_rounding_); // chassis
 
