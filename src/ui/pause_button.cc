@@ -32,7 +32,7 @@ void PauseButton::Update(const glm::vec2& mouse_position) {
   Button::Update(mouse_position);
 }
 
-void PauseButton::Toggle(const glm::vec2& mouse_position) {
+void PauseButton::Pause(const glm::vec2& mouse_position) {
   if (rectangle_.contains(mouse_position)) {
     is_paused_ = !is_paused_;
   }

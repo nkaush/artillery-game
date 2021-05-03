@@ -21,28 +21,31 @@ Button::Button(
     : hover_color_(hover_color), border_color_(border_color),
       background_color_(background_color), is_visible_(true),
       is_hovered_(false), border_width_(border_width) {
+  // Center the button's bounding rectangle at the provided button center
   vec2 offset(width / 2, height / 2);
   rectangle_ = Rectf(center - offset, center + offset);
 }
 
 void Button::Draw() const {
-  if (!is_visible_) {
+  if (!is_visible_) { // if the button is not visible, DO NOT draw it
     return;
   }
 
+  // set the button color based on whether the button is being hovered over
   if (is_hovered_) {
     ci::gl::color(hover_color_);
   } else {
     ci::gl::color(background_color_);
   }
 
+  // Draw the button and the border of the button
   ci::gl::drawSolidRect(rectangle_);
-
   ci::gl::color(border_color_);
   ci::gl::drawStrokedRect(rectangle_, border_width_);
 }
 
 void Button::Update(const glm::vec2& mouse_location) {
+  // if the button is visible and contains the user's mouse, update it's status
   if (is_visible_) {
     is_hovered_ = rectangle_.contains(mouse_location);
   }

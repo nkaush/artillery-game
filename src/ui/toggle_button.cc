@@ -20,6 +20,7 @@ ToggleButton::ToggleButton(
     : Button(button_center, button_width, button_height,
              border_width, background_color, hover_color),
       is_toggled_(false) {
+  // Center the inner toggle rectangle in the button center coordinate given
   vec2 offset(toggle_rect_width / 2, toggle_rect_height / 2);
   toggle_rect_ = Rectf(button_center - offset, button_center + offset);
 }
@@ -27,6 +28,7 @@ ToggleButton::ToggleButton(
 void ToggleButton::Draw() const {
   Button::Draw();
 
+  // Only draw the inner toggle rectangle if the button is visible & toggled on
   if (is_visible_ && is_toggled_) {
     ci::gl::color(border_color_);
     ci::gl::drawSolidRect(toggle_rect_);
@@ -42,10 +44,9 @@ void ToggleButton::SetToggleStatus(bool is_toggled) {
 }
 
 void ToggleButton::Toggle(const glm::vec2& mouse_position) {
+  // flip the toggle state when the button is clicked
   if (rectangle_.contains(mouse_position)) {
-    std::cout << is_toggled_ << std::endl;
     is_toggled_ = !is_toggled_;
-    std::cout << is_toggled_ << std::endl;
   }
 }
 
