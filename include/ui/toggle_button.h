@@ -14,6 +14,11 @@
 
 namespace artillery {
 
+/**
+ * This class represents a toggle button that changes color when hovered over by
+ * the user's mouse. It is filled when the button has an on state. The button
+ * alternates between on and off states for each click.
+ */
 class ToggleButton : public Button {
  public:
   /**

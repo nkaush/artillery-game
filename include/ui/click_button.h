@@ -15,6 +15,11 @@
 
 namespace artillery {
 
+/**
+ * This class represents a clickable button with a label. This button is derived
+ * from a base Button class; it has all functionality defined by the base class.
+ * This button also has functionality to change its label to an alternate label.
+ */
 class ClickButton : public Button {
  public:
   /**

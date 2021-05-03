@@ -28,6 +28,7 @@ void PauseMenu::Configure(size_t num_buttons) {
   float menu_height =
        vertical_offset + (button_count * (vertical_padding_ + button_height_));
 
+  // Center the menu at the given location and draw it with the given dimensions
   vec2 offset(menu_width / 2, menu_height / 2);
   menu_rectangle_ = Rectf(menu_rectangle_center_ - offset,
                           menu_rectangle_center_ + offset);
@@ -35,7 +36,9 @@ void PauseMenu::Configure(size_t num_buttons) {
   menu_label_position_ =
       vec2(label_padding_, vertical_padding_ + (button_height_ / 2));
 
+  // Create a toggle button for each player to configure aim assistance
   for (size_t idx = 0; idx < num_buttons; idx++) {
+    // Find the vertical offset from the top of the menu
     float menu_item_vertical_padding =
         (static_cast<float>(idx) * (button_height_ + vertical_padding_))
         + vertical_offset + (button_height_ / 2);
@@ -46,8 +49,6 @@ void PauseMenu::Configure(size_t num_buttons) {
         button_center, button_background_color_, button_hover_color_,
         button_width_, button_height_, button_toggle_width_,
         button_toggle_height_, button_border_width_);
-
-    std::cout << button_center << std::endl;
 
     button_label_positions_.emplace_back(
         label_padding_, menu_item_vertical_padding);
@@ -61,17 +62,21 @@ void PauseMenu::Draw() const {
     return;
   }
 
+  // Draw the menu background rectangle
   ci::gl::color(background_color_);
   ci::gl::drawSolidRect(menu_rectangle_);
+  ci::gl::color(label_color_);
+  ci::gl::drawStrokedRect(menu_rectangle_, button_border_width_);
 
+  // Move the reference frame to be anchored at the top left of the menu box
   ci::gl::pushMatrices();
   ci::gl::translate(menu_rectangle_.getUpperLeft());
 
   ci::gl::drawString(menu_label_, menu_label_position_, label_color_);
 
+  // Draw each button and label in the new reference frame
   for (size_t idx = 0; idx < toggle_buttons_.size(); idx++) {
     toggle_buttons_.at(idx).Draw();
-
     ci::gl::drawString(
         button_labels_.at(idx), button_label_positions_.at(idx), label_color_);
   }
@@ -81,6 +86,7 @@ void PauseMenu::Draw() const {
 
 void PauseMenu::Update(const glm::vec2& mouse_position) {
   if (is_visible_) {
+    // Convert the mouse location to the coordinates of the menu reference frame
     vec2 reference_location = mouse_position - menu_rectangle_.getUpperLeft();
 
     for (ToggleButton& button : toggle_buttons_) {
@@ -95,8 +101,8 @@ void PauseMenu::SetVisibility(bool is_visible) {
 
 void PauseMenu::HandleMouseDown(const glm::vec2& mouse_position) {
   if (is_visible_) {
+    // Convert the mouse location to the coordinates of the menu reference frame
     vec2 reference_location = mouse_position - menu_rectangle_.getUpperLeft();
-    std::cout << reference_location << std::endl;
 
     for (ToggleButton& button : toggle_buttons_) {
       button.Toggle(reference_location);
@@ -114,6 +120,7 @@ vector<bool> PauseMenu::GetToggleButtonStates() const {
   vector<bool> states(toggle_buttons_.size());
   auto checker = [] (const ToggleButton& button) { return button.IsToggled(); };
 
+  // Get the toggle state of each button and save to the new vector
   transform(toggle_buttons_.begin(), toggle_buttons_.end(),
             states.begin(), checker);
 

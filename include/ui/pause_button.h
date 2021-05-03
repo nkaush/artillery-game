@@ -15,6 +15,11 @@
 
 namespace artillery {
 
+/**
+ * This class represents a pause button that changes color when hovered over by
+ * the user's mouse. It also displays a play icon when the button has a paused
+ * state. It displays a pause icon when the button has an in-play state.
+ */
 class PauseButton : public Button {
  public:
   /**
