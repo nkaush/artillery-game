@@ -40,7 +40,8 @@ class ArtilleryApp : public ci::app::App {
   void update() override;
 
   /**
-   *
+   * Executes the user's request from clicking UI elements.
+   * @param event - a MouseEvent class containing the new mouse coordinates
    */
   void mouseDown(ci::app::MouseEvent event) override;
 
@@ -57,7 +58,7 @@ class ArtilleryApp : public ci::app::App {
   void keyDown(ci::app::KeyEvent event) override;
 
  private:
-  // The path to the settings json files in the cmake working directory
+  // The path to the settings json files in the working directory
   static const std::string kGameSettingsFilePath;
   static const std::string kRenderSettingsFilePath;
 
@@ -67,7 +68,7 @@ class ArtilleryApp : public ci::app::App {
   // The game engine object that manages and executes all the logic of the game
   GameEngine game_engine_;
 
-  // TODO COMMENT
+  // The object that manages and executes all logic of user interaction
   UIHandler ui_handler_;
 };
 

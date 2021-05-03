@@ -28,30 +28,39 @@ void UIHandler::Draw() const {
 
 void UIHandler::Configure(const vector<ci::ColorA8u>& tank_colors,
                           float max_hitpoints) {
+  // Create a aim assistance toggle button for each tank in the game
   pause_menu_.Configure(tank_colors.size());
   start_button_.ChangeLabel(true);
 
   hitpoints_bars_ = vector<ProgressBar>();
   hitpoints_bars_.reserve(tank_colors.size() * sizeof(ProgressBar));
 
+  // Create a hitpoints bar for each tank in the game
   for (size_t idx = 0; idx < tank_colors.size(); idx++) {
     hitpoints_bars_.emplace_back(
         hp_render_settings_, tank_colors.at(idx), max_hitpoints, idx);
   }
 }
 
-void UIHandler::Update(const vec2& mouse_location, const GameState& game_state,
-                       const vector<size_t>& player_hitpoints) {
+void UIHandler::Update(const glm::vec2& mouse_location,
+                       const GameActivityState& game_state,
+                       const HitpointsUpdateStatus& hitpoints_status,
+                       const std::vector<size_t>& player_hitpoints) {
+  // Handle hover interactions of UI elements that change color when hovered over
   start_button_.Update(mouse_location);
   pause_button_.Update(mouse_location);
   pause_menu_.Update(mouse_location);
 
-  for (size_t idx = 0; idx < hitpoints_bars_.size(); idx++) {
-    hitpoints_bars_.at(idx).UpdateProgress(
-        static_cast<float>(player_hitpoints.at(idx)));
+  // Update the hitpoints progress bars if any tank(s) were recently hit
+  if (hitpoints_status != HitpointsUpdateStatus::kNoTanksHit) {
+    for (size_t idx = 0; idx < hitpoints_bars_.size(); idx++) {
+      hitpoints_bars_.at(idx).UpdateProgress(
+          static_cast<float>(player_hitpoints.at(idx)));
+    }
   }
 
-  if (game_state == GameState::kGameOver) {
+  // If the game has finished, show the restart button
+  if (game_state == GameActivityState::kGameOver) {
     start_button_.ChangeLabel(false);
     start_button_.SetVisibility(true);
   }
@@ -60,11 +69,13 @@ void UIHandler::Update(const vec2& mouse_location, const GameState& game_state,
 void UIHandler::HandleMouseDown(const vec2& mouse_location) {
   pause_button_.Toggle(mouse_location);
 
+  // If the pause button was just clicked, send a signal indicating so
   if (pause_status_ == GamePauseStatus::kUnPausedWaitingForAction
       && pause_button_.IsPaused()) {
     pause_status_ = GamePauseStatus::kGamePaused;
   }
 
+  // If the unpause button was just clicked, send a signal indicating so
   if (pause_status_ == GamePauseStatus::kPausedWaitingForAction
       && !pause_button_.IsPaused()) {
     pause_status_ = GamePauseStatus::kGameUnPaused;
@@ -74,6 +85,7 @@ void UIHandler::HandleMouseDown(const vec2& mouse_location) {
   pause_menu_.SetVisibility(pause_button_.IsPaused());
   pause_menu_.HandleMouseDown(mouse_location);
 
+  // If the start button was clicked, hide it
   if (start_button_.IsHoveredOver() && !IsGamePaused()) {
     start_button_.SetVisibility(false);
   }
@@ -99,7 +111,9 @@ bool UIHandler::IsGamePaused() const {
 GamePauseStatus UIHandler::RetrieveGamePauseStatus() {
   GamePauseStatus current_status = pause_status_;
 
+  // Receive the signal sent the instant the game is paused/un-paused
   if (current_status == GamePauseStatus::kGamePaused) {
+    // acknowledge signal as received and signal we are waiting for user input
     pause_status_ = GamePauseStatus::kPausedWaitingForAction;
   } else if (current_status == GamePauseStatus::kGameUnPaused) {
     pause_status_ = GamePauseStatus::kUnPausedWaitingForAction;
