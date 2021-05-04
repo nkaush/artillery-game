@@ -29,8 +29,8 @@ enum class TerrainVisibility {
 class Terrain {
  public:
   // These constants define the size of the app window
-  static constexpr int kWindowWidth = 750;
-  static constexpr int kWindowHeight = 500;
+  static constexpr int kWindowWidth = 1200;
+  static constexpr int kWindowHeight = 750;
 
   /**
    * Default constructor. Initializes the array of pixels and states using the

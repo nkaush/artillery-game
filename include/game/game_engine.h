@@ -102,6 +102,10 @@ class GameEngine {
    */
   const GameActivityState& GetGameActivityState() const;
 
+  /**
+   *
+   * @return
+   */
   HitpointsUpdateStatus RetrieveHitpointsUpdateStatus();
 
   /**
@@ -206,8 +210,14 @@ class GameEngine {
    */
   void FindNextSurvivingTank();
 
+  /**
+   *
+   */
   void HandleBulletTerrainCollisions();
 
+  /**
+   *
+   */
   void HandleBulletTankCollisions();
 };
 

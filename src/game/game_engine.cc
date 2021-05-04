@@ -104,11 +104,12 @@ float GameEngine::GetMaxHitpoints() const {
 
 void GameEngine::Draw(const glm::vec2& mouse_location) const {
   terrain_.Draw();
-  bullet_.Draw();
 
   for (size_t idx = 0; idx < tanks_.size(); idx++) {
     tanks_.at(idx).Draw(mouse_location, idx == current_tank_idx_);
   }
+
+  bullet_.Draw();
 
   ci::gl::color(ci::Color(1, 1, 1));
 }

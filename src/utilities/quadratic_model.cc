@@ -9,29 +9,31 @@
 namespace artillery {
 
 using std::vector;
+using glm::dmat3;
 using glm::mat3;
+using glm::dvec3;
 using glm::vec3;
 using glm::vec2;
 
 QuadraticModel::QuadraticModel(
     const vec2& point_a, const vec2& point_b, const vec2& point_c) {
-  vec3 second_column = vec3(point_a.x, point_b.x, point_c.x);
-  vec3 third_column = second_column * second_column;
+  dvec3 second_column = vec3(point_a.x, point_b.x, point_c.x);
+  dvec3 third_column = second_column * second_column;
 
   // Make design matrix with the form a polynomial takes with given x-values
-  mat3 design_matrix = mat3(vec3(1), second_column, third_column);
-  vec3 observation_vector = vec3(point_a.y, point_b.y, point_c.y);
+  mat3 design_matrix = dmat3(dvec3(1), second_column, third_column);
+  dvec3 observation_vector = dvec3(point_a.y, point_b.y, point_c.y);
 
   quadratic_constants_ = Solve(design_matrix, observation_vector);
 }
 
-const vec3 QuadraticModel::Solve(
-    const mat3& design_matrix, const vec3& observation_vector) {
+const dvec3 QuadraticModel::Solve(
+    const dmat3& design_matrix, const dvec3& observation_vector) {
   // Solve the linear system A.T * A * x = A.T * b
-  mat3 design_matrix_transpose = glm::transpose(design_matrix);
+  dmat3 design_matrix_transpose = glm::transpose(design_matrix);
 
-  mat3 equation_system = design_matrix_transpose * design_matrix;
-  vec3 equation_targets = design_matrix_transpose * observation_vector;
+  dmat3 equation_system = design_matrix_transpose * design_matrix;
+  dvec3 equation_targets = design_matrix_transpose * observation_vector;
 
   return glm::inverse(equation_system) * equation_targets;
 }

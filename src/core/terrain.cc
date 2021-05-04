@@ -58,7 +58,7 @@ vector<size_t> Terrain::ComputeSurfaceHeights(
 
   if (last_point.x != kWindowWidth) {
     throw std::invalid_argument("Invalid terrain extrema points. "
-        "Points must span entire 750 pixel wide frame.");
+        "Points must span entire 1200 pixel wide frame.");
   }
 
   vector<float> curve_fits;
@@ -107,7 +107,7 @@ void Terrain::LoadSurfaceFromHeights(const vector<size_t>& column_heights) {
         }
       } catch (std::out_of_range& e) {
         throw std::invalid_argument("Invalid terrain extrema points. "
-            "Points must span entire 500 pixel high frame.");
+            "Points must span entire 750 pixel high frame.");
       }
     }
   }

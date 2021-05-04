@@ -3,15 +3,22 @@
 //
 
 #include "core/tank.h"
-
 #include "core/terrain.h"
+
+#include "utilities/quadratic_model.h"
 
 namespace artillery {
 
 using nlohmann::json;
+
 using ci::ColorA8u;
 using ci::Rectf;
+
+using glm::vec3;
 using glm::vec2;
+
+using std::vector;
+using std::pair;
 
 Tank::Tank()
     : chassis_rounding_(0), chassis_rotation_(0), tread_wheel_radius_(0),
@@ -101,7 +108,7 @@ void Tank::SetXCoordinate(float x_coord) {
 }
 
 void Tank::SetYCoordinate(float treads_y1, float treads_y2) {
-  std::pair<float, float> x_coords = GetTreadsXCoordinates();
+  pair<float, float> x_coords = GetTreadsXCoordinates();
   chassis_rotation_ =
       glm::atan(treads_y2 - treads_y1, x_coords.second - x_coords.first);
 
@@ -178,8 +185,9 @@ void Tank::DrawLaser(const vec2& mouse_location, bool is_current_player) const {
   }
 }
 
-std::vector<vec2> Tank::PredictBulletPath() const {
-  std::vector<vec2> points;
+vector<vec2> Tank::PredictBulletPath() const {
+  vector<vec2> points;
+  points.reserve((aim_assistance_ / aim_assist_frequency_) * sizeof(vec2));
 
   // Make a copy of the bullet velocity so we can update it as we go
   vec2 working_velocity(loaded_bullet_velocity_);
@@ -212,10 +220,9 @@ Bullet Tank::ShootBullet() const {
   // Find the change in coords after the barrel rotation
   vec2 barrel_extension(glm::cos(barrel_rotation_) * barrel_span_,
                         glm::sin(barrel_rotation_) * barrel_span_);
-  vec2 initial_position = barrel_pivot_position_ + barrel_extension;
+  vec2 initial_pos = barrel_pivot_position_ + barrel_extension;
 
-  return Bullet(initial_position, loaded_bullet_velocity_,
-                bullet_color_, barrel_radius_);
+  return {initial_pos, loaded_bullet_velocity_, bullet_color_, barrel_radius_};
 }
 
 void Tank::PointBarrel(const vec2& position_pointed_at) {
@@ -268,14 +275,14 @@ float Tank::GetBarrelRotation() const {
   return barrel_rotation_;
 }
 
-std::pair<float, float> Tank::GetTreadsXCoordinates() const {
+pair<float, float> Tank::GetTreadsXCoordinates() const {
   // Get the coordinates in context of the actual frame,
   // NOT the reference frame when rendering the tank
   return {treads_rect_.x1 + chassis_position_.x,
           treads_rect_.x2 + chassis_position_.x};
 }
 
-std::pair<float, float> Tank::GetXBounds() const {
+pair<float, float> Tank::GetXBounds() const {
   return {treads_rect_.x1, treads_rect_.x2};
 }
 

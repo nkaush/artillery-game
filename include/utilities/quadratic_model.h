@@ -66,8 +66,8 @@ class QuadraticModel {
    * @param observation_vector - a vec3 of the solutions to the system
    * @return a vec3 of the solution to the system of equations
    */
-  static const glm::vec3 Solve(
-      const glm::mat3& design_matrix, const glm::vec3& observation_vector);
+  static const glm::dvec3 Solve(
+      const glm::dmat3& design_matrix, const glm::dvec3& observation_vector);
 };
 
 }

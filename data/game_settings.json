@@ -10,7 +10,7 @@
     "barrel_radius_": 3,
     "tread_wheel_radius_": 5,
     "tread_wheel_padding_": 2,
-    "bullet_velocity_damping_": [0.05, 0.05],
+    "bullet_velocity_damping_": [0.0375, 0.0375],
     "aim_assist_frequency_": 3,
     "aim_assist_render_size_": 2,
     "tread_color_": {}
@@ -20,7 +20,7 @@
   "blast_size_scalar_": 2,
   "max_hitpoints_": 100,
   "default_aim_assistance_": 150,
-  "tank_speed_on_move_": 2,
+  "tank_speed_on_move_": 3,
   "tanks_": [
     {
       "chassis_color_": {
@@ -86,9 +86,11 @@
     },
     "color_randomization_": 10,
     "ridge_extrema": [
-      [[0, 300], [100, 125], [200, 300]],
-      [[200, 300], [350, 400], [500, 300]],
-      [[500, 300], [625, 200], [750, 300]]
+      [[0, 300], [50, 340], [100, 300]],
+      [[100, 300], [200, 200], [300, 300]],
+      [[300, 300], [500, 500], [700, 300]],
+      [[700, 300], [850, 150], [1000, 300]],
+      [[1000, 300], [1100, 400], [1200, 300]]
     ]
   }
 }

@@ -4,7 +4,7 @@
     "alternate_label_": "Restart",
     "border_width_": 2,
     "rectangle_": {
-      "center": [375, 250],
+      "center": [600, 375],
       "width": 100,
       "height": 50
     },
@@ -19,31 +19,8 @@
       "blue": 5
     }
   },
-  "toggle_button_": {
-    "border_width_": 1.5,
-    "rectangle_": {
-      "center": [730, 20],
-      "width": 20,
-      "height": 20
-    },
-    "toggle_rect_": {
-      "center": [730, 20],
-      "width": 12,
-      "height": 12
-    },
-    "background_color_": {
-      "red": 242,
-      "green": 187,
-      "blue": 5
-    },
-    "hover_color_": {
-      "red": 200,
-      "green": 147,
-      "blue": 5
-    }
-  },
   "pause_menu_": {
-    "menu_rectangle_center_": [375, 250],
+    "menu_rectangle_center_": [600, 375],
     "background_color_": {
       "red": 200,
       "green": 200,
@@ -73,7 +50,7 @@
   "pause_button_": {
     "border_width_": 1.5,
     "rectangle_": {
-      "center": [730, 20],
+      "center": [1180, 20],
       "width": 20,
       "height": 20
     },
@@ -110,7 +87,7 @@
     "horizontal_padding_": [10, 0],
     "label_padding_": [5, 5],
     "bar_height_": 15,
-    "bar_width_": 200,
+    "bar_width_": 350,
     "label_prefix_": "Player ",
     "label_suffix_": " Hitpoints: ",
     "background_color_": {
