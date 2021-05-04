@@ -21,7 +21,7 @@ constexpr TerrainVisibility Terrain::kDefaultVisibility;
 
 Terrain::Terrain() : landscape_(),
                      pixels_(kWindowWidth, kWindowHeight, true),
-                     display_() {}
+                     display_(), color_randomization_(0) {}
 
 void to_json(json& json_object, const Terrain& terrain) {}
 

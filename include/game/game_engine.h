@@ -200,23 +200,23 @@ class GameEngine {
   void UpdateTankYCoordinate(Tank& tank);
 
   /**
-   *
-   * @return
+   * Helper method that checks whether there are 1 or fewer players left alive.
+   * @return a bool indicating whether the game has been won by a player.
    */
   bool WasGameWon() const;
 
   /**
-   *
+   * Helper method that advances the next turn to the next surviving player.
    */
   void FindNextSurvivingTank();
 
   /**
-   *
+   * Handles the logic behind a bullet's interactions with the terrain.
    */
   void HandleBulletTerrainCollisions();
 
   /**
-   *
+   * Handles the logic behind a bullet's interactions with all tanks in the game.
    */
   void HandleBulletTankCollisions();
 };
