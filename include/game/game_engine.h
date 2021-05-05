@@ -103,8 +103,9 @@ class GameEngine {
   const GameActivityState& GetGameActivityState() const;
 
   /**
-   *
-   * @return
+   * Retrieve the current hitpoints update status enum and set the state back
+   * to idle. This method acts as the signal receiver for this enum.
+   * @return a HitpointsUpdateStatus indicating whether to update hitpoints
    */
   HitpointsUpdateStatus RetrieveHitpointsUpdateStatus();
 

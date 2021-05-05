@@ -42,7 +42,7 @@ float QuadraticModel::ComputePoint(float x_coord) const {
   return glm::dot(quadratic_constants_, vec3(1, x_coord, x_coord * x_coord));
 }
 
-const std::vector<float> QuadraticModel::ComputePointsInRange(
+std::vector<float> QuadraticModel::ComputePointsInRange(
     float start_x, float end_x) const {
   vector<float> x_values = CreateRange(start_x, end_x);
   std::vector<float> y_values = vector<float>(x_values.size());
@@ -55,7 +55,7 @@ const std::vector<float> QuadraticModel::ComputePointsInRange(
   return y_values;
 }
 
-const std::vector<float> QuadraticModel::CreateRange(float start, float end) {
+std::vector<float> QuadraticModel::CreateRange(float start, float end) {
   vector<float> range = vector<float>(static_cast<size_t>(end - start));
   std::iota(range.begin(), range.end(), start); // Fill with increments of 1
 
